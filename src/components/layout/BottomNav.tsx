@@ -84,7 +84,7 @@ export function BottomNav() {
             </div>
             <button
               onClick={handleLogout}
-            className="flex min-h-11 items-center gap-2 w-full px-4 py-3 rounded-xl text-sm text-red-500 bg-red-50"
+              className="flex min-h-11 items-center gap-2 w-full px-4 py-3 rounded-xl text-sm text-red-500 bg-red-50"
             >
               <LogOut className="w-5 h-5" />
               로그아웃
