@@ -7,7 +7,7 @@ import { ko } from 'date-fns/locale'
 import {
   CalendarDays, Users, CreditCard, BookOpen,
   TrendingUp, Mail, MessageSquare, ClipboardList,
-  CheckCircle2, ChevronRight,
+  CheckCircle2, ChevronRight, Bot, Zap, History,
 } from 'lucide-react'
 import { useTodayBriefing } from '@/lib/queries/useTodayBriefing'
 import { useStudents } from '@/lib/queries/useStudents'
@@ -143,6 +143,40 @@ export default function DashboardPage() {
 
       {/* 섹션 카드 2열 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+
+        {/* 빠른 실행 */}
+        <SectionCard href="/schedule" icon={Zap} title="빠른 실행">
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { href: '/schedule', label: '수업 추가' },
+              { href: '/students', label: '학생 관리' },
+              { href: '/materials', label: '자료 업로드' },
+              { href: '/feedback', label: '피드백 작성' },
+            ].map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex min-h-11 items-center justify-center rounded-lg bg-gray-50 px-3 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* GPT 바로가기 */}
+        <SectionCard href="/feedback" icon={Bot} title="GPT 바로가기">
+          <div className="space-y-2">
+            <Link href="/feedback" className="flex items-center justify-between rounded-lg border border-violet-100 bg-violet-50 px-3 py-3 text-sm font-medium text-violet-700">
+              수업 피드백 AI 다듬기
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+            <Link href="/reports" className="flex items-center justify-between rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-3 text-sm font-medium text-indigo-700">
+              성장리포트 AI 생성
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </SectionCard>
 
         {/* 수업 일정 */}
         <SectionCard href="/schedule" icon={CalendarDays} title="수업 일정">
@@ -287,6 +321,41 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
+        </SectionCard>
+
+        {/* 최근 활동 */}
+        <SectionCard href="/messages" icon={History} title="최근 활동" badge={totalUnread + pendingRequests.length}>
+          <div className="space-y-2">
+            {messageThreads.slice(0, 2).map(t => (
+              <div key={`message-${t.student.id}`} className="flex items-start gap-2.5">
+                <div
+                  className="mt-0.5 h-6 w-6 shrink-0 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                  style={{ backgroundColor: t.student.color ?? '#6366f1' }}
+                >
+                  {t.student.name[0]}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-800">{t.student.name} 문의</p>
+                  <p className="truncate text-xs text-gray-400">{t.lastMsg.body}</p>
+                </div>
+              </div>
+            ))}
+            {pendingRequests.slice(0, 2).map(r => (
+              <div key={`request-${r.id}`} className="flex items-start gap-2.5">
+                <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-800">{r.students?.name} 변경요청</p>
+                  <p className="truncate text-xs text-gray-400">
+                    {r.request_type === 'reschedule' ? '일정 변경'
+                      : r.request_type === 'cancel' ? '수업 취소' : '보강 요청'}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {messageThreads.length === 0 && pendingRequests.length === 0 && (
+              <p className="text-sm text-gray-400">최근 확인할 활동이 없어요</p>
+            )}
+          </div>
         </SectionCard>
 
         {/* 문의함 */}

@@ -74,9 +74,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // non-teacher가 dashboard 경로에 접근 → /portal/schedule로
-  const dashboardPaths = ['/schedule', '/students', '/payments']
-  if (role !== 'teacher' && dashboardPaths.some((p) => pathname.startsWith(p))) {
+  // non-teacher가 teacher dashboard 경로에 접근 → portal home으로
+  const dashboardPaths = [
+    '/schedule',
+    '/students',
+    '/payments',
+    '/materials',
+    '/reports',
+    '/feedback',
+    '/messages',
+    '/requests',
+  ]
+  if (role !== 'teacher' && (pathname === '/' || dashboardPaths.some((p) => pathname.startsWith(p)))) {
     const url = request.nextUrl.clone()
     url.pathname = '/portal/home'
     return NextResponse.redirect(url)
