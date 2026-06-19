@@ -35,7 +35,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden md:flex w-60 bg-white border-r border-gray-200 flex-col">
+    <aside className="hidden md:flex w-60 shrink-0 bg-white border-r border-gray-200 flex-col">
       <div className="h-16 flex items-center px-6 border-b border-gray-200">
         <span className="text-lg font-bold text-indigo-600">syzhlin classroom</span>
       </div>

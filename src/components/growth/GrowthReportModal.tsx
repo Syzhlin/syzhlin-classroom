@@ -147,20 +147,20 @@ export function GrowthReportModal({ studentId, studentName, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 overflow-y-auto py-4">
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-xl mx-4 my-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 overflow-y-auto sm:items-start sm:py-4">
+      <div className="relative w-full max-w-xl max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:mx-4 sm:my-4 sm:rounded-2xl">
         {/* 헤더 */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10 sm:px-6">
           <div>
             <h2 className="text-base font-bold text-gray-900">성장리포트 생성</h2>
             <p className="text-xs text-gray-400 mt-0.5">학생: {studentName}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
+          <button onClick={onClose} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 text-xl">×</button>
         </div>
 
-        <div className="px-6 py-5 space-y-6">
+        <div className="px-4 py-5 space-y-6 sm:px-6">
           {/* 기간 + 수업 횟수 */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-end gap-4">
             <div>
               <label className="text-xs text-gray-500 mb-1 block">리포트 기간</label>
               <input type="month" value={period} onChange={e => setPeriod(e.target.value)}
@@ -181,14 +181,14 @@ export function GrowthReportModal({ studentId, studentName, onClose }: Props) {
           <div className="space-y-5">
             {ITEMS.map(({ key, label, desc }) => (
               <div key={key}>
-                <div className="flex items-baseline gap-2 mb-1.5">
+                <div className="flex flex-col gap-0.5 mb-1.5 sm:flex-row sm:items-baseline sm:gap-2">
                   <span className="text-sm font-semibold text-gray-800">{label}</span>
                   <span className="text-xs text-gray-400">{desc}</span>
                 </div>
-                <div className="flex gap-2 mb-2">
+                <div className="flex flex-wrap gap-2 mb-2">
                   {[1, 2, 3, 4, 5].map(v => (
                     <button key={v} onClick={() => setScore(key, v)}
-                      className={"w-10 h-10 rounded-xl text-sm font-bold border-2 transition-all " +
+                      className={"w-11 h-11 rounded-xl text-sm font-bold border-2 transition-all " +
                         (scores[key] === v
                           ? 'bg-indigo-600 text-white border-indigo-600 scale-110'
                           : 'border-gray-200 text-gray-400 hover:border-indigo-300')}>
@@ -247,13 +247,13 @@ export function GrowthReportModal({ studentId, studentName, onClose }: Props) {
           )}
 
           {/* 저장 / 공개 버튼 */}
-          <div className="flex gap-2 pb-2">
+          <div className="flex flex-col gap-2 pb-2 sm:flex-row">
             <button onClick={() => save('saved')} disabled={!allScored || saving}
-              className="flex-1 py-2.5 border-2 border-indigo-200 text-indigo-600 text-sm font-medium rounded-xl hover:bg-indigo-50 disabled:opacity-40">
+              className="flex-1 min-h-11 py-2.5 border-2 border-indigo-200 text-indigo-600 text-sm font-medium rounded-xl hover:bg-indigo-50 disabled:opacity-40">
               {saving ? '저장 중...' : '💾 저장'}
             </button>
             <button onClick={() => save('published')} disabled={!allScored || !generatedReport || publishing}
-              className="flex-1 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-40">
+              className="flex-1 min-h-11 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-40">
               {publishing ? '공개 중...' : '📤 학부모 채널 공개'}
             </button>
           </div>

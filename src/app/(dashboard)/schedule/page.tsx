@@ -57,13 +57,13 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex h-[calc(100dvh-5rem)] flex-col bg-white md:h-screen">
       {/* 상단 헤더 */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <div className="flex flex-col gap-3 px-4 py-3 border-b border-gray-200 sm:px-6 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
         <h1 className="text-xl font-bold text-gray-900">수업 일정</h1>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
           <WeekNavigator />
-          <Button onClick={handleAddClick} size="sm">
+          <Button onClick={handleAddClick} size="sm" className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-1" />
             수업 추가
           </Button>

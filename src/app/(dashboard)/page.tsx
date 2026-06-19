@@ -93,7 +93,7 @@ export default function DashboardPage() {
   ).length
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* 헤더 */}
       <div>
         <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
@@ -103,10 +103,10 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI 4개 */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-indigo-600 rounded-xl p-4 text-white">
           <p className="text-xs text-indigo-200 font-medium">오늘 수업</p>
-          <p className="text-3xl font-bold mt-1">
+          <p className="text-2xl sm:text-3xl font-bold mt-1">
             {todayClasses.length}
             <span className="text-base font-normal text-indigo-200">회</span>
           </p>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
 
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-400 font-medium">활성 학생</p>
-          <p className="text-3xl font-bold mt-1 text-gray-900">
+          <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
             {students.length}
             <span className="text-base font-normal text-gray-400">명</span>
           </p>
@@ -124,7 +124,7 @@ export default function DashboardPage() {
 
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-400 font-medium">미납 현황</p>
-          <p className="text-3xl font-bold mt-1 text-gray-900">
+          <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
             {paymentStats.unpaid + paymentStats.partial}
             <span className="text-base font-normal text-gray-400">건</span>
           </p>
@@ -133,7 +133,7 @@ export default function DashboardPage() {
 
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <p className="text-xs text-gray-400 font-medium">미확인 알림</p>
-          <p className="text-3xl font-bold mt-1 text-gray-900">
+          <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
             {totalUnread + pendingRequests.length}
             <span className="text-base font-normal text-gray-400">건</span>
           </p>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 섹션 카드 2열 */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
 
         {/* 수업 일정 */}
         <SectionCard href="/schedule" icon={CalendarDays} title="수업 일정">

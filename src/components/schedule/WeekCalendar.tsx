@@ -42,7 +42,7 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
     (classes ?? []).filter((c) => c.date === format(day, 'yyyy-MM-dd'))
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full min-w-[760px] flex-col md:min-w-0">
       {/* 헤더 — 요일 */}
       <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20">
         <div className="w-14 shrink-0" /> {/* 시간 컬럼 여백 */}

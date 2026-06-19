@@ -28,8 +28,8 @@ export default function RequestsPage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="w-full max-w-2xl mx-auto p-4 sm:p-6">
+      <div className="flex flex-wrap items-center gap-3 mb-5 sm:mb-6">
         <h1 className="text-lg font-bold text-gray-900">수업 변경 요청</h1>
         {pendingCount > 0 && (
           <span className="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full font-medium">{pendingCount}건</span>
@@ -37,7 +37,7 @@ export default function RequestsPage() {
         <div className="ml-auto flex gap-2">
           {(['pending', 'all'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={"text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors " +
+              className={"min-h-10 text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors " +
                 (filter === f ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-200 text-gray-500')}>
               {f === 'pending' ? '검토 중' : '전체'}
             </button>
@@ -62,12 +62,12 @@ export default function RequestsPage() {
             return (
               <div key={req.id} className={"rounded-2xl border p-4 bg-white " + (req.status === 'pending' ? 'border-amber-200' : 'border-gray-100')}>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                       style={{ backgroundColor: req.students?.color ?? '#6366f1' }}>
                       {req.students?.name?.slice(0, 1)}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <span className="text-sm font-semibold text-gray-800">{req.students?.name}</span>
                       <span className="text-xs text-gray-400 ml-2">{TYPE_LABELS[req.request_type]}</span>
                     </div>
@@ -98,20 +98,20 @@ export default function RequestsPage() {
                           className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400" />
                         <div className="flex gap-2">
                           <button onClick={() => respond(req.id, 'rejected')} disabled={handle.isPending}
-                            className="flex-1 py-2 border border-red-200 text-red-600 text-xs rounded-xl hover:bg-red-50">
+                            className="flex-1 min-h-11 py-2 border border-red-200 text-red-600 text-xs rounded-xl hover:bg-red-50">
                             거절
                           </button>
                           <button onClick={() => respond(req.id, 'approved')} disabled={handle.isPending}
-                            className="flex-1 py-2 bg-indigo-600 text-white text-xs rounded-xl">
+                            className="flex-1 min-h-11 py-2 bg-indigo-600 text-white text-xs rounded-xl">
                             {handle.isPending ? '처리 중...' : '승인'}
                           </button>
                           <button onClick={() => { setActiveId(null); setNote('') }}
-                            className="px-3 py-2 border border-gray-200 text-gray-400 text-xs rounded-xl">취소</button>
+                            className="min-h-11 px-3 py-2 border border-gray-200 text-gray-400 text-xs rounded-xl">취소</button>
                         </div>
                       </div>
                     ) : (
                       <button onClick={() => setActiveId(req.id)}
-                        className="text-xs text-indigo-600 font-medium hover:underline">
+                        className="min-h-10 text-xs text-indigo-600 font-medium hover:underline">
                         답변하기 →
                       </button>
                     )}

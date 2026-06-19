@@ -51,21 +51,21 @@ export function BottomNav() {
       {showMore && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowMore(false)} />
-          <div className="relative bg-white rounded-t-2xl px-4 pt-4 pb-8 z-10">
+          <div className="relative bg-white rounded-t-2xl px-4 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold text-gray-500">더보기</span>
-              <button onClick={() => setShowMore(false)} className="p-1 text-gray-400">
+              <button onClick={() => setShowMore(false)} className="min-h-11 min-w-11 inline-flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="grid grid-cols-4 gap-3 mb-4">
+            <div className="grid grid-cols-3 min-[390px]:grid-cols-4 gap-2.5 mb-4">
               {moreNav.map(({ href, label, icon: Icon }) => (
                 <Link
                   key={href}
                   href={href}
                   onClick={() => setShowMore(false)}
                   className={cn(
-                    'flex flex-col items-center gap-1.5 py-3 rounded-xl',
+                    'flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl px-1 text-center',
                     pathname === href ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600'
                   )}
                 >
@@ -84,7 +84,7 @@ export function BottomNav() {
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 w-full px-4 py-3 rounded-xl text-sm text-red-500 bg-red-50"
+            className="flex min-h-11 items-center gap-2 w-full px-4 py-3 rounded-xl text-sm text-red-500 bg-red-50"
             >
               <LogOut className="w-5 h-5" />
               로그아웃
@@ -94,13 +94,13 @@ export function BottomNav() {
       )}
 
       {/* 하단 탭바 */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 flex items-center">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 flex items-center pb-[env(safe-area-inset-bottom)]">
         {primaryNav.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
             className={cn(
-              'flex-1 flex flex-col items-center gap-1 py-2.5 text-xs font-medium',
+              'flex-1 min-h-16 flex flex-col items-center justify-center gap-1 text-xs font-medium',
               pathname === href ? 'text-indigo-600' : 'text-gray-400'
             )}
           >
@@ -111,7 +111,7 @@ export function BottomNav() {
         <button
           onClick={() => setShowMore(true)}
           className={cn(
-            'flex-1 flex flex-col items-center gap-1 py-2.5 text-xs font-medium relative',
+            'flex-1 min-h-16 flex flex-col items-center justify-center gap-1 text-xs font-medium relative',
             isMoreActive ? 'text-indigo-600' : 'text-gray-400'
           )}
         >

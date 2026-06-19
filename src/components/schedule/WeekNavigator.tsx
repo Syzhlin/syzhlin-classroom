@@ -12,13 +12,13 @@ export function WeekNavigator() {
   const label = `${format(selectedWeekStart, 'yyyy년 M월 d일', { locale: ko })} ~ ${format(weekEnd, 'M월 d일', { locale: ko })}`
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
       <Button variant="outline" size="icon" onClick={() => setWeekStart(subWeeks(selectedWeekStart, 1))}>
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <div className="flex items-center gap-2 min-w-[240px] justify-center">
+      <div className="flex min-w-0 flex-1 items-center justify-center gap-2 sm:min-w-[240px]">
         <CalendarDays className="h-4 w-4 text-indigo-600" />
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="truncate text-sm font-medium text-gray-700">{label}</span>
       </div>
       <Button variant="outline" size="icon" onClick={() => setWeekStart(addWeeks(selectedWeekStart, 1))}>
         <ChevronRight className="h-4 w-4" />

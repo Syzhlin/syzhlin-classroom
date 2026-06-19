@@ -125,15 +125,15 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+      <div className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:mx-4 sm:rounded-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-4 border-b border-gray-100 bg-white sm:px-6">
           <h2 className="text-base font-semibold text-gray-900">{isEdit ? '학생 수정' : '학생 추가'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+          <button onClick={onClose} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 text-xl leading-none">×</button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-5 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="px-4 py-5 space-y-4 sm:px-6">
           {/* 이름 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">이름 <span className="text-red-500">*</span></label>
@@ -142,7 +142,7 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
           </div>
 
           {/* 학교 + 학년 */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">학교</label>
               <input {...register('school')} placeholder="○○중학교" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -162,7 +162,7 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
             <div className="flex flex-wrap gap-2">
               {SUBJECTS.map(s => (
                 <button key={s} type="button" onClick={() => toggleSubject(s)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                  className={`min-h-10 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                     selectedSubjects.includes(s) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
                   }`}>{s}</button>
               ))}
@@ -176,7 +176,7 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
           </div>
 
           {/* 연락처 */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">학생 연락처</label>
               <input {...register('phone')} placeholder="010-0000-0000" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -190,10 +190,10 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
           {/* 캘린더 색상 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">캘린더 색상</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {COLORS.map(c => (
                 <button key={c} type="button" onClick={() => setValue('color', c)}
-                  className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                  className="h-10 w-10 rounded-full border-2 transition-transform hover:scale-110"
                   style={{ backgroundColor: c, borderColor: selectedColor === c ? '#1f2937' : 'transparent' }} />
               ))}
             </div>
@@ -203,12 +203,12 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">정기 수업 일정</label>
             <p className="text-xs text-gray-400 mb-2">선택한 요일에 수업이 자동으로 계속 생성돼요 (직접 삭제하지 않는 한 유지)</p>
-            <div className="flex gap-1.5 mb-3">
+            <div className="flex flex-wrap gap-1.5 mb-3">
               {DAYS.map((label, idx) => {
                 const active = recurringSlots.some(s => s.day === idx)
                 return (
                   <button key={idx} type="button" onClick={() => toggleDay(idx)}
-                    className={`w-9 h-9 rounded-full text-xs font-semibold border transition-colors ${
+                    className={`w-10 h-10 rounded-full text-xs font-semibold border transition-colors ${
                       active ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
                     }`}>{label}</button>
                 )
@@ -217,15 +217,15 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
             {recurringSlots.length > 0 && (
               <div className="space-y-2">
                 {recurringSlots.map(slot => (
-                  <div key={slot.day} className="flex items-center gap-2 bg-indigo-50 rounded-lg px-3 py-2">
+                  <div key={slot.day} className="grid grid-cols-[1rem_1fr_auto_1fr] items-center gap-2 bg-indigo-50 rounded-lg px-3 py-2">
                     <span className="text-xs font-bold text-indigo-600 w-4">{DAYS[slot.day]}</span>
                     <input type="time" value={slot.start_time}
                       onChange={e => updateSlotTime(slot.day, 'start_time', e.target.value)}
-                      className="text-xs border border-indigo-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400" />
+                      className="min-w-0 text-xs border border-indigo-200 rounded px-2 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400" />
                     <span className="text-xs text-gray-400">~</span>
                     <input type="time" value={slot.end_time}
                       onChange={e => updateSlotTime(slot.day, 'end_time', e.target.value)}
-                      className="text-xs border border-indigo-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400" />
+                      className="min-w-0 text-xs border border-indigo-200 rounded px-2 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-400" />
                   </div>
                 ))}
               </div>
@@ -239,8 +239,8 @@ export default function StudentFormDialog({ open, onClose, student }: Props) {
           </div>
 
           <div className="flex gap-2 pt-1">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 border border-gray-200 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">취소</button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-60">
+            <button type="button" onClick={onClose} className="flex-1 min-h-11 py-2.5 border border-gray-200 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">취소</button>
+            <button type="submit" disabled={isSubmitting} className="flex-1 min-h-11 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-60">
               {isSubmitting ? '저장 중...' : (isEdit ? '수정' : '추가')}
             </button>
           </div>

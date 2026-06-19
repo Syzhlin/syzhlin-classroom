@@ -16,13 +16,13 @@ export default function MessagesPage() {
   }, [threads])
 
   return (
-    <div className="flex h-[calc(100vh-64px)]">
+    <div className="flex h-[calc(100dvh-5rem)] min-w-0 flex-col md:h-[calc(100vh-64px)] md:flex-row">
       {/* 왼쪽: 학생 목록 */}
-      <div className="w-64 border-r border-gray-100 bg-white flex flex-col shrink-0">
+      <div className="border-b border-gray-100 bg-white flex shrink-0 flex-col md:w-64 md:border-b-0 md:border-r">
         <div className="px-4 py-3 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-800">문의함</h2>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex gap-2 overflow-x-auto px-3 py-2 md:block md:flex-1 md:overflow-y-auto md:px-0 md:py-0">
           {threads.length === 0 && (
             <p className="text-xs text-gray-400 text-center mt-8">아직 메시지가 없어요</p>
           )}
@@ -30,8 +30,8 @@ export default function MessagesPage() {
             <button
               key={t.student.id}
               onClick={() => setSelectedStudentId(t.student.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-gray-50 ${
-                selectedStudentId === t.student.id ? 'bg-indigo-50' : 'hover:bg-gray-50'
+              className={`flex min-h-14 w-56 shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors md:w-full md:rounded-none md:border-b md:border-gray-50 md:px-4 ${
+                selectedStudentId === t.student.id ? 'bg-indigo-50' : 'bg-gray-50 hover:bg-gray-100 md:bg-transparent'
               }`}
             >
               <div className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold"
@@ -56,7 +56,7 @@ export default function MessagesPage() {
       {selectedStudentId && selected ? (
         <ChatPanel studentId={selectedStudentId} studentName={selected.student.name} />
       ) : (
-        <div className="flex-1 flex items-center justify-center text-gray-400">
+        <div className="flex min-h-64 flex-1 items-center justify-center text-gray-400">
           <p className="text-sm">학생을 선택하세요</p>
         </div>
       )}
@@ -87,17 +87,17 @@ function ChatPanel({ studentId, studentName }: { studentId: string; studentName:
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="min-w-0 flex-1 flex flex-col">
       <div className="px-5 py-3 border-b border-gray-100 bg-white">
         <h3 className="text-sm font-semibold text-gray-800">{studentName}</h3>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-gray-50">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50 sm:px-5">
         {messages.map(msg => {
           const isTeacher = msg.sender_role === 'teacher'
           return (
             <div key={msg.id} className={`flex ${isTeacher ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] flex flex-col gap-1 ${isTeacher ? 'items-end' : 'items-start'}`}>
+              <div className={`max-w-[86%] sm:max-w-[70%] flex flex-col gap-1 ${isTeacher ? 'items-end' : 'items-start'}`}>
                 {!isTeacher && (
                   <span className="text-xs text-gray-400 px-1">{studentName}</span>
                 )}
@@ -130,7 +130,7 @@ function ChatPanel({ studentId, studentName }: { studentId: string; studentName:
         <button
           onClick={handleSend}
           disabled={!text.trim() || send.isPending}
-          className="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center disabled:opacity-40 shrink-0"
+          className="w-11 h-11 bg-indigo-600 text-white rounded-full flex items-center justify-center disabled:opacity-40 shrink-0"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>

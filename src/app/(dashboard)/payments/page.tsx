@@ -94,15 +94,15 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
       <div className="mt-3 flex items-center gap-2">
         <span className="text-xs text-gray-400">보너스</span>
         <div className="flex items-center gap-1">
-          <button
+        <button
             onClick={() => onBonusChange(payment, -1)}
             disabled={payment.bonus_sessions <= 0}
-            className="w-6 h-6 rounded-md border border-gray-200 text-gray-500 text-sm font-bold hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="min-h-10 min-w-10 rounded-md border border-gray-200 text-gray-500 text-sm font-bold hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >−</button>
           <span className="text-sm font-semibold text-orange-600 w-5 text-center">{payment.bonus_sessions}</span>
           <button
             onClick={() => onBonusChange(payment, +1)}
-            className="w-6 h-6 rounded-md border border-indigo-200 text-indigo-600 text-sm font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center"
+            className="min-h-10 min-w-10 rounded-md border border-indigo-200 text-indigo-600 text-sm font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center"
           >+</button>
         </div>
         <span className="text-xs text-gray-400">회 추가</span>
@@ -118,27 +118,27 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
       </div>
 
       {/* 결제 정보 */}
-      <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
+      <div className="mt-4 pt-4 border-t border-gray-50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-base font-bold text-gray-900">{payment.amount.toLocaleString()}원</p>
           <p className="text-xs text-gray-400 mt-0.5">{payment.payment_period}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {payment.payment_link ? (
             <a
               href={payment.payment_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors font-medium"
+              className="min-h-10 text-xs px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors font-medium inline-flex items-center"
             >
               결제링크 →
             </a>
           ) : payment.payment_method === '계좌이체' ? (
-            <span className="text-xs px-2.5 py-1.5 bg-gray-100 text-gray-500 rounded-lg">계좌이체</span>
+            <span className="min-h-10 text-xs px-2.5 py-1.5 bg-gray-100 text-gray-500 rounded-lg inline-flex items-center">계좌이체</span>
           ) : null}
           <button
             onClick={() => onRequestToggle(payment)}
-            className={`text-xs px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
+            className={`min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
               payment.payment_requested
                 ? 'bg-green-50 text-green-600 hover:bg-green-100'
                 : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
@@ -148,7 +148,7 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
           </button>
           <button
             onClick={() => onEdit(payment)}
-            className="text-xs px-2.5 py-1.5 border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+            className="min-h-10 text-xs px-2.5 py-1.5 border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
           >
             수정
           </button>
@@ -180,10 +180,10 @@ function EditModal({ payment, onClose }: { payment: PaymentWithStudent; onClose:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6">
+      <div className="relative bg-white rounded-2xl shadow-xl w-[calc(100vw-2rem)] max-w-sm p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-gray-900">{payment.student.name} 수정</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
+          <button onClick={onClose} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 text-xl">×</button>
         </div>
 
         <div className="space-y-4">
@@ -229,13 +229,13 @@ function EditModal({ payment, onClose }: { payment: PaymentWithStudent; onClose:
         </div>
 
         <div className="flex gap-2 mt-6">
-          <button onClick={onClose} className="flex-1 py-2.5 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50">
+          <button onClick={onClose} className="flex-1 min-h-11 py-2.5 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50">
             취소
           </button>
           <button
             onClick={handleSave}
             disabled={updatePayment.isPending}
-            className="flex-1 py-2.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60"
+            className="flex-1 min-h-11 py-2.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60"
           >
             {updatePayment.isPending ? '저장 중...' : '저장'}
           </button>
@@ -276,9 +276,9 @@ export default function PaymentsPage() {
   const displayMonth = `${year}년 ${parseInt(month)}월`
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="w-full max-w-4xl p-4 sm:p-6">
       {/* 헤더 */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">결제 관리</h1>
           <p className="mt-0.5 text-sm text-gray-500">{displayMonth}</p>

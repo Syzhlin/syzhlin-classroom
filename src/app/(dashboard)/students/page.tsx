@@ -37,9 +37,9 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="w-full max-w-4xl p-4 sm:p-6">
       {/* 헤더 */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">학생 관리</h1>
           <p className="mt-0.5 text-sm text-gray-500">
@@ -48,7 +48,7 @@ export default function StudentsPage() {
         </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          className="flex min-h-11 shrink-0 items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
         >
           <span className="text-lg leading-none">+</span> 학생 추가
         </button>
@@ -82,7 +82,7 @@ export default function StudentsPage() {
       {!isLoading && students && students.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {students.map(student => (
-            <div key={student.id} className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-sm transition-shadow">
+            <div key={student.id} className="bg-white border border-gray-100 rounded-xl p-4 sm:p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-start gap-3">
                 {/* 색상 아바타 */}
                 <div
@@ -93,7 +93,7 @@ export default function StudentsPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-semibold text-gray-900">{student.name}</h3>
                     {student.grade && (
                       <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
@@ -129,14 +129,14 @@ export default function StudentsPage() {
 
                   {/* 정기 수업 시간 */}
                   {student.schedule_note && (
-                    <p className="mt-1.5 text-xs text-indigo-600 font-medium">
+                  <p className="mt-1.5 text-xs text-indigo-600 font-medium break-words">
                       🕐 {student.schedule_note}
                     </p>
                   )}
 
                   {/* 연락처 */}
                   {(student.phone || student.parent_phone) && (
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-1 text-xs text-gray-400 break-words">
                       {student.phone && `📱 ${student.phone}`}
                       {student.phone && student.parent_phone && '  ·  '}
                       {student.parent_phone && `👨‍👩‍👧 ${student.parent_phone}`}
@@ -145,10 +145,10 @@ export default function StudentsPage() {
                 </div>
 
                 {/* 액션 버튼 */}
-                <div className="flex gap-1">
+                <div className="flex shrink-0 gap-1">
                   <button
                     onClick={() => setReportTarget(student)}
-                    className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
+                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
                     title="성장리포트"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -157,7 +157,7 @@ export default function StudentsPage() {
                   </button>
                   <button
                     onClick={() => handleEdit(student)}
-                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                     title="수정"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -169,13 +169,13 @@ export default function StudentsPage() {
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleDelete(student.id)}
-                        className="px-2 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        className="min-h-10 px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                       >
                         삭제
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(null)}
-                        className="px-2 py-1 text-xs border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="min-h-10 px-3 py-1 text-xs border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         취소
                       </button>
@@ -183,7 +183,7 @@ export default function StudentsPage() {
                   ) : (
                     <button
                       onClick={() => setDeleteConfirm(student.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      className="inline-flex min-h-10 min-w-10 items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       title="삭제"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

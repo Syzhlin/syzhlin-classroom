@@ -68,9 +68,9 @@ export default function MaterialsPage() {
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
         <div className="flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-indigo-600" />
           <h1 className="text-xl font-bold text-gray-900">수업 자료 관리</h1>
@@ -78,7 +78,7 @@ export default function MaterialsPage() {
         {selectedId && (
           <button
             onClick={() => { setShowForm(true); setForm(EMPTY_FORM) }}
-            className="flex items-center gap-1.5 text-sm px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            className="flex min-h-11 shrink-0 items-center gap-1.5 text-sm px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
           >
             <Plus className="w-4 h-4" />
             자료 추가
@@ -87,12 +87,12 @@ export default function MaterialsPage() {
       </div>
 
       {/* Student tabs */}
-      <div className="flex gap-2 flex-wrap mb-6">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 sm:flex-wrap sm:overflow-visible sm:pb-0 sm:mb-6">
         {students.map(s => (
           <button
             key={s.id}
             onClick={() => { setSelectedId(s.id); setShowForm(false) }}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`min-h-10 shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               selectedId === s.id
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-300'
@@ -105,13 +105,13 @@ export default function MaterialsPage() {
 
       {/* Add form */}
       {showForm && (
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-5 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 mb-5 shadow-sm">
           <h3 className="font-semibold text-gray-800 mb-4">
             {selectedStudent?.name}에게 자료 추가
           </h3>
           <form onSubmit={handleAdd} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 font-medium block mb-1">제목 *</label>
                 <input
                   required
@@ -121,7 +121,7 @@ export default function MaterialsPage() {
                   placeholder="예: 6월 3주차 복습 자료"
                 />
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 font-medium block mb-1">Google Drive 공유 링크 *</label>
                 <input
                   required
@@ -131,7 +131,7 @@ export default function MaterialsPage() {
                   placeholder="https://drive.google.com/file/d/..."
                 />
               </div>
-              <div>
+              <div className="sm:col-span-1">
                 <label className="text-xs text-gray-500 font-medium block mb-1">파일 종류</label>
                 <select
                   value={form.file_type}
@@ -143,7 +143,7 @@ export default function MaterialsPage() {
                   ))}
                 </select>
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 font-medium block mb-1">설명 (선택)</label>
                 <input
                   value={form.description}
@@ -153,18 +153,18 @@ export default function MaterialsPage() {
                 />
               </div>
             </div>
-            <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1">
               <button
                 type="submit"
                 disabled={addMaterial.isPending}
-                className="flex-1 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                className="flex-1 min-h-11 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
               >
                 {addMaterial.isPending ? '저장 중...' : '저장'}
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="min-h-11 px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 취소
               </button>
@@ -175,7 +175,7 @@ export default function MaterialsPage() {
 
       {/* Materials list */}
       {!selectedId ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 sm:p-12 text-center">
           <BookOpen className="w-10 h-10 text-gray-200 mx-auto mb-3" />
           <p className="text-sm text-gray-400">위에서 학생을 선택하세요</p>
         </div>
@@ -186,7 +186,7 @@ export default function MaterialsPage() {
           ))}
         </div>
       ) : materials.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 sm:p-12 text-center">
           <p className="text-sm text-gray-400">
             {selectedStudent?.name}의 수업 자료가 없습니다
           </p>
@@ -213,14 +213,14 @@ export default function MaterialsPage() {
                   href={m.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 text-gray-400 hover:text-indigo-600 transition-colors"
+                  className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
                   title="보기"
                 >
                   <ExternalLink className="w-4 h-4" />
                 </a>
                 <button
                   onClick={() => handleDelete(m.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                   title="삭제"
                 >
                   <Trash2 className="w-4 h-4" />
