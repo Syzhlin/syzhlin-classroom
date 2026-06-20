@@ -170,35 +170,35 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-3xl overflow-hidden" style={{backgroundColor: "var(--sz-card-pastel)", boxShadow: "0 8px 40px rgba(46,53,69,0.10), 0 2px 12px rgba(46,53,69,0.06), inset 0 1px 0 rgba(255,255,255,0.9)"}}>
+    <div className="w-[min(92vw,420px)] sm:w-full sm:max-w-md rounded-[24px] sm:rounded-[32px] overflow-hidden" style={{backgroundColor: "var(--sz-card-pastel)", boxShadow: "0 8px 40px rgba(46,53,69,0.10), 0 2px 12px rgba(46,53,69,0.06), inset 0 1px 0 rgba(255,255,255,0.9)"}}>
       {/* 로고 */}
-      <div className="px-8 pt-8 pb-4 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4" style={{backgroundColor: "var(--sz-blue-soft)"}}>
+      <div className="px-5 pt-6 pb-3 sm:px-8 sm:pt-8 sm:pb-4 text-center">
+        <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl mb-3 sm:mb-4" style={{backgroundColor: "var(--sz-blue-soft)"}}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
             <path d="M6 12v5c3 3 9 3 12 0v-5"/>
           </svg>
         </div>
-        <h1 className="text-xl font-bold tracking-tight" style={{color: "var(--sz-navy)", letterSpacing: "-0.01em"}}>Syzhlin Classroom</h1>
+        <h1 className="text-lg sm:text-xl font-bold tracking-tight" style={{color: "var(--sz-navy)", letterSpacing: "-0.01em"}}>Syzhlin Classroom</h1>
         <p className="mt-1 text-xs tracking-widest uppercase" style={{color: "var(--sz-warm-gray)", letterSpacing: "0.12em"}}>Premium English Classroom</p>
       </div>
 
       {/* 역할 선택 */}
-      <div className="px-8 pb-4">
+      <div className="px-5 pb-3 sm:px-8 sm:pb-4">
         <p className="text-xs font-medium text-gray-500 mb-2 text-center">누구신가요?</p>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2">
           {ROLES.map(r => (
             <button
               key={r.value}
               type="button"
               onClick={() => handleRoleChange(r.value)}
-              className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 text-xs font-medium transition-all ${
+              className={`flex flex-col items-center gap-1 py-2.5 sm:py-3 rounded-xl border-2 text-xs font-medium transition-all ${
                 role === r.value
                   ? COLOR_ACTIVE[r.color]
                   : 'border-[var(--sz-beige)] text-[var(--sz-warm-gray)] hover:border-[var(--sz-navy)] hover:text-[var(--sz-navy)]'
               }`}
             >
-              <span className="text-xl">{r.emoji}</span>
+              <span className="text-lg sm:text-xl">{r.emoji}</span>
               {r.label}
             </button>
           ))}
@@ -206,10 +206,10 @@ export default function LoginPage() {
       </div>
 
       {/* 구분선 */}
-      <div className="border-t mx-8" style={{borderColor: "rgba(175,196,216,0.25)"}} />
+      <div className="border-t mx-5 sm:mx-8" style={{borderColor: "rgba(175,196,216,0.25)"}} />
 
       {/* 로그인 폼 */}
-      <div className="px-8 py-6">
+      <div className="px-5 py-4 sm:px-8 sm:py-6">
         {error && (
           <div className="mb-4 px-4 py-3 rounded-2xl text-sm" style={{backgroundColor: "var(--sz-pink-pale)", color: "var(--sz-pink-soft)"}}>
             {error}
