@@ -25,8 +25,8 @@ function AccountCopyButton() {
   return (
     <button
       onClick={handleCopy}
-      className="w-full flex items-center justify-between rounded-2xl px-4 py-3"
-      style={{backgroundColor: 'var(--sz-peach-pale)', borderRadius: '16px'}}
+      className="w-full flex items-center justify-between px-4 py-3"
+      style={{ backgroundColor: 'rgba(242,199,166,0.2)', border: '1px solid rgba(242,199,166,0.3)', borderRadius: '16px' }}
     >
       <div className="flex items-center gap-2.5">
         <span className="text-lg">🏦</span>
@@ -75,8 +75,8 @@ export default function PortalPaymentPage() {
 
   if (!payment) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-6">
-        <h2 className="text-sm font-semibold text-[var(--sz-text-muted)] mb-4">
+      <div className="max-w-lg mx-auto px-4" style={{ paddingTop: '20px' }}>
+        <h2 className="text-xs font-bold mb-4" style={{ color: 'var(--sz-text-muted)' }}>
           {linkedStudentName ? `${linkedStudentName} · ` : ""}{year}년 {month}월 결제 현황
         </h2>
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-sm text-gray-400">
@@ -92,13 +92,13 @@ export default function PortalPaymentPage() {
     : 0
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-      <h2 className="text-sm font-semibold text-[var(--sz-text-muted)]">
+    <div className="max-w-lg mx-auto px-4 space-y-4" style={{ paddingTop: '20px' }}>
+      <h2 className="text-xs font-bold" style={{ color: 'var(--sz-text-muted)' }}>
         {linkedStudentName ? `${linkedStudentName} · ` : ""}{year}년 {month}월 결제 현황
       </h2>
 
       {/* Status card */}
-      <div className="sz-widget rounded-3xl p-6 space-y-5" style={{backgroundColor: 'var(--sz-card-pastel)'}}>
+      <div className="space-y-5" style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '28px', padding: '24px' }}>
         {/* Big status badge */}
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-800">납부 상태</span>
@@ -123,10 +123,9 @@ export default function PortalPaymentPage() {
               {payment.completed_sessions} / {payment.total_sessions}회
             </span>
           </div>
-          <div className="w-full rounded-full h-2" style={{backgroundColor: 'rgba(175,196,216,0.15)'}}>
+          <div style={{ width: '100%', height: '10px', borderRadius: '999px', background: 'rgba(175,196,216,0.15)', boxShadow: 'inset 2px 2px 5px rgba(120,130,150,0.12), inset -2px -2px 5px rgba(255,255,255,0.9)' }}>
             <div
-              className="h-2 rounded-full transition-all"
-              style={{backgroundColor: "var(--sz-navy)", width: `${progress}%`}}
+              style={{ height: '10px', borderRadius: '999px', transition: 'width 0.7s ease', width: `${progress}%`, background: 'linear-gradient(to right, var(--sz-blue-soft), #8BB8D8)', boxShadow: '0 2px 6px rgba(100,140,180,0.3)' }}
             />
           </div>
           <div className="text-xs mt-1" style={{ color: 'var(--sz-text-muted)' }}>

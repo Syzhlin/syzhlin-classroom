@@ -151,6 +151,14 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
         overflow: pathname === '/portal/inquiry' ? 'hidden' : undefined,
       }}
     >
+      {/* 소프트 민트-크림 배경 그라데이션 */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: -1,
+          background: `radial-gradient(circle at 12% 8%, rgba(195,225,215,0.36) 0%, transparent 32%), radial-gradient(circle at 88% 12%, rgba(242,232,208,0.30) 0%, transparent 28%), radial-gradient(circle at 50% 85%, rgba(205,218,235,0.20) 0%, transparent 38%)`,
+        }}
+      />
       {/* Top header */}
       <header
         className="px-4 pt-3 pb-2 sticky top-0 z-10"

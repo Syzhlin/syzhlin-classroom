@@ -86,7 +86,7 @@ function MonthlyCalendar({
   }, [classes])
 
   return (
-    <div className="sz-widget rounded-3xl p-4">
+    <div style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '24px', padding: '16px' }}>
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -533,7 +533,7 @@ export default function PortalSchedulePage() {
     const studentName = linkedStudentName ?? undefined
 
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-lg mx-auto px-4 space-y-4" style={{ paddingTop: '20px' }}>
         {/* 월간 캘린더 */}
         <MonthlyCalendar
           classes={allClasses as ClassItem[]}
@@ -543,8 +543,8 @@ export default function PortalSchedulePage() {
 
         {/* 선택된 날짜 수업 디테일 */}
         {selectedCalDate && selectedDayClasses.length > 0 && (
-          <div className="bg-white rounded-2xl border border-[var(--sz-beige)] overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 bg-[var(--sz-gold-light)] border-b border-[var(--sz-beige)] flex items-center justify-between">
+          <div className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.08), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '16px' }}>
+            <div className="px-4 py-2.5 border-b flex items-center justify-between" style={{ backgroundColor: 'rgba(175,196,216,0.1)', borderColor: 'rgba(175,196,216,0.2)' }}>
               <span className="text-xs font-semibold text-[var(--sz-navy)]">{formatClassDate(selectedCalDate)}</span>
               <button onClick={() => setSelectedCalDate(null)} className="text-[var(--sz-warm-gray)] hover:text-[var(--sz-navy)]">
                 <X className="w-3.5 h-3.5" />
@@ -560,16 +560,16 @@ export default function PortalSchedulePage() {
 
         {/* 다가오는 수업 (2개 날짜) */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">다가오는 수업</h2>
+          <h2 className="text-xs font-bold mb-3" style={{ color: 'var(--sz-text-muted)', letterSpacing: '0.06em' }}>다가오는 수업</h2>
           {upcomingGroups.length === 0 ? (
-            <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+            <div className="p-6 text-center text-sm" style={{ backgroundColor: '#FFFDF8', border: '1px solid rgba(175,196,216,0.2)', borderRadius: '20px', color: 'var(--sz-text-muted)' }}>
               예정된 수업이 없습니다
             </div>
           ) : (
             <div className="space-y-3">
               {upcomingGroups.map(([date, items]) => (
-                <div key={date} className="rounded-xl border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
-                  <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
+                <div key={date} className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.08), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '16px' }}>
+                  <div className="px-4 py-2.5 border-b" style={{ backgroundColor: 'rgba(175,196,216,0.1)', borderColor: 'rgba(175,196,216,0.2)' }}>
                     <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                   </div>
                   <div className="divide-y divide-gray-50">
@@ -595,12 +595,12 @@ export default function PortalSchedulePage() {
           </button>
           {showPast && (
             pastGroups.length === 0 ? (
-              <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>지난 수업이 없습니다</div>
+              <div className="p-6 text-center text-sm" style={{ backgroundColor: '#FFFDF8', border: '1px solid rgba(175,196,216,0.2)', borderRadius: '20px', color: 'var(--sz-text-muted)' }}>지난 수업이 없습니다</div>
             ) : (
               <div className="space-y-3">
                 {pastGroups.map(([date, items]) => (
-                  <div key={date} className="rounded-xl border overflow-hidden opacity-70" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
-                    <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
+                  <div key={date} className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.07), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '16px', opacity: 0.8 }}>
+                    <div className="px-4 py-2.5 border-b" style={{ backgroundColor: 'rgba(175,196,216,0.1)', borderColor: 'rgba(175,196,216,0.2)' }}>
                       <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                     </div>
                     <div className="divide-y divide-gray-50">
@@ -624,16 +624,16 @@ export default function PortalSchedulePage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
       <section>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">다가오는 수업</h2>
+        <h2 className="text-xs font-bold mb-3" style={{ color: 'var(--sz-text-muted)', letterSpacing: '0.06em' }}>다가오는 수업</h2>
         {groupByDate(upcoming).length === 0 ? (
-          <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+          <div className="p-6 text-center text-sm" style={{ backgroundColor: '#FFFDF8', border: '1px solid rgba(175,196,216,0.2)', borderRadius: '20px', color: 'var(--sz-text-muted)' }}>
             예정된 수업이 없습니다
           </div>
         ) : (
           <div className="space-y-3">
             {groupByDate(upcoming).map(([date, items]) => (
-              <div key={date} className="rounded-xl border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
-                <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
+              <div key={date} className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.08), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '16px' }}>
+                <div className="px-4 py-2.5 border-b" style={{ backgroundColor: 'rgba(175,196,216,0.1)', borderColor: 'rgba(175,196,216,0.2)' }}>
                   <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                 </div>
                 <div className="divide-y divide-gray-50">
@@ -658,12 +658,12 @@ export default function PortalSchedulePage() {
         </button>
         {showPast && (
           groupByDate(past).length === 0 ? (
-            <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>지난 수업이 없습니다</div>
+            <div className="p-6 text-center text-sm" style={{ backgroundColor: '#FFFDF8', border: '1px solid rgba(175,196,216,0.2)', borderRadius: '20px', color: 'var(--sz-text-muted)' }}>지난 수업이 없습니다</div>
           ) : (
             <div className="space-y-3">
               {groupByDate(past).map(([date, items]) => (
-                <div key={date} className="rounded-xl border overflow-hidden opacity-70" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
-                  <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
+                <div key={date} className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.07), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '16px', opacity: 0.8 }}>
+                  <div className="px-4 py-2.5 border-b" style={{ backgroundColor: 'rgba(175,196,216,0.1)', borderColor: 'rgba(175,196,216,0.2)' }}>
                     <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                   </div>
                   <div className="divide-y divide-gray-50">

@@ -38,7 +38,7 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
     : null
 
   return (
-    <div className="sz-widget rounded-3xl overflow-hidden">
+    <div className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '24px' }}>
       {/* 헤더 (항상 표시) */}
       <button
         onClick={() => setOpen(v => !v)}
@@ -105,7 +105,7 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
                 const score = report[scoreKey] as number | null
                 if (!note) return null
                 return (
-                  <div key={label} className="rounded-xl px-4 py-3" style={{backgroundColor: 'var(--sz-blue-pale)'}}>
+                  <div key={label} className="rounded-[14px] px-4 py-3" style={{ backgroundColor: 'rgba(175,196,216,0.14)', border: '1px solid rgba(175,196,216,0.2)' }}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-semibold text-gray-700">{label}</span>
                       {score && (
@@ -121,7 +121,7 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
 
           {/* 선생님 종합 코멘트 */}
           {report.generated_report && (
-            <div className="rounded-xl px-4 py-4" style={{backgroundColor: 'var(--sz-peach-pale)'}}>
+            <div className="rounded-[14px] px-4 py-4" style={{ backgroundColor: 'rgba(242,199,166,0.22)', border: '1px solid rgba(242,199,166,0.3)' }}>
               <p className="text-xs font-semibold mb-2" style={{color: 'var(--sz-text-deep)'}}>📝 선생님의 코멘트</p>
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {report.generated_report}
@@ -160,10 +160,10 @@ export default function PortalReportPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 pb-24 space-y-3">
+    <div className="max-w-lg mx-auto px-4 space-y-3" style={{ paddingTop: '20px' }}>
       {/* 헤더 */}
       <div className="mb-2">
-        <h1 className="text-lg font-bold text-gray-900">성장리포트 🌟</h1>
+        <h1 className="text-base font-bold" style={{ color: 'var(--sz-text-deep)' }}>성장리포트 🌟</h1>
         <p className="text-xs text-gray-400 mt-0.5">총 {reports.length}개월 누적</p>
       </div>
 

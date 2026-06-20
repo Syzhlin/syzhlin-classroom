@@ -55,7 +55,7 @@ function HomeworkSection({ studentId }: { studentId: string }) {
       </div>
 
       {/* 업로드 카드 */}
-      <div className="sz-widget rounded-3xl p-4 space-y-3" style={{ backgroundColor: 'var(--sz-card-pastel)' }}>
+      <div className="space-y-3" style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '24px', padding: '16px' }}>
         {/* 사진 선택 */}
         <input ref={inputRef} type="file" accept="image/*" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
@@ -122,8 +122,8 @@ function HomeworkSection({ studentId }: { studentId: string }) {
         <div className="space-y-2">
           <p className="text-xs font-semibold" style={{ color: 'var(--sz-text-muted)' }}>제출 기록</p>
           {submissions.slice(0, 3).map(s => (
-            <div key={s.id} className="sz-widget rounded-2xl px-4 py-3 flex items-center gap-3"
-              style={{ backgroundColor: 'var(--sz-card-pastel)' }}>
+            <div key={s.id} className="px-4 py-3 flex items-center gap-3"
+              style={{ backgroundColor: '#FFFDF8', boxShadow: '4px 4px 12px rgba(100,88,65,0.07), -3px -3px 8px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.7)', borderRadius: '16px' }}>
               {s.photo_url
                 ? <img src={s.photo_url} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0" />
                 : <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
@@ -178,7 +178,7 @@ export default function ParentPortalPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6">
+    <div className="max-w-lg mx-auto px-4" style={{ paddingTop: '20px' }}>
 
       {/* ── 숙제 제출 ── */}
       <HomeworkSection studentId={linkedId} />
@@ -193,7 +193,7 @@ export default function ParentPortalPage() {
           ))}
         </div>
       ) : !materials || materials.length === 0 ? (
-        <div className="sz-widget rounded-3xl p-10 text-center">
+        <div className="p-10 text-center" style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '24px' }}>
           <div className="text-4xl mb-3">📚</div>
           <p className="text-sm text-gray-500">아직 등록된 수업 자료가 없어요</p>
         </div>
@@ -204,7 +204,7 @@ export default function ParentPortalPage() {
             const config = FILE_TYPE_CONFIG[typeKey] ?? FILE_TYPE_CONFIG.file
 
             return (
-              <div key={material.id} className="sz-widget rounded-2xl overflow-hidden">
+              <div key={material.id} className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.08), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '20px' }}>
                 <div className="px-4 py-3.5 flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg" style={config.style}>
                     {config.icon}
