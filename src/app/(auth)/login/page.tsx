@@ -1,54 +1,64 @@
+
 'use client'
 
 import { logActivity } from '@/lib/logActivity'
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
 const ROLES = [
-  { value: 'teacher',       label: '선생님',      emoji: '👩‍🏫', color: 'indigo' },
-  { value: 'adult_learner', label: '성인 학습자',  emoji: '📚', color: 'emerald' },
-  { value: 'student',       label: '학생',         emoji: '🎒', color: 'sky' },
-  { value: 'parent',        label: '학부모',       emoji: '👨‍👧', color: 'amber' },
+  { value: 'teacher',       label: '선생님',     emoji: '👩‍🏫' },
+  { value: 'adult_learner', label: '성인 학습자', emoji: '📚' },
+  { value: 'student',       label: '학생',        emoji: '🎒' },
+  { value: 'parent',        label: '학부모',      emoji: '👨‍👧' },
 ] as const
 
 type RoleValue = typeof ROLES[number]['value']
 
-const COLOR_ACTIVE: Record<string, string> = {
-  indigo:  '',
-  emerald: '',
-  sky:     '',
-  amber:   '',
-}
-const BTN_COLOR: Record<string, string> = {
-  indigo:  '',
-  emerald: '',
-  sky:     '',
-  amber:   '',
-}
+// ── Neumorphic base ──────────────────────────────────────────
+const BASE = '#EEEAE4'
+const SDK  = '#C6C2BB'   // shadow dark
+const SLT  = 'rgba(255,255,255,0.95)'  // shadow light
 
-function getColorForRole(role: RoleValue) {
-  return ROLES.find(r => r.value === role)?.color ?? 'indigo'
+const neuCard: React.CSSProperties = {
+  backgroundColor: BASE,
+  boxShadow: `20px 20px 56px ${SDK}, -10px -10px 28px ${SLT}`,
+}
+const neuRaised: React.CSSProperties = {
+  backgroundColor: BASE,
+  boxShadow: `5px 5px 12px ${SDK}, -5px -5px 12px ${SLT}`,
+}
+const neuInset: React.CSSProperties = {
+  backgroundColor: BASE,
+  boxShadow: `inset 3px 3px 8px ${SDK}, inset -3px -3px 8px ${SLT}`,
+}
+const neuActive: React.CSSProperties = {
+  backgroundColor: BASE,
+  boxShadow: `inset 3px 3px 7px ${SDK}, inset -2px -2px 6px ${SLT}`,
+  outline: '1.5px solid #AFC4D8',
+  outlineOffset: '-1.5px',
+}
+const neuBtn: React.CSSProperties = {
+  backgroundColor: '#9BB5CE',
+  boxShadow: `5px 5px 12px ${SDK}, -3px -3px 8px ${SLT}`,
+  color: '#ffffff',
 }
 
 export default function LoginPage() {
-  const [role,        setRole]        = useState<RoleValue>('teacher')
-  const [email,       setEmail]       = useState('')
-  const [password,    setPassword]    = useState('')
-  const [code,        setCode]        = useState('')
-  const [rememberMe,  setRememberMe]  = useState(false)
-  const [loading,     setLoading]     = useState(false)
-  const [error,       setError]       = useState<string | null>(null)
-  const router = useRouter()
+  const [role,         setRole]         = useState<RoleValue>('teacher')
+  const [email,        setEmail]        = useState('')
+  const [password,     setPassword]     = useState('')
+  const [showPw,       setShowPw]       = useState(false)
+  const [code,         setCode]         = useState('')
+  const [rememberMe,   setRememberMe]   = useState(false)
+  const [loading,      setLoading]      = useState(false)
+  const [error,        setError]        = useState<string | null>(null)
+  const router      = useRouter()
   const queryClient = useQueryClient()
-  const supabase = createClient()
+  const supabase    = createClient()
+  const isTeacher   = role === 'teacher'
 
-  const color = getColorForRole(role)
-  const isTeacher = role === 'teacher'
-
-  // remember-me 복원
   useEffect(() => {
     const saved = localStorage.getItem('syzhlin_remember')
     if (!saved) return
@@ -61,225 +71,240 @@ export default function LoginPage() {
     } catch { /* ignore */ }
   }, [])
 
-  // 역할 변경 시 입력 초기화
   function handleRoleChange(r: RoleValue) {
-    setRole(r)
-    setError(null)
-    setEmail('')
-    setPassword('')
-    setCode('')
+    setRole(r); setError(null); setEmail(''); setPassword(''); setCode('')
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
-
+    e.preventDefault(); setError(null); setLoading(true)
     try {
       if (isTeacher) {
-        // 선생님: 이메일 + 비밀번호
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) {
           setError(error.message === 'Invalid login credentials'
             ? '이메일 또는 비밀번호가 올바르지 않습니다' : error.message)
           return
         }
-        // role 검증 - 선생님 계정인지 확인
-        const { data: { user: signedInUser } } = await supabase.auth.getUser()
-        if (signedInUser) {
-          const { data: profileData } = await supabase
-            .from('profiles').select('role').eq('id', signedInUser.id).single()
-          if (profileData && profileData.role !== 'teacher') {
+        const { data: { user: u } } = await supabase.auth.getUser()
+        if (u) {
+          const { data: p } = await supabase.from('profiles').select('role').eq('id', u.id).single()
+          if (p && p.role !== 'teacher') {
             await supabase.auth.signOut()
             setError('이 계정은 선생님 계정이 아닙니다. 올바른 역할을 선택해주세요.')
             return
           }
         }
-        // remember-me
-        if (rememberMe) {
-          localStorage.setItem('syzhlin_remember', JSON.stringify({ role: 'teacher', value: email }))
-        } else {
-          localStorage.removeItem('syzhlin_remember')
-        }
+        if (rememberMe) localStorage.setItem('syzhlin_remember', JSON.stringify({ role: 'teacher', value: email }))
+        else localStorage.removeItem('syzhlin_remember')
       } else {
-        // 학생/학부모/성인학습자: 코드 입력
         const upperCode = code.trim().toUpperCase()
         if (!upperCode) { setError('로그인 코드를 입력해주세요'); return }
-
-        // 코드 확인
-        const { data: loginCode, error: codeErr } = await supabase
-          .from('login_codes')
-          .select('*')
-          .eq('code', upperCode)
-          .single()
-
-        if (codeErr || !loginCode) {
-          setError('코드를 찾을 수 없습니다. 선생님께 확인해주세요.')
-          return
-        }
-
-        // 코드로 생성된 이메일/비밀번호로 로그인
+        const { data: loginCode, error: codeErr } = await supabase.from('login_codes').select('*').eq('code', upperCode).single()
+        if (codeErr || !loginCode) { setError('코드를 찾을 수 없습니다. 선생님께 확인해주세요.'); return }
         const derivedEmail = `${upperCode.toLowerCase()}@syzhlin.classroom`
         const derivedPassword = `${upperCode}_syzhlin!`
-
-        const { error: signInErr } = await supabase.auth.signInWithPassword({
-          email: derivedEmail,
-          password: derivedPassword,
-        })
-        if (signInErr) {
-          setError('로그인에 실패했습니다. 선생님께 문의해주세요.')
-          return
-        }
-
-        // role 검증 - 선택한 역할과 실제 프로필 role 일치 확인
-        const { data: { user: codeUser } } = await supabase.auth.getUser()
-        if (codeUser) {
-          const { data: profileData } = await supabase
-            .from('profiles').select('role').eq('id', codeUser.id).single()
-          if (profileData && profileData.role !== role) {
+        const { error: signInErr } = await supabase.auth.signInWithPassword({ email: derivedEmail, password: derivedPassword })
+        if (signInErr) { setError('로그인에 실패했습니다. 선생님께 문의해주세요.'); return }
+        const { data: { user: cu } } = await supabase.auth.getUser()
+        if (cu) {
+          const { data: p } = await supabase.from('profiles').select('role').eq('id', cu.id).single()
+          if (p && p.role !== role) {
             await supabase.auth.signOut()
-            const roleLabels: Record<string, string> = {
-              teacher: '선생님', adult_learner: '성인 학습자', student: '학생', parent: '학부모'
-            }
-            setError(`이 코드는 '${roleLabels[profileData.role] ?? profileData.role}' 계정입니다. 올바른 역할을 선택해주세요.`)
+            const L: Record<string, string> = { teacher:'선생님', adult_learner:'성인 학습자', student:'학생', parent:'학부모' }
+            setError(`이 코드는 '${L[p.role] ?? p.role}' 계정입니다.`)
             return
           }
         }
-
-        // remember-me
-        if (rememberMe) {
-          localStorage.setItem('syzhlin_remember', JSON.stringify({ role, value: upperCode }))
-        } else {
-          localStorage.removeItem('syzhlin_remember')
-        }
+        if (rememberMe) localStorage.setItem('syzhlin_remember', JSON.stringify({ role, value: upperCode }))
+        else localStorage.removeItem('syzhlin_remember')
       }
-
-      // 로그인 성공 로그
       const loginRole = isTeacher ? 'teacher' : role
-      await logActivity({
-        userRole: loginRole,
-        action: 'login',
-        detail: `${loginRole} 로그인`,
-      })
+      await logActivity({ userRole: loginRole, action: 'login', detail: `${loginRole} 로그인` })
       queryClient.clear()
-      router.push('/')
-      router.refresh()
-    } finally {
-      setLoading(false)
-    }
+      router.push('/'); router.refresh()
+    } finally { setLoading(false) }
   }
 
   return (
-    <div className="w-[min(92vw,420px)] sm:w-full sm:max-w-md rounded-[24px] sm:rounded-[32px] overflow-hidden" style={{backgroundColor: "var(--sz-card-pastel)", boxShadow: "0 8px 40px rgba(46,53,69,0.10), 0 2px 12px rgba(46,53,69,0.06), inset 0 1px 0 rgba(255,255,255,0.9)"}}>
-      {/* 로고 */}
-      <div className="px-5 pt-6 pb-3 sm:px-8 sm:pt-8 sm:pb-4 text-center">
-        <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl mb-3 sm:mb-4" style={{backgroundColor: "var(--sz-blue-soft)"}}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <div
+      className="w-full max-w-[400px] rounded-[32px] overflow-hidden"
+      style={{ ...neuCard, margin: '0 auto' }}
+    >
+      {/* ── 아이콘 + 타이틀 ── */}
+      <div className="pt-8 pb-5 px-7 flex flex-col items-center gap-3">
+        <div
+          className="w-14 h-14 rounded-2xl flex items-center justify-center"
+          style={neuRaised}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+            stroke="#7B9EC0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
             <path d="M6 12v5c3 3 9 3 12 0v-5"/>
           </svg>
         </div>
-        <h1 className="text-lg sm:text-xl font-bold tracking-tight" style={{color: "var(--sz-navy)", letterSpacing: "-0.01em"}}>Syzhlin Classroom</h1>
-        <p className="mt-1 text-xs tracking-widest uppercase" style={{color: "var(--sz-warm-gray)", letterSpacing: "0.12em"}}>Premium English Classroom</p>
+        <div className="text-center">
+          <h1 className="text-[22px] font-bold tracking-tight" style={{ color: '#1E2D4E' }}>
+            Syzhlin Classroom
+          </h1>
+          <p className="mt-1 text-[9px] tracking-[0.22em] uppercase font-medium"
+            style={{ color: '#8B9BB0' }}>
+            Premium English Classroom
+          </p>
+        </div>
       </div>
 
-      {/* 역할 선택 */}
-      <div className="px-5 pb-3 sm:px-8 sm:pb-4">
-        <p className="text-xs font-medium text-gray-500 mb-2 text-center">누구신가요?</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2">
+      {/* ── 역할 선택 ── */}
+      <div className="px-7 pb-5">
+        <p className="text-[11px] font-medium text-center mb-3" style={{ color: '#9AA4B0' }}>
+          누구신가요?
+        </p>
+        <div className="grid grid-cols-4 gap-2">
           {ROLES.map(r => (
             <button
               key={r.value}
               type="button"
               onClick={() => handleRoleChange(r.value)}
-              className={`flex flex-col items-center gap-1 py-2.5 sm:py-3 rounded-xl border-2 text-xs font-medium transition-all ${
-                role === r.value
-                  ? COLOR_ACTIVE[r.color]
-                  : 'border-[var(--sz-beige)] text-[var(--sz-warm-gray)] hover:border-[var(--sz-navy)] hover:text-[var(--sz-navy)]'
-              }`}
+              className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all active:scale-95"
+              style={role === r.value ? neuActive : neuRaised}
             >
-              <span className="text-lg sm:text-xl">{r.emoji}</span>
-              {r.label}
+              <span className="text-[20px] leading-none">{r.emoji}</span>
+              <span
+                className="text-[9px] font-semibold text-center leading-tight"
+                style={{ color: role === r.value ? '#4A7FA5' : '#8B9BB0' }}
+              >
+                {r.label}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* 구분선 */}
-      <div className="border-t mx-5 sm:mx-8" style={{borderColor: "rgba(175,196,216,0.25)"}} />
+      {/* ── 구분선 ── */}
+      <div className="flex items-center px-7 mb-5">
+        <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(175,196,216,0.2)' }} />
+        <div className="mx-3 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'rgba(175,196,216,0.4)' }} />
+        <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(175,196,216,0.2)' }} />
+      </div>
 
-      {/* 로그인 폼 */}
-      <div className="px-5 py-4 sm:px-8 sm:py-6">
+      {/* ── 폼 ── */}
+      <div className="px-7 pb-8">
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-2xl text-sm" style={{backgroundColor: "var(--sz-pink-pale)", color: "var(--sz-pink-soft)"}}>
+          <div className="mb-4 px-4 py-3 rounded-2xl text-xs font-medium text-center"
+            style={{ backgroundColor: 'rgba(220,100,100,0.08)', color: '#C0605A' }}>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {isTeacher ? (
             <>
+              {/* 이메일 */}
               <div>
-                <label className="block text-xs font-semibold mb-1" style={{color: "var(--sz-text-muted)"}}>이메일</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  autoComplete="email"
-                  placeholder="example@email.com"
-                  required
-                  className="w-full px-4 py-3 rounded-2xl focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)", fontSize: "16px"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
-                />
+                <p className="text-[10px] font-semibold mb-1.5 ml-1" style={{ color: '#9AA4B0' }}>이메일</p>
+                <div className="flex items-center gap-3 rounded-full px-4 py-3" style={neuInset}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="#9BB5CE" strokeWidth="1.8" strokeLinecap="round">
+                    <rect x="2" y="4" width="20" height="16" rx="3"/>
+                    <path d="m2 7 10 7 10-7"/>
+                  </svg>
+                  <input
+                    type="email" value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    autoComplete="email"
+                    placeholder="example@email.com"
+                    required
+                    className="flex-1 bg-transparent outline-none placeholder:text-[#B8C4D0]"
+                    style={{ fontSize: '16px', color: '#1E2D4E', border: 'none' }}
+                  />
+                </div>
               </div>
+              {/* 비밀번호 */}
               <div>
-                <label className="block text-xs font-semibold mb-1" style={{color: "var(--sz-text-muted)"}}>비밀번호</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  required
-                  className="w-full px-4 py-3 rounded-2xl focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)", fontSize: "16px"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
-                />
+                <p className="text-[10px] font-semibold mb-1.5 ml-1" style={{ color: '#9AA4B0' }}>비밀번호</p>
+                <div className="flex items-center gap-3 rounded-full px-4 py-3" style={neuInset}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="#9BB5CE" strokeWidth="1.8" strokeLinecap="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <input
+                    type={showPw ? 'text' : 'password'} value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    required
+                    className="flex-1 bg-transparent outline-none placeholder:text-[#B8C4D0]"
+                    style={{ fontSize: '16px', color: '#1E2D4E', border: 'none' }}
+                  />
+                  <button type="button" onClick={() => setShowPw(v => !v)} className="shrink-0 opacity-50 hover:opacity-80 transition-opacity">
+                    {showPw ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B9EC0" strokeWidth="1.8" strokeLinecap="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B9EC0" strokeWidth="1.8" strokeLinecap="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
             </>
           ) : (
             <div>
-              <label className="block text-xs font-semibold mb-1" style={{color: "var(--sz-text-muted)"}}>로그인 코드</label>
-              <input
-                type="text"
-                value={code}
-                onChange={e => setCode(e.target.value)}
-                placeholder="예: LEEMOO"
-                autoComplete="off"
-                autoCapitalize="off"
-                required
-                className="w-full px-4 py-3 rounded-2xl font-mono tracking-widest text-center focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)", fontSize: "16px"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
-              />
-              <p className="mt-1.5 text-xs text-gray-400 text-center">선생님께 받은 코드를 입력하세요</p>
+              <p className="text-[10px] font-semibold mb-1.5 ml-1" style={{ color: '#9AA4B0' }}>로그인 코드</p>
+              <div className="flex items-center gap-3 rounded-full px-4 py-3" style={neuInset}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="#9BB5CE" strokeWidth="1.8" strokeLinecap="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <input
+                  type="text" value={code}
+                  onChange={e => setCode(e.target.value)}
+                  placeholder="예: LEEMOO"
+                  autoComplete="off" autoCapitalize="characters" required
+                  className="flex-1 bg-transparent outline-none font-mono tracking-widest text-center placeholder:text-[#B8C4D0] placeholder:tracking-wide placeholder:font-normal"
+                  style={{ fontSize: '16px', color: '#1E2D4E', border: 'none' }}
+                />
+              </div>
+              <p className="mt-2 text-[10px] text-center" style={{ color: '#B8C4D0' }}>
+                선생님께 받은 코드를 입력하세요
+              </p>
             </div>
           )}
 
-          {/* remember-me */}
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={e => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded-md focus:ring-[var(--sz-blue-soft)] accent-[var(--sz-blue-soft)]"
-            />
-            <span className="text-xs" style={{color: "var(--sz-text-muted)"}}>
+          {/* Remember-me */}
+          <label className="flex items-center gap-2.5 cursor-pointer select-none pt-1">
+            <div
+              className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-all"
+              style={rememberMe ? { ...neuActive, backgroundColor: '#9BB5CE' } : neuRaised}
+              onClick={() => setRememberMe(v => !v)}
+            >
+              {rememberMe && (
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"
+                  stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="2 6 5 9 10 3"/>
+                </svg>
+              )}
+            </div>
+            <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="sr-only" />
+            <span className="text-[11px]" style={{ color: '#9AA4B0' }}>
               {isTeacher ? '이메일 저장' : '코드 저장'}
             </span>
           </label>
 
+          {/* 로그인 버튼 */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 text-white text-sm font-semibold rounded-2xl transition-all disabled:opacity-50 tracking-wide" style={{backgroundColor: "var(--sz-blue-soft)", boxShadow: "0 4px 16px rgba(175,196,216,0.4)"}}
+            className="w-full py-4 rounded-full font-semibold text-[15px] tracking-wide transition-all active:scale-[0.98] mt-2"
+            style={loading ? { ...neuBtn, opacity: 0.6 } : neuBtn}
           >
-            {loading ? '로그인 중...' : '로그인'}
+            {loading ? '로그인 중…' : '로그인'}
           </button>
         </form>
       </div>
