@@ -28,9 +28,10 @@ interface WeekCalendarProps {
   onClassClick: (cls: ClassWithStudent) => void
   onNameClick: (cls: ClassWithStudent) => void
   onSlotClick: (date: Date, hour: number) => void
+  compact?: boolean
 }
 
-export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCalendarProps) {
+export function WeekCalendar({ onClassClick, onNameClick, onSlotClick, compact }: WeekCalendarProps) {
   const { selectedWeekStart } = useScheduleStore()
   const { data: classes, isLoading } = useWeekClasses(selectedWeekStart)
   const { data: allSessionClasses } = useAllSessionClasses()
@@ -61,7 +62,7 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
     (classes ?? []).filter((c) => c.date === format(day, 'yyyy-MM-dd'))
 
   return (
-    <div className="flex h-full min-w-[760px] flex-col md:min-w-0">
+    <div className={`flex h-full flex-col ${compact ? "" : "min-w-[760px] md:min-w-0"}`}>
       {/* 헤더 — 요일 */}
       <div className="flex sticky top-0 z-20" style={{borderBottom:"1px solid rgba(175,196,216,0.2)", backgroundColor:"var(--sz-card-pastel)"}}>
         <div className="w-14 shrink-0" />

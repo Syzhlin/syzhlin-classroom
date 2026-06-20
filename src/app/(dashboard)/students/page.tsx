@@ -1,17 +1,167 @@
+
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useStudents, useDeleteStudent } from '@/lib/queries/useStudents'
 import StudentFormDialog from '@/components/students/StudentFormDialog'
 import { GrowthReportModal } from '@/components/growth/GrowthReportModal'
 import type { Database } from '@/types/database'
+import { Search, Plus, Star, MoreHorizontal, Pencil, Trash2, BookOpen } from 'lucide-react'
 
 type Student = Database['public']['Tables']['students']['Row']
 
-const SUBJECT_COLORS: Record<string, string> = {
-  영어: 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
-  중국어: 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]',
+type FilterType = 'all' | 'fav' | 'has_schedule' | 'no_info'
+
+const FILTERS: { key: FilterType; label: string }[] = [
+  { key: 'all',          label: '전체' },
+  { key: 'fav',          label: '즐겨찾기' },
+  { key: 'has_schedule', label: '정기수업' },
+  { key: 'no_info',      label: '정보 미등록' },
+]
+
+function MoreMenu({ student, onEdit, onDelete, onReport }: {
+  student: Student
+  onEdit: () => void
+  onDelete: () => void
+  onReport: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(v => !v) }}
+        className="w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
+        style={{ color: 'var(--sz-text-muted)' }}
+      >
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
+      {open && (
+        <div
+          className="absolute right-0 top-9 z-50 min-w-[148px] rounded-2xl overflow-hidden"
+          style={{
+            backgroundColor: 'var(--sz-card-pastel)',
+            boxShadow: '0 8px 32px rgba(46,53,69,0.14), 0 2px 8px rgba(46,53,69,0.08)',
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <button
+            onClick={() => { onReport(); setOpen(false) }}
+            className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-left transition-colors hover:bg-[rgba(175,196,216,0.1)]"
+            style={{ color: 'var(--sz-text-deep)' }}
+          >
+            <Star className="w-3.5 h-3.5 opacity-60" /> 성장 리포트
+          </button>
+          <button
+            onClick={() => { onEdit(); setOpen(false) }}
+            className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-left transition-colors hover:bg-[rgba(175,196,216,0.1)]"
+            style={{ color: 'var(--sz-text-deep)' }}
+          >
+            <Pencil className="w-3.5 h-3.5 opacity-60" /> 정보 수정
+          </button>
+          <div className="mx-4 h-px" style={{ backgroundColor: 'rgba(175,196,216,0.2)' }} />
+          <button
+            onClick={() => { onDelete(); setOpen(false) }}
+            className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-left transition-colors hover:bg-red-50"
+            style={{ color: '#E05252' }}
+          >
+            <Trash2 className="w-3.5 h-3.5" /> 삭제
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function StudentCard({ student, onEdit, onDelete, onReport, favorites, onToggleFav }: {
+  student: Student
+  onEdit: () => void
+  onDelete: () => void
+  onReport: () => void
+  favorites: Set<string>
+  onToggleFav: (id: string) => void
+}) {
+  const isFav = favorites.has(student.id)
+  const subject = student.subjects?.[0] ?? null
+  const hasInfo = !!(student.hourly_rate || student.schedule_note)
+
+  return (
+    <Link
+      href={`/students/${student.id}`}
+      className="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all active:scale-[0.99]"
+      style={{
+        backgroundColor: 'var(--sz-card-pastel)',
+        boxShadow: '0 1px 4px rgba(46,53,69,0.06)',
+      }}
+    >
+      {/* 아바타 */}
+      <div
+        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+        style={{ backgroundColor: student.color ?? '#AFC4D8' }}
+      >
+        {student.name.charAt(0)}
+      </div>
+
+      {/* 정보 */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-sm" style={{ color: 'var(--sz-text-deep)' }}>
+            {student.name}
+          </span>
+          {subject && (
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+              style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}>
+              {subject}
+            </span>
+          )}
+        </div>
+        {hasInfo ? (
+          <>
+            {!!student.hourly_rate && (
+              <p className="text-xs mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
+                월 {student.hourly_rate.toLocaleString()}원
+              </p>
+            )}
+            {student.schedule_note && (
+              <p className="text-xs mt-0.5 font-medium truncate" style={{ color: 'var(--sz-blue-soft)' }}>
+                {student.schedule_note}
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="text-xs mt-0.5" style={{ color: 'rgba(175,196,216,0.7)' }}>정보 미등록</p>
+        )}
+      </div>
+
+      {/* 액션 */}
+      <div className="flex items-center gap-0.5 shrink-0" onClick={e => e.preventDefault()}>
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFav(student.id) }}
+          className="w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
+          style={{ color: isFav ? '#F5A623' : 'rgba(175,196,216,0.5)' }}
+        >
+          <Star className="w-4 h-4" fill={isFav ? 'currentColor' : 'none'} />
+        </button>
+        <MoreMenu
+          student={student}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onReport={onReport}
+        />
+      </div>
+    </Link>
+  )
 }
 
 export default function StudentsPage() {
@@ -19,186 +169,179 @@ export default function StudentsPage() {
   const deleteStudent = useDeleteStudent()
   const [formOpen, setFormOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Student | null>(null)
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Student | null>(null)
   const [reportTarget, setReportTarget] = useState<Student | null>(null)
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState<FilterType>('all')
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set()
+    try { return new Set(JSON.parse(localStorage.getItem('sz_fav_students') ?? '[]')) }
+    catch { return new Set() }
+  })
 
-  function handleEdit(student: Student) {
-    setEditTarget(student)
-    setFormOpen(true)
+  function toggleFav(id: string) {
+    setFavorites(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      localStorage.setItem('sz_fav_students', JSON.stringify([...next]))
+      return next
+    })
   }
 
-  function handleAdd() {
-    setEditTarget(null)
-    setFormOpen(true)
+  function handleEdit(student: Student) { setEditTarget(student); setFormOpen(true) }
+  function handleAdd() { setEditTarget(null); setFormOpen(true) }
+  async function handleDelete(student: Student) {
+    await deleteStudent.mutateAsync(student.id)
+    setDeleteTarget(null)
   }
 
-  async function handleDelete(id: string) {
-    await deleteStudent.mutateAsync(id)
-    setDeleteConfirm(null)
-  }
+  const filtered = useMemo(() => {
+    if (!students) return []
+    let list = students
+    if (search.trim()) {
+      const q = search.trim().toLowerCase()
+      list = list.filter(s => s.name.toLowerCase().includes(q))
+    }
+    if (filter === 'fav')          list = list.filter(s => favorites.has(s.id))
+    if (filter === 'has_schedule') list = list.filter(s => !!s.schedule_note)
+    if (filter === 'no_info')      list = list.filter(s => !s.hourly_rate && !s.schedule_note)
+    return list
+  }, [students, search, filter, favorites])
 
   return (
-    <div className="w-full max-w-4xl p-4 sm:p-6">
-      {/* 헤더 */}
-      <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-[var(--sz-text-deep)]">학생 관리</h1>
-          <p className="mt-0.5 text-sm text-[var(--sz-text-muted)]">
-            {isLoading ? '...' : `총 ${students?.length ?? 0}명`}
-          </p>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 px-4 py-2 bg-[var(--sz-blue-soft)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
-        >
-          <span className="text-lg leading-none">+</span> 학생 추가
-        </button>
-      </div>
+    <div className="flex flex-col h-[calc(100dvh-5rem)] md:h-screen"
+      style={{ backgroundColor: 'var(--sz-bg-pastel)' }}>
 
-      {/* 로딩 */}
-      {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-36 bg-[rgba(175,196,216,0.1)] rounded-xl animate-pulse" />
-          ))}
-        </div>
-      )}
-
-      {/* 빈 상태 */}
-      {!isLoading && (!students || students.length === 0) && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="text-5xl mb-4">👨‍🎓</div>
-          <p className="font-medium text-[var(--sz-text-deep)]">아직 등록된 학생이 없어요</p>
-          <p className="mt-1 text-sm text-[var(--sz-text-muted)] opacity-70">학생을 추가하면 수업 일정에서 선택할 수 있어요</p>
+      {/* ── 헤더 ── */}
+      <div className="px-4 pt-5 pb-3 shrink-0"
+        style={{ borderBottom: '1px solid rgba(175,196,216,0.15)' }}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h1 className="text-xl font-bold" style={{ color: 'var(--sz-text-deep)' }}>학생 관리</h1>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
+              총 {students?.length ?? 0}명
+            </p>
+          </div>
           <button
             onClick={handleAdd}
-            className="mt-4 px-4 py-2 bg-[var(--sz-blue-soft)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
+            className="flex items-center gap-1.5 text-sm font-semibold px-3 py-2.5 rounded-xl text-white"
+            style={{ backgroundColor: 'var(--sz-blue-soft)' }}
           >
-            첫 번째 학생 추가하기
+            <Plus className="w-4 h-4" />추가
           </button>
         </div>
-      )}
 
-      {/* 학생 목록 */}
-      {!isLoading && students && students.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {students.map(student => (
-            <Link key={student.id} href={`/students/${student.id}`} className="bg-white border border-gray-100 rounded-xl p-4 sm:p-5 hover:shadow-md hover:border-indigo-100 transition-all block">
-              <div className="flex items-start gap-3">
-                {/* 색상 아바타 */}
-                <div
-                  className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                  style={{ backgroundColor: student.color ?? '#6366f1' }}
-                >
-                  {student.name.charAt(0)}
-                </div>
+        {/* 검색창 */}
+        <div className="flex items-center gap-2.5 rounded-2xl px-3 py-2.5 mb-3"
+          style={{ backgroundColor: 'var(--sz-card-pastel)', boxShadow: '0 1px 4px rgba(46,53,69,0.06)' }}>
+          <Search className="w-4 h-4 shrink-0" style={{ color: 'rgba(175,196,216,0.6)' }} />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="학생 이름 검색"
+            className="flex-1 bg-transparent outline-none placeholder:text-[rgba(175,196,216,0.6)]"
+            style={{ fontSize: '16px', color: 'var(--sz-text-deep)', border: 'none' }}
+          />
+          {search && (
+            <button onClick={() => setSearch('')} style={{ color: 'rgba(175,196,216,0.6)' }}>✕</button>
+          )}
+        </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-[var(--sz-text-deep)]">{student.name}</h3>
-                    {student.grade && (
-                      <span className="text-xs text-[var(--sz-text-muted)] bg-[rgba(175,196,216,0.1)] px-2 py-0.5 rounded-full">
-                        {student.grade}
-                      </span>
-                    )}
-                  </div>
-
-                  {student.school && (
-                    <p className="mt-0.5 text-xs text-[var(--sz-text-muted)]">{student.school}</p>
-                  )}
-
-                  {/* 과목 태그 */}
-                  {student.subjects && student.subjects.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {student.subjects.map(s => (
-                        <span
-                          key={s}
-                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${SUBJECT_COLORS[s] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* 수업료 */}
-                  {!!student.hourly_rate && (
-                    <p className="mt-2 text-xs text-[var(--sz-text-muted)]">
-                      한달 {student.hourly_rate.toLocaleString()}원
-                    </p>
-                  )}
-
-                  {/* 정기 수업 시간 */}
-                  {student.schedule_note && (
-                  <p className="mt-1.5 text-xs text-[var(--sz-blue-soft)] font-medium break-words">
-                      🕐 {student.schedule_note}
-                    </p>
-                  )}
-
-                  {/* 연락처 */}
-                  {(student.phone || student.parent_phone) && (
-                    <p className="mt-1 text-xs text-[var(--sz-text-muted)] opacity-70 break-words">
-                      {student.phone && `📱 ${student.phone}`}
-                      {student.phone && student.parent_phone && '  ·  '}
-                      {student.parent_phone && `👨‍👩‍👧 ${student.parent_phone}`}
-                    </p>
-                  )}
-                </div>
-
-                {/* 액션 버튼 */}
-                <div className="flex shrink-0 gap-1">
-                  <button
-                    onClick={() => setReportTarget(student)}
-                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-[var(--sz-text-muted)] opacity-70 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
-                    title="성장리포트"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleEdit(student)}
-                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-[var(--sz-text-muted)] opacity-70 hover:text-[var(--sz-blue-soft)] hover:bg-[var(--sz-blue-pale)] rounded-lg transition-colors"
-                    title="수정"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                  </button>
-                  {deleteConfirm === student.id ? (
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleDelete(student.id)}
-                        className="min-h-10 px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                      >
-                        삭제
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(null)}
-                        className="min-h-10 px-3 py-1 text-xs border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] rounded-lg hover:bg-[var(--sz-bg-pastel)] transition-colors"
-                      >
-                        취소
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setDeleteConfirm(student.id)}
-                      className="inline-flex min-h-10 min-w-10 items-center justify-center text-[var(--sz-text-muted)] opacity-70 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      title="삭제"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        <path d="M10 11v6M14 11v6"/>
-                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </Link>
+        {/* 필터 칩 */}
+        <div className="flex gap-2 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
+          {FILTERS.map(f => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className="whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full transition-all shrink-0"
+              style={filter === f.key
+                ? { backgroundColor: 'var(--sz-blue-soft)', color: '#fff' }
+                : { backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)' }}
+            >
+              {f.label}
+              {f.key === 'all' && students ? ` ${students.length}` : ''}
+            </button>
           ))}
+        </div>
+      </div>
+
+      {/* ── 리스트 ── */}
+      <div className="flex-1 overflow-auto px-4 py-3"
+        style={{ paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
+
+        {isLoading && (
+          <div className="space-y-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-16 rounded-2xl animate-pulse"
+                style={{ backgroundColor: 'rgba(175,196,216,0.12)' }} />
+            ))}
+          </div>
+        )}
+
+        {!isLoading && filtered.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="text-4xl mb-3">👨‍🎓</div>
+            <p className="font-medium" style={{ color: 'var(--sz-text-deep)' }}>
+              {search ? '검색 결과가 없어요' : '등록된 학생이 없어요'}
+            </p>
+            {!search && (
+              <button onClick={handleAdd}
+                className="mt-4 px-4 py-2 text-sm font-semibold text-white rounded-xl"
+                style={{ backgroundColor: 'var(--sz-blue-soft)' }}>
+                + 첫 번째 학생 추가
+              </button>
+            )}
+          </div>
+        )}
+
+        {!isLoading && filtered.length > 0 && (
+          <div className="space-y-2">
+            {filtered.map(student => (
+              <StudentCard
+                key={student.id}
+                student={student}
+                onEdit={() => handleEdit(student)}
+                onDelete={() => setDeleteTarget(student)}
+                onReport={() => setReportTarget(student)}
+                favorites={favorites}
+                onToggleFav={toggleFav}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── 삭제 확인 모달 ── */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom)]"
+          style={{ backgroundColor: 'rgba(30,45,78,0.35)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setDeleteTarget(null)}>
+          <div className="w-full max-w-md rounded-t-3xl p-6"
+            style={{ backgroundColor: 'var(--sz-card-pastel)' }}
+            onClick={e => e.stopPropagation()}>
+            <p className="text-base font-bold mb-1" style={{ color: 'var(--sz-text-deep)' }}>
+              {deleteTarget.name} 학생을 삭제할까요?
+            </p>
+            <p className="text-sm mb-5" style={{ color: 'var(--sz-text-muted)' }}>
+              삭제하면 관련 수업 기록도 함께 제거됩니다. 되돌릴 수 없어요.
+            </p>
+            <div className="flex gap-2">
+              <button onClick={() => setDeleteTarget(null)}
+                className="flex-1 py-3 rounded-2xl text-sm font-semibold"
+                style={{ backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)' }}>
+                취소
+              </button>
+              <button
+                onClick={() => handleDelete(deleteTarget)}
+                disabled={deleteStudent.isPending}
+                className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white disabled:opacity-50"
+                style={{ backgroundColor: '#E05252' }}>
+                {deleteStudent.isPending ? '삭제 중...' : '삭제'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
