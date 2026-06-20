@@ -68,197 +68,249 @@ export default function PortalHomePage() {
   const studentDisplayName = linkedStudentName ?? profile?.display_name ?? ''
 
   return (
-    <div className="p-4 max-w-lg mx-auto" style={{ paddingTop: '16px' }}>
-      <div className="grid grid-cols-2 gap-3">
+    <div className="relative max-w-lg mx-auto px-4" style={{ paddingTop: '20px' }}>
 
-        {/* 1. 다음 수업 카드 (압축형) */}
+      {/* ── 배경 그라데이션 오버레이 ── */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          zIndex: -1,
+          background: `
+            radial-gradient(circle at 12% 8%, rgba(195,225,215,0.38) 0%, transparent 32%),
+            radial-gradient(circle at 88% 12%, rgba(242,232,208,0.32) 0%, transparent 28%),
+            radial-gradient(circle at 50% 85%, rgba(205,218,235,0.22) 0%, transparent 38%)
+          `,
+        }}
+      />
+
+      <div className="space-y-3">
+
+        {/* ── 1. 다음 수업 위젯 ── */}
         <div
-          className="col-span-2 sz-widget sz-widget-navy rounded-3xl px-5 py-4 text-white"
-          style={{ background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)' }}
+          className="relative overflow-hidden"
+          style={{
+            borderRadius: '28px',
+            background: 'linear-gradient(145deg, #3D5678 0%, #2B4060 60%, #243660 100%)',
+            boxShadow: '10px 10px 28px rgba(36,54,96,0.32), -2px -2px 8px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.14)',
+            padding: '20px 20px',
+          }}
         >
+          {/* 장식 서클 */}
+          <div className="absolute pointer-events-none" style={{
+            top: '-20%', right: '-8%', width: '140px', height: '140px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)',
+          }} />
+          <div className="absolute pointer-events-none" style={{
+            bottom: '-30%', left: '10%', width: '90px', height: '90px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(240,210,130,0.18) 0%, transparent 70%)',
+          }} />
+
           {nextClass ? (
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between relative z-10">
               <div>
-                <p className="text-xs font-semibold mb-1" style={{ color: 'rgba(240,230,198,0.7)' }}>
+                <p className="text-xs font-semibold mb-1.5 tracking-wide" style={{ color: 'rgba(240,230,198,0.62)' }}>
                   다음 수업
                 </p>
-                <p className="text-base font-bold leading-snug">
+                <p className="text-xl font-bold leading-snug text-white">
                   {formatDate(nextClass.date)}
                 </p>
-                <p className="text-sm mt-0.5" style={{ color: 'var(--sz-gold)' }}>
+                <p className="text-sm mt-1" style={{ color: 'var(--sz-gold)' }}>
                   {formatTime(nextClass.start_time)}
                   {studentDisplayName ? ` · ${studentDisplayName}` : ''}
                 </p>
               </div>
               {daysUntil !== null && (
-                <div className="text-right flex-shrink-0">
+                <div
+                  className="flex-shrink-0 flex flex-col items-center justify-center"
+                  style={{
+                    borderRadius: '18px',
+                    padding: '10px 16px',
+                    background: 'rgba(255,255,255,0.11)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255,255,255,0.16)',
+                    minWidth: '64px',
+                  }}
+                >
                   {daysUntil === 0 ? (
-                    <div className="text-right">
-                      <p className="text-2xl font-bold" style={{ color: 'var(--sz-gold)' }}>오늘</p>
-                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>수업이에요!</p>
-                    </div>
+                    <>
+                      <p className="text-xl font-bold" style={{ color: 'var(--sz-gold)' }}>오늘</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>수업이에요!</p>
+                    </>
                   ) : (
-                    <div className="text-right">
-                      <p className="text-2xl font-bold" style={{ color: 'var(--sz-gold)' }}>D-{daysUntil}</p>
-                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{daysUntil}일 후</p>
-                    </div>
+                    <>
+                      <p className="text-xl font-bold" style={{ color: 'var(--sz-gold)' }}>D-{daysUntil}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>{daysUntil}일 후</p>
+                    </>
                   )}
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-base font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <p className="text-sm font-medium relative z-10" style={{ color: 'rgba(255,255,255,0.45)' }}>
               예정된 수업이 없어요
             </p>
           )}
         </div>
 
-        {/* 2. 선생님의 편지 — 학부모 전용 */}
+        {/* ── 2. 선생님의 편지 ── */}
         {profile?.role === 'parent' && (
           <ParentLetterCard feedback={feedback} latestCompleted={latestCompleted} />
         )}
 
-        {/* 3. 숙제 제출 바로가기 — 학부모 전용 */}
+        {/* ── 3+4. 숙제 제출 & 세계 여권 (2열) ── */}
         {profile?.role === 'parent' && (
-          <Link href="/portal/parent" className="col-span-2">
-            <div
-              className="sz-widget rounded-3xl px-4 py-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform"
-              style={{ backgroundColor: 'var(--sz-card-pastel)' }}
-            >
+          <div className="grid grid-cols-2 gap-3">
+
+            {/* 숙제 제출 */}
+            <Link href="/portal/parent" className="active:scale-[0.96] transition-transform block">
               <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: 'var(--sz-gold-light)' }}
+                style={{
+                  borderRadius: '24px',
+                  backgroundColor: '#FFFDF8',
+                  boxShadow: '7px 7px 20px rgba(100,88,65,0.10), -4px -4px 12px rgba(255,255,255,0.88)',
+                  border: '1px solid rgba(255,255,255,0.75)',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sz-gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                  <circle cx="12" cy="13" r="4"/>
-                </svg>
+                <div
+                  style={{
+                    width: '40px', height: '40px',
+                    borderRadius: '14px',
+                    backgroundColor: 'var(--sz-gold-light)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: 'inset 2px 2px 5px rgba(200,175,80,0.18), inset -2px -2px 5px rgba(255,255,255,0.85)',
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sz-gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--sz-text-deep)' }}>숙제 제출</p>
+                  <p style={{ fontSize: '10px', marginTop: '2px', color: 'var(--sz-text-muted)' }}>사진으로 바로 보내요</p>
+                </div>
+                <span
+                  style={{
+                    alignSelf: 'flex-start',
+                    fontSize: '10px', fontWeight: '700',
+                    padding: '4px 10px',
+                    borderRadius: '999px',
+                    backgroundColor: 'var(--sz-blue-soft)',
+                    color: '#fff',
+                  }}
+                >
+                  제출하기
+                </span>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm" style={{ color: 'var(--sz-text-deep)' }}>숙제 제출하기</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
-                  사진을 찍어 선생님께 바로 보내요
-                </p>
-              </div>
-              <span
-                className="text-xs font-semibold px-3 py-1.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: 'var(--sz-blue-soft)', color: '#fff' }}
+            </Link>
+
+            {/* 세계 여권 */}
+            <Link href="/portal/passport" className="active:scale-[0.96] transition-transform block">
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  borderRadius: '24px',
+                  background: 'linear-gradient(145deg, #3D5678 0%, #2A3F5F 100%)',
+                  boxShadow: '7px 7px 20px rgba(36,54,96,0.28), -2px -2px 8px rgba(255,255,255,0.06)',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
               >
-                제출하기
-              </span>
-            </div>
-          </Link>
+                <div className="absolute pointer-events-none" style={{
+                  top: '-20%', right: '-15%', width: '70px', height: '70px',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.14), transparent)',
+                }} />
+                <div className="flex items-center justify-between">
+                  <span style={{ fontSize: '20px' }}>🌍</span>
+                  <span style={{ fontSize: '10px', color: 'var(--sz-gold)' }}>보기 →</span>
+                </div>
+                <div>
+                  <p style={{ fontSize: '26px', fontWeight: '800', color: '#fff', lineHeight: 1 }}>{stampedCities.length}</p>
+                  <p style={{ fontSize: '10px', color: 'rgba(240,230,198,0.65)' }}>도시 스탬프</p>
+                </div>
+                {currentCity && (
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ fontSize: '14px' }}>{currentCity.landmark}</span>
+                    <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.65)' }} className="truncate">{currentCity.name}</p>
+                  </div>
+                )}
+              </div>
+            </Link>
+          </div>
         )}
 
-        {/* 4. 세계 여권 위젯 */}
-        <Link href="/portal/passport" className="col-span-2">
-          <div
-            className="sz-widget rounded-3xl p-4 text-white"
-            style={{ background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)' }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🌍</span>
-                <p className="text-sm font-semibold">세계 여권</p>
-              </div>
-              <span className="text-xs" style={{ color: 'var(--sz-gold)' }}>여권 보기 →</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="text-3xl font-bold">{stampedCities.length}</p>
-                <p className="text-xs" style={{ color: 'var(--sz-gold-light)' }}>도시 스탬프</p>
-              </div>
-              {currentCity && (
-                <div className="flex items-center gap-2 rounded-xl px-3 py-2">
-                  <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
-                  <div>
-                    <p className="text-xs font-semibold">{currentCity.name}</p>
-                    <p className={`text-[10px] ${isArrived ? 'text-amber-300' : 'text-blue-200'}`}>
-                      {isArrived ? '도착 완료 · 1/2' : '다음 도시 · 0/2'}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {stampedCities.length > 0 && (() => {
-                const lastCity = stampedCities[stampedCities.length - 1]
-                return (
-                  <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
-                    <span className="text-xl">{lastCity.landmark}</span>
-                    <div>
-                      <p className="text-xs font-semibold">{lastCity.name}</p>
-                      <p className="text-[10px] text-blue-200">최근 스탬프</p>
-                    </div>
-                  </div>
-                )
-              })()}
-            </div>
-          </div>
-        </Link>
-
-        {/* 5. 이번 달 수업 흐름 */}
+        {/* ── 5. 이번 달 수업 흐름 ── */}
         {payment && profile?.role === 'parent' && (
-          <div className="col-span-2 sz-widget rounded-3xl p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-base">🎯</span>
-              <h2 className="font-semibold text-sm" style={{ color: 'var(--sz-text-deep)' }}>이번 달 수업 흐름</h2>
-            </div>
-            <div className="flex items-end justify-between mb-3">
-              <div>
-                <p className="text-2xl font-bold" style={{ color: 'var(--sz-text-deep)' }}>
-                  {payment.completed_sessions}
-                  <span className="text-sm font-normal" style={{ color: 'var(--sz-text-muted)' }}> / {payment.total_sessions}번</span>
-                </p>
-                {remaining !== null && remaining > 0 && (
-                  <p className="text-sm mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
-                    앞으로 <span className="font-semibold" style={{ color: 'var(--sz-gold)' }}>{remaining}번</span> 남았어요
-                  </p>
-                )}
-                {remaining === 0 && (
-                  <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--sz-sage)' }}>이번 달 수업 모두 완료 🎉</p>
-                )}
+          <div
+            style={{
+              borderRadius: '28px',
+              backgroundColor: '#FFFDF8',
+              boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)',
+              border: '1px solid rgba(255,255,255,0.75)',
+              padding: '20px',
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize: '16px' }}>🎯</span>
+                <h2 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--sz-text-deep)' }}>이번 달 수업 흐름</h2>
               </div>
               {payment.bonus_sessions > 0 && (
-                <span className="text-xs px-2 py-1 rounded-full font-medium"
-                  style={{ backgroundColor: 'var(--sz-gold-light)', color: 'var(--sz-gold)' }}>
+                <span
+                  style={{
+                    fontSize: '10px', fontWeight: '700',
+                    padding: '3px 8px', borderRadius: '999px',
+                    backgroundColor: 'var(--sz-gold-light)', color: 'var(--sz-gold)',
+                  }}
+                >
                   +{payment.bonus_sessions} 보너스
                 </span>
               )}
             </div>
-            <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(175,196,216,0.2)' }}>
-              <div className="h-full rounded-full transition-all"
+            <div className="flex items-baseline gap-1 mb-3">
+              <p style={{ fontSize: '32px', fontWeight: '800', color: 'var(--sz-text-deep)', lineHeight: 1 }}>
+                {payment.completed_sessions}
+              </p>
+              <p style={{ fontSize: '14px', color: 'var(--sz-text-muted)' }}>/ {payment.total_sessions}회 완료</p>
+            </div>
+            {/* Progress bar */}
+            <div
+              style={{
+                width: '100%', height: '10px',
+                borderRadius: '999px', overflow: 'hidden',
+                background: 'rgba(175,196,216,0.15)',
+                boxShadow: 'inset 2px 2px 5px rgba(120,130,150,0.12), inset -2px -2px 5px rgba(255,255,255,0.9)',
+              }}
+            >
+              <div
                 style={{
+                  height: '100%', borderRadius: '999px',
+                  transition: 'width 0.7s ease',
                   width: `${payment.total_sessions > 0 ? Math.min(100, (payment.completed_sessions / payment.total_sessions) * 100) : 0}%`,
-                  backgroundColor: 'var(--sz-blue-soft)',
+                  background: 'linear-gradient(to right, var(--sz-blue-soft), #8BB8D8)',
+                  boxShadow: '0 2px 8px rgba(100,140,180,0.35)',
                 }}
               />
             </div>
-          </div>
-        )}
-
-        {/* 6. 앞으로의 수업 */}
-        {data?.nextClasses && data.nextClasses.length > 0 && (
-          <div className="col-span-2 sz-widget sz-widget-blue rounded-3xl p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-base">📅</span>
-              <h2 className="font-semibold text-sm" style={{ color: 'var(--sz-text-deep)' }}>앞으로의 수업</h2>
-            </div>
-            <div className="space-y-2">
-              {data.nextClasses.map((cls: any, i: number) => (
-                <div key={cls.id} className="flex items-center justify-between py-2 rounded-xl px-3"
-                  style={{ backgroundColor: i === 0 ? 'var(--sz-blue-pale)' : 'rgba(175,196,216,0.1)' }}>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--sz-text-deep)' }}>{formatDate(cls.date)}</p>
-                    <p className="text-xs" style={{ color: 'var(--sz-text-muted)' }}>{formatTime(cls.start_time)}</p>
-                  </div>
-                  {i === 0 && (
-                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ backgroundColor: 'var(--sz-blue-soft)', color: '#fff' }}>
-                      다음 수업
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+            {remaining !== null && remaining > 0 && (
+              <p style={{ fontSize: '12px', marginTop: '10px', color: 'var(--sz-text-muted)' }}>
+                앞으로 <span style={{ fontWeight: '700', color: 'var(--sz-gold)' }}>{remaining}번</span> 남았어요
+              </p>
+            )}
+            {remaining === 0 && (
+              <p style={{ fontSize: '12px', fontWeight: '600', marginTop: '10px', color: 'var(--sz-sage)' }}>
+                이번 달 수업 모두 완료 🎉
+              </p>
+            )}
           </div>
         )}
 
@@ -267,17 +319,25 @@ export default function PortalHomePage() {
   )
 }
 
-/* ── 선생님의 편지 카드 (3줄 클램프 + 전체 보기) ── */
+/* ── 선생님의 편지 카드 ── */
 function ParentLetterCard({ feedback, latestCompleted }: { feedback: any; latestCompleted: any }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="col-span-2 sz-widget rounded-3xl p-5" style={{ backgroundColor: 'var(--sz-card-pastel, #fff)' }}>
+    <div
+      style={{
+        borderRadius: '28px',
+        backgroundColor: '#FFFDF8',
+        boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)',
+        border: '1px solid rgba(255,255,255,0.75)',
+        padding: '20px',
+      }}
+    >
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">💌</span>
-        <h2 className="font-semibold text-sm" style={{ color: 'var(--sz-text-deep)' }}>선생님의 편지</h2>
+        <span style={{ fontSize: '16px' }}>💌</span>
+        <h2 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--sz-text-deep)' }}>선생님의 편지</h2>
         {latestCompleted && (
-          <span className="ml-auto text-xs" style={{ color: 'var(--sz-text-muted)' }}>
+          <span className="ml-auto" style={{ fontSize: '11px', color: 'var(--sz-text-muted)' }}>
             {(() => {
               const d = parseISO(latestCompleted.date)
               return `${d.getMonth() + 1}월 ${d.getDate()}일`
@@ -285,15 +345,19 @@ function ParentLetterCard({ feedback, latestCompleted }: { feedback: any; latest
           </span>
         )}
       </div>
+
       {feedback ? (
         <div className="space-y-3">
           {feedback.parent_summary && (
             <div>
               <p
-                className="text-sm leading-relaxed rounded-xl px-4 py-3"
+                className="text-sm leading-relaxed"
                 style={{
                   color: 'var(--sz-text-deep)',
-                  backgroundColor: 'var(--sz-blue-pale)',
+                  padding: '12px 16px',
+                  borderRadius: '16px',
+                  backgroundColor: 'rgba(175,196,216,0.12)',
+                  border: '1px solid rgba(175,196,216,0.2)',
                   ...(expanded ? {} : {
                     overflow: 'hidden',
                     display: '-webkit-box',
@@ -306,7 +370,7 @@ function ParentLetterCard({ feedback, latestCompleted }: { feedback: any; latest
               </p>
               <button
                 onClick={() => setExpanded(v => !v)}
-                className="mt-1.5 text-xs font-medium"
+                className="mt-1.5 text-xs font-semibold"
                 style={{ color: 'var(--sz-blue-soft)' }}
               >
                 {expanded ? '접기 ↑' : '전체 보기 →'}
@@ -346,9 +410,17 @@ function ParentLetterCard({ feedback, latestCompleted }: { feedback: any; latest
           )}
         </div>
       ) : (
-        <div className="py-6 text-center">
-          <p className="text-2xl mb-2">✏️</p>
-          <p className="text-sm" style={{ color: 'var(--sz-text-muted)' }}>선생님이 곧 편지를 보낼 예정입니다</p>
+        <div
+          className="flex items-center gap-3"
+          style={{
+            padding: '14px 16px',
+            borderRadius: '16px',
+            background: 'rgba(175,196,216,0.07)',
+            border: '1.5px dashed rgba(175,196,216,0.35)',
+          }}
+        >
+          <span style={{ fontSize: '20px' }}>✏️</span>
+          <p style={{ fontSize: '13px', color: 'var(--sz-text-muted)' }}>선생님이 곧 편지를 보낼 예정입니다</p>
         </div>
       )}
     </div>
