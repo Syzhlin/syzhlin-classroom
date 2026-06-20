@@ -47,7 +47,7 @@ export default function PortalHomePage() {
     <div className="p-4 space-y-4 max-w-lg mx-auto pb-24">
       {/* 인사말 + 다음 수업 */}
       <div className="rounded-2xl p-5 text-white" style={{backgroundColor: "var(--sz-navy)"}}>
-        <p className="text-sm text-indigo-200">안녕하세요, {profile?.display_name ?? ''}님 👋</p>
+        <p className="text-sm text-indigo-200">안녕하세요, {profile?.display_name ?? ''}{profile?.role === 'parent' ? '학부모' : ''}님 👋</p>
         {nextClass ? (
           <>
             <p className="mt-2 text-lg font-bold leading-snug">
