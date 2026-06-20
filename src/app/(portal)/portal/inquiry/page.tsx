@@ -197,7 +197,7 @@ export default function InquiryPage() {
         className="flex-shrink-0 flex items-end gap-2"
         style={{
           padding: '10px 12px',
-          paddingBottom: 'max(14px, env(safe-area-inset-bottom))',
+          paddingBottom: 'calc(72px + max(14px, env(safe-area-inset-bottom)))',
           backgroundColor: 'rgba(255,253,246,0.97)',
           borderTop: '1px solid rgba(175,196,216,0.2)',
         }}
