@@ -18,15 +18,15 @@ type RoleValue = typeof ROLES[number]['value']
 
 const COLOR_ACTIVE: Record<string, string> = {
   indigo:  'border-[var(--sz-navy)] bg-[var(--sz-gold-light)] text-[var(--sz-navy)]',
-  emerald: 'border-emerald-400 bg-emerald-50 text-emerald-700',
-  sky:     'border-sky-400 bg-sky-50 text-sky-700',
-  amber:   'border-amber-400 bg-amber-50 text-amber-700',
+  emerald: 'border-[var(--sz-navy)] bg-[var(--sz-gold-light)] text-[var(--sz-navy)]',
+  sky:     'border-[var(--sz-navy)] bg-[var(--sz-gold-light)] text-[var(--sz-navy)]',
+  amber:   'border-[var(--sz-navy)] bg-[var(--sz-gold-light)] text-[var(--sz-navy)]',
 }
 const BTN_COLOR: Record<string, string> = {
   indigo:  'bg-[var(--sz-navy)] hover:bg-[var(--sz-navy-light)]',
-  emerald: 'bg-emerald-600 hover:bg-emerald-700',
-  sky:     'bg-sky-500 hover:bg-sky-600',
-  amber:   'bg-amber-500 hover:bg-amber-600',
+  emerald: 'bg-[var(--sz-navy)] hover:bg-[var(--sz-navy-light)]',
+  sky:     'bg-[var(--sz-navy)] hover:bg-[var(--sz-navy-light)]',
+  amber:   'bg-[var(--sz-navy)] hover:bg-[var(--sz-navy-light)]',
 }
 
 function getColorForRole(role: RoleValue) {
@@ -170,7 +170,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl shadow-sm border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+    <div className="w-full max-w-md rounded-3xl overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "#DDD4C8", border: "1px solid #DDD4C8", boxShadow: "0 4px 32px rgba(100,80,50,0.10), 0 1px 4px rgba(100,80,50,0.06)"}}>
       {/* 로고 */}
       <div className="px-8 pt-8 pb-4 text-center">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" style={{backgroundColor: "var(--sz-navy)"}}>
@@ -179,8 +179,8 @@ export default function LoginPage() {
             <path d="M6 12v5c3 3 9 3 12 0v-5"/>
           </svg>
         </div>
-        <h1 className="text-xl font-bold text-gray-900">syzhlin classroom</h1>
-        <p className="mt-1 text-sm text-gray-500">수업 관리 서비스</p>
+        <h1 className="text-xl font-bold tracking-tight" style={{color: "var(--sz-navy)", letterSpacing: "-0.01em"}}>Syzhlin Classroom</h1>
+        <p className="mt-1 text-xs tracking-widest uppercase" style={{color: "var(--sz-warm-gray)", letterSpacing: "0.12em"}}>Premium English Classroom</p>
       </div>
 
       {/* 역할 선택 */}
@@ -195,7 +195,7 @@ export default function LoginPage() {
               className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 text-xs font-medium transition-all ${
                 role === r.value
                   ? COLOR_ACTIVE[r.color]
-                  : 'border-gray-100 text-gray-400 hover:border-gray-200'
+                  : 'border-[var(--sz-beige)] text-[var(--sz-warm-gray)] hover:border-[var(--sz-navy)] hover:text-[var(--sz-navy)]'
               }`}
             >
               <span className="text-xl">{r.emoji}</span>
@@ -228,7 +228,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   placeholder="example@email.com"
                   required
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent"
+                  className="w-full px-3 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent" style={{borderColor: "var(--sz-beige)", backgroundColor: "var(--sz-cream)"}}
                 />
               </div>
               <div>
@@ -240,7 +240,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   required
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent"
+                  className="w-full px-3 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent" style={{borderColor: "var(--sz-beige)", backgroundColor: "var(--sz-cream)"}}
                 />
               </div>
             </>
@@ -255,7 +255,7 @@ export default function LoginPage() {
                 autoComplete="off"
                 autoCapitalize="off"
                 required
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent"
+                className="w-full px-3 py-2.5 border rounded-xl text-sm font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent" style={{borderColor: "var(--sz-beige)", backgroundColor: "var(--sz-cream)"}}
               />
               <p className="mt-1.5 text-xs text-gray-400 text-center">선생님께 받은 코드를 입력하세요</p>
             </div>
@@ -277,7 +277,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2.5 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-60 ${BTN_COLOR[color]}`}
+            className={`w-full py-3 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-60 tracking-wide ${BTN_COLOR[color]}`}
           >
             {loading ? '로그인 중...' : '로그인'}
           </button>
