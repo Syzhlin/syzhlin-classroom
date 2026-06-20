@@ -205,9 +205,9 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{backgroundColor: "var(--sz-cream)"}}>
       {/* Top header */}
-      <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <header className="border-b px-4 py-3 flex items-center justify-between sticky top-0 z-10" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.back()}
@@ -217,13 +217,13 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           </button>
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{backgroundColor: "var(--sz-navy)"}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
               <path d="M6 12v5c3 3 9 3 12 0v-5"/>
             </svg>
           </div>
-          <span className="font-bold text-gray-900 text-sm">Syzhlin Class</span>
+          <span className="font-bold text-sm" style={{color: "var(--sz-navy)"}}>Syzhlin Class</span>
         </div>
         <SiblingSwitch />
         <div className="flex items-center gap-3">
@@ -232,7 +232,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
           )}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1.5 rounded-lg hover:bg-red-50"
+            className="flex items-center gap-1.5 text-xs transition-colors px-2 py-1.5 rounded-lg" style={{color: "var(--sz-warm-gray)"}}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -252,7 +252,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex z-10">
+      <nav className="fixed bottom-0 left-0 right-0 border-t flex z-10" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
         {visibleNavItems.map((item) => {
           const isActive = pathname === item.href
           return (
@@ -260,7 +260,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
               key={item.href}
               href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-2.5 transition-colors ${
-                isActive ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'
+                isActive ? 'sz-text-navy' : 'sz-text-warm-gray'
               }`}
             >
               {item.icon}
@@ -293,8 +293,8 @@ function SiblingSwitch() {
           onClick={() => { playSiblingSwapSound(); setSelectedStudentId(s.id) }}
           className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
             selectedStudentId === s.id
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              ? 'sz-btn-navy'
+              : 'sz-btn-outline'
           }`}
         >
           {s.name}

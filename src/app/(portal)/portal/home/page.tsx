@@ -31,7 +31,7 @@ export default function PortalHomePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{borderColor: "var(--sz-navy)", borderTopColor: "transparent"}} />
       </div>
     )
   }
@@ -46,7 +46,7 @@ export default function PortalHomePage() {
   return (
     <div className="p-4 space-y-4 max-w-lg mx-auto pb-24">
       {/* 인사말 + 다음 수업 */}
-      <div className="bg-indigo-600 rounded-2xl p-5 text-white">
+      <div className="rounded-2xl p-5 text-white" style={{backgroundColor: "var(--sz-navy)"}}>
         <p className="text-sm text-indigo-200">안녕하세요 👋</p>
         {nextClass ? (
           <>
@@ -63,7 +63,7 @@ export default function PortalHomePage() {
 
       {/* 오늘의 수업 피드백 */}
       {/* 선생님의 편지 - 항상 표시 */}
-      <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+      <div className="sz-card rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-base">💌</span>
           <h2 className="font-semibold text-gray-900 text-sm">선생님의 편지</h2>
@@ -90,7 +90,7 @@ export default function PortalHomePage() {
                 <p className="text-xs font-semibold text-gray-400 mb-1.5">오늘 배운 표현</p>
                 <div className="flex flex-wrap gap-1.5">
                   {feedback.expressions.map((e: string) => (
-                    <span key={e} className="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-medium">
+                    <span key={e} className="text-xs px-2.5 py-1 rounded-full font-medium" style={{backgroundColor: "var(--sz-gold-light)", color: "var(--sz-navy)"}}>
                       {e}
                     </span>
                   ))}
@@ -104,8 +104,8 @@ export default function PortalHomePage() {
               </div>
             )}
             {feedback.has_homework && feedback.homework_text && (
-              <div className="bg-amber-50 rounded-xl px-4 py-3">
-                <p className="text-xs font-semibold text-amber-600 mb-1">📌 숙제</p>
+              <div className="rounded-xl px-4 py-3" style={{backgroundColor: "var(--sz-gold-light)"}}>
+                <p className="text-xs font-semibold mb-1" style={{color: "var(--sz-gold)"}}>📌 숙제</p>
                 <p className="text-sm text-gray-700">{feedback.homework_text}</p>
               </div>
             )}
@@ -120,7 +120,7 @@ export default function PortalHomePage() {
 
       {/* 다음 일정 카드 */}
       {data?.nextClasses && data.nextClasses.length > 0 && (
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div className="sz-card rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-base">📅</span>
             <h2 className="font-semibold text-gray-900 text-sm">앞으로의 수업</h2>
@@ -133,7 +133,7 @@ export default function PortalHomePage() {
                   <p className="text-xs text-gray-400">{formatTime(cls.start_time)}</p>
                 </div>
                 {i === 0 && (
-                  <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-medium">다음 수업</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{backgroundColor: "var(--sz-navy)", color: "var(--sz-cream)"}}>다음 수업</span>
                 )}
               </div>
             ))}
@@ -151,21 +151,21 @@ export default function PortalHomePage() {
         const lastCity = stampedCities[stampedCities.length - 1] ?? null
         return (
           <Link href="/portal/passport">
-            <div className="bg-gradient-to-r from-indigo-700 to-violet-700 rounded-2xl p-4 text-white cursor-pointer">
+            <div className="rounded-2xl p-4 text-white cursor-pointer" style={{background: "linear-gradient(135deg, var(--sz-navy) 0%, var(--sz-navy-light) 100%)"}}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🌍</span>
                   <p className="text-sm font-semibold">세계 여권</p>
                 </div>
-                <span className="text-xs text-indigo-300">여권 보기 →</span>
+                <span className="text-xs" style={{color: "var(--sz-gold)"}}>여권 보기 →</span>
               </div>
               <div className="flex items-center gap-3">
                 <div>
                   <p className="text-3xl font-bold">{stampedCities.length}</p>
-                  <p className="text-xs text-indigo-300">도시 스탬프</p>
+                  <p className="text-xs" style={{color: "var(--sz-gold-light)"}}>도시 스탬프</p>
                 </div>
                 {currentCity && (
-                  <div className={`flex items-center gap-2 rounded-xl px-3 py-2 ${isArrived ? 'bg-amber-400/20' : 'bg-white/10'}`}>
+                  <div className={`flex items-center gap-2 rounded-xl px-3 py-2`}>
                     <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
                     <div>
                       <p className="text-xs font-semibold">{currentCity.name}</p>
@@ -192,7 +192,7 @@ export default function PortalHomePage() {
 
       {/* 잔여 회차 */}
       {payment && (
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div className="sz-card rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-base">🎯</span>
             <h2 className="font-semibold text-gray-900 text-sm">이번 달 수업권</h2>
@@ -203,14 +203,14 @@ export default function PortalHomePage() {
                 <span className="text-base font-normal text-gray-400"> / {payment.total_sessions}회</span>
               </p>
               {remaining !== null && remaining > 0 && (
-                <p className="text-sm text-gray-500 mt-0.5">남은 수업 <span className="font-semibold text-indigo-600">{remaining}회</span></p>
+                <p className="text-sm text-gray-500 mt-0.5">남은 수업 <span className="font-semibold" style={{color: "var(--sz-gold)"}}>{remaining}회</span></p>
               )}
               {remaining === 0 && (
                 <p className="text-sm text-green-600 font-medium mt-0.5">이번 달 수업 완료 🎉</p>
               )}
             </div>
             {payment.bonus_sessions > 0 && (
-              <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-medium">
+              <span className="text-xs px-2 py-1 rounded-full font-medium" style={{backgroundColor: "var(--sz-gold-light)", color: "var(--sz-gold)"}}>
                 +{payment.bonus_sessions} 보너스
               </span>
             )}
@@ -220,7 +220,7 @@ export default function PortalHomePage() {
               className="h-full rounded-full transition-all"
               style={{
                 width: `${payment.total_sessions > 0 ? Math.min(100, (payment.completed_sessions / payment.total_sessions) * 100) : 0}%`,
-                backgroundColor: '#6366f1',
+                backgroundColor: 'var(--sz-navy)',
               }}
             />
           </div>

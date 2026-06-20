@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 238 76% 60%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 238 76% 60%;
-  --radius: 0.5rem;
+  /* ── Syzhlin Passport Palette ── */
+  /* Background: Warm Cream / Ivory */
+  --background: 40 33% 97%;
+  /* Surface: Paper White */
+  --card: 40 25% 99%;
+  --card-foreground: 220 55% 18%;
+  --foreground: 220 55% 18%;
+  --popover: 40 25% 99%;
+  --popover-foreground: 220 55% 18%;
+  /* Primary: Deep Navy */
+  --primary: 220 55% 18%;
+  --primary-foreground: 40 33% 97%;
+  /* Secondary: Pale Beige */
+  --secondary: 38 28% 92%;
+  --secondary-foreground: 220 55% 18%;
+  /* Muted: Warm Gray */
+  --muted: 38 20% 94%;
+  --muted-foreground: 220 12% 52%;
+  /* Accent: Soft Gold */
+  --accent: 40 65% 47%;
+  --accent-foreground: 40 33% 97%;
+  /* Destructive */
+  --destructive: 0 62% 48%;
+  --destructive-foreground: 40 33% 97%;
+  /* Border: Pale Beige Line */
+  --border: 38 22% 88%;
+  --input: 38 22% 88%;
+  /* Ring: Gold */
+  --ring: 40 65% 47%;
+  --radius: 0.625rem;
+
+  /* ── 커스텀 패스포트 변수 ── */
+  --sz-cream:       #FAF8F3;   /* 배경 크림 */
+  --sz-paper:       #FEFCF8;   /* 카드 종이 */
+  --sz-navy:        #1A2744;   /* 딥 네이비 */
+  --sz-navy-light:  #2C3F6B;   /* 네이비 라이트 */
+  --sz-gold:        #C4982A;   /* 소프트 골드 */
+  --sz-gold-light:  #F0E6C6;   /* 골드 배경 */
+  --sz-beige:       #E8E3D7;   /* 베이지 선 */
+  --sz-warm-gray:   #7A7570;   /* 웜 그레이 */
+  --sz-stamp-navy:  #1A2744;   /* 도장 잉크 네이비 */
+  --sz-stamp-brown: #8B5A2B;   /* 도장 잉크 브라운 */
+  --sz-stamp-red:   #8B3A3A;   /* 도장 잉크 머티드 레드 */
+  --sz-arrived:     #C4982A;   /* Arrived 상태 골드 */
+  --sz-stamped:     #1A2744;   /* Stamped 상태 네이비 */
 }
 
 @theme inline {
@@ -43,6 +68,16 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+
+  /* Syzhlin Design Tokens */
+  --color-sz-cream:      var(--sz-cream);
+  --color-sz-paper:      var(--sz-paper);
+  --color-sz-navy:       var(--sz-navy);
+  --color-sz-navy-light: var(--sz-navy-light);
+  --color-sz-gold:       var(--sz-gold);
+  --color-sz-gold-light: var(--sz-gold-light);
+  --color-sz-beige:      var(--sz-beige);
+  --color-sz-warm-gray:  var(--sz-warm-gray);
 }
 
 * {
@@ -96,4 +131,90 @@ textarea {
   animation: pageEnter 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
+/* ── Syzhlin 기본 컴포넌트 ── */
+
+/* 패스포트 카드 — 종이 느낌 */
+.sz-card {
+  background: var(--sz-paper);
+  border: 1px solid var(--sz-beige);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(26, 39, 68, 0.04);
+}
+
+/* 네이비 버튼 */
+.sz-btn-navy {
+  background: var(--sz-navy);
+  color: var(--sz-cream);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, opacity 0.15s;
+}
+.sz-btn-navy:hover { background: var(--sz-navy-light); }
+.sz-btn-navy:disabled { opacity: 0.4; }
+
+/* 골드 버튼 */
+.sz-btn-gold {
+  background: var(--sz-gold);
+  color: var(--sz-cream);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.sz-btn-gold:hover { opacity: 0.88; }
+
+/* 아웃라인 버튼 */
+.sz-btn-outline {
+  background: transparent;
+  color: var(--sz-navy);
+  border: 1.5px solid var(--sz-beige);
+  border-radius: 10px;
+  font-weight: 500;
+  transition: border-color 0.15s, background 0.15s;
+}
+.sz-btn-outline:hover {
+  border-color: var(--sz-navy);
+  background: rgba(26, 39, 68, 0.03);
+}
+
+/* 여권 도장 — Arrived (outline) */
+.sz-stamp-arrived {
+  border: 2px solid var(--sz-arrived);
+  border-radius: 50%;
+  color: var(--sz-arrived);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* 여권 도장 — Stamped (filled) */
+.sz-stamp-done {
+  background: var(--sz-stamped);
+  border-radius: 50%;
+  color: var(--sz-cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* 베이지 구분선 */
+.sz-divider {
+  border: none;
+  border-top: 1px solid var(--sz-beige);
+}
+
+/* 네이비 텍스트 / 골드 텍스트 유틸 */
+.sz-text-navy { color: var(--sz-navy); }
+.sz-text-gold { color: var(--sz-gold); }
+.sz-text-warm-gray { color: var(--sz-warm-gray); }
+.sz-bg-cream { background: var(--sz-cream); }
+.sz-bg-gold-light { background: var(--sz-gold-light); }
 
