@@ -31,6 +31,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (prevPathname.current !== pathname) {
       playPageTransitionSound()
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
       prevPathname.current = pathname
     }
     if (!profile) return
@@ -142,8 +143,13 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: 'var(--sz-bg-pastel)' }}
+      className="flex flex-col"
+      style={{
+        backgroundColor: 'var(--sz-bg-pastel)',
+        height: pathname === '/portal/inquiry' ? '100dvh' : undefined,
+        minHeight: pathname === '/portal/inquiry' ? undefined : '100dvh',
+        overflow: pathname === '/portal/inquiry' ? 'hidden' : undefined,
+      }}
     >
       {/* Top header */}
       <header
@@ -209,7 +215,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       <main
         className={`flex-1 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
         style={{
-          paddingBottom: 'calc(140px + env(safe-area-inset-bottom))',
+          paddingBottom: pathname === '/portal/inquiry' ? '0' : 'calc(140px + env(safe-area-inset-bottom))',
           display: pathname === '/portal/inquiry' ? 'flex' : undefined,
           flexDirection: pathname === '/portal/inquiry' ? 'column' : undefined,
           overflow: pathname === '/portal/inquiry' ? 'hidden' : undefined,

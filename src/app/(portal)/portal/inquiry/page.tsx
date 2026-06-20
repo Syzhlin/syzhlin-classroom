@@ -23,6 +23,11 @@ export default function InquiryPage() {
   const [text, setText] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  // 탭 진입 시 항상 최상단부터 시작
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+  }, [])
+
   useEffect(() => {
     if (studentId) markRead.mutate(studentId)
   }, [studentId, messages.length])
