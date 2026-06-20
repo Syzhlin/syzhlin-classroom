@@ -139,7 +139,6 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
     router.push('/login')
   }
 
-  const isInquiry = pathname === '/portal/inquiry'
 
   return (
     <div
@@ -210,22 +209,23 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       <main
         className={`flex-1 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
         style={{
-          paddingBottom: isInquiry ? '0' : 'calc(140px + env(safe-area-inset-bottom))',
-          ...(isInquiry ? { display: 'flex', flexDirection: 'column', overflow: 'hidden' } : {}),
+          paddingBottom: 'calc(140px + env(safe-area-inset-bottom))',
+          display: pathname === '/portal/inquiry' ? 'flex' : undefined,
+          flexDirection: pathname === '/portal/inquiry' ? 'column' : undefined,
+          overflow: pathname === '/portal/inquiry' ? 'hidden' : undefined,
         }}
       >
         <div
           key={pathname}
           className="page-enter"
-          style={isInquiry ? { flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 } : undefined}
+          style={pathname === '/portal/inquiry' ? { flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 } : undefined}
         >
           {children}
         </div>
       </main>
 
-      {/* Bottom navigation — 문의 대화방에서는 숨김 */}
-      {!isInquiry && (
-        <nav
+      {/* Bottom navigation */}
+      <nav
           className="fixed bottom-0 left-0 right-0 flex z-10"
           style={{
             backgroundColor: 'rgba(255,253,246,0.95)',
@@ -272,7 +272,6 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
             )
           })}
         </nav>
-      )}
     </div>
   )
 }
