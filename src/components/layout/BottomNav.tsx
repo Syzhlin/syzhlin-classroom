@@ -21,11 +21,11 @@ const primaryNav = [
 ]
 
 const moreNav = [
-  { href: '/materials',      label: '수업 자료',  icon: BookOpen },
-  { href: '/reports',        label: '성장리포트', icon: TrendingUp },
+  { href: '/materials',      label: '수업 자료 관리', icon: BookOpen },
+  { href: '/reports',        label: '성장 리포트', icon: TrendingUp },
   { href: '/feedback',       label: '수업 피드백', icon: Mail },
   { href: '/messages',       label: '문의함',     icon: MessageSquare },
-  { href: '/requests',       label: '변경요청',   icon: ClipboardList },
+  { href: '/requests',       label: '일정 변경 요청', icon: ClipboardList },
   { href: '/activity-logs',  label: '활동 로그',  icon: Activity },
 ]
 
@@ -52,7 +52,11 @@ export function BottomNav() {
       {showMore && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowMore(false)} />
-          <div className="relative rounded-t-3xl px-4 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10" style={{backgroundColor: "var(--sz-card-pastel)", boxShadow: "0 -4px 24px rgba(46,53,69,0.06)"}}>
+          <div className="relative rounded-t-3xl px-4 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10" style={{backgroundColor: "var(--sz-card-pastel)", boxShadow: "0 -4px 24px rgba(46,53,69,0.06)"}}>
+            {/* 핸들바 */}
+            <div className="flex justify-center mb-3">
+              <div className="w-10 h-1 rounded-full" style={{backgroundColor: "rgba(175,196,216,0.4)"}} />
+            </div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold" style={{color: "var(--sz-text-muted)"}}>더보기</span>
               <button onClick={() => setShowMore(false)} className="min-h-11 min-w-11 inline-flex items-center justify-center rounded-full" style={{color: "var(--sz-text-muted)", backgroundColor: "rgba(175,196,216,0.15)"}}>
@@ -82,13 +86,16 @@ export function BottomNav() {
                 </Link>
               ))}
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex min-h-11 items-center gap-2 w-full px-4 py-3 rounded-2xl text-sm font-medium" style={{color: "var(--sz-pink-soft)", backgroundColor: "var(--sz-pink-pale)"}}
-            >
-              <LogOut className="w-5 h-5" />
-              로그아웃
-            </button>
+            <div className="border-t pt-3 mt-1" style={{borderColor: "rgba(175,196,216,0.15)"}}>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-2 py-2 rounded-xl text-sm transition-colors"
+                style={{color: "var(--sz-text-muted)"}}
+              >
+                <LogOut className="w-4 h-4" />
+                로그아웃
+              </button>
+            </div>
           </div>
         </div>
       )}

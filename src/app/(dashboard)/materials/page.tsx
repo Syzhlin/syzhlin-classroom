@@ -175,9 +175,17 @@ export default function MaterialsPage() {
 
       {/* Materials list */}
       {!selectedId ? (
-        <div className="sz-widget rounded-2xl border border-gray-100 p-8 sm:p-12 text-center">
-          <BookOpen className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-sm text-[var(--sz-text-muted)] opacity-70">위에서 학생을 선택하세요</p>
+        <div className="sz-widget rounded-3xl p-8 sm:p-10 text-center">
+          <div className="w-14 h-14 rounded-3xl flex items-center justify-center mx-auto mb-4"
+            style={{ backgroundColor: 'var(--sz-blue-pale)' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--sz-blue-soft)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <p className="text-sm font-semibold mb-2" style={{ color: 'var(--sz-text-deep)' }}>학생을 선택해주세요</p>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--sz-text-muted)' }}>
+            학생별 수업 자료 링크를 등록하거나<br/>Google Drive 폴더와 연결할 수 있어요
+          </p>
         </div>
       ) : isLoading ? (
         <div className="space-y-3">
@@ -213,10 +221,12 @@ export default function MaterialsPage() {
                   href={m.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg text-[var(--sz-text-muted)] opacity-70 hover:text-[var(--sz-blue-soft)] hover:bg-[var(--sz-blue-pale)] transition-colors"
-                  title="보기"
+                  className="inline-flex min-h-10 items-center gap-1.5 px-2.5 rounded-xl text-xs font-medium transition-all"
+                  style={{ backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)' }}
+                  title="열기"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  {m.file_type === 'drive' ? 'Drive' : '열기'}
                 </a>
                 <button
                   onClick={() => handleDelete(m.id)}

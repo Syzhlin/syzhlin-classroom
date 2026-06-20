@@ -174,9 +174,9 @@ function FeedbackCard({ classItem, studentId, studentName, isOpen, onToggle }: {
     <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
       <button className="w-full flex min-h-14 items-center justify-between px-4 py-3.5 text-left hover:bg-[var(--sz-bg-pastel)] transition-colors sm:px-5" onClick={onToggle}>
         <div className="flex min-w-0 items-center gap-3">
-          <div className={"w-2 h-2 rounded-full shrink-0 " + (hasFeedback ? 'bg-indigo-400' : 'bg-gray-200')} />
+          <div className={"w-2 h-2 rounded-full shrink-0 " + (hasFeedback ? 'bg-[var(--sz-blue-soft)]' : 'bg-gray-200')} />
           <span className="truncate text-sm font-semibold text-[var(--sz-text-deep)]">{dateLabel}</span>
-          {hasFeedback && <span className="text-xs text-indigo-500 bg-[var(--sz-blue-pale)] px-2 py-0.5 rounded-full">작성됨</span>}
+          {hasFeedback && <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{backgroundColor:'var(--sz-blue-pale)',color:'var(--sz-blue-soft)'}}>작성됨</span>}
         </div>
         <span className={"text-[var(--sz-text-muted)] opacity-70 text-xs transition-transform " + (isOpen ? 'rotate-180' : '')}>▾</span>
       </button>
@@ -186,8 +186,9 @@ function FeedbackCard({ classItem, studentId, studentName, isOpen, onToggle }: {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <label className="text-xs font-semibold text-[var(--sz-text-muted)]">학부모에게 보낼 내용</label>
             <button onClick={generateAI} disabled={generating}
-              className="flex min-h-10 items-center justify-center gap-1 text-xs px-2.5 py-1 bg-violet-50 text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-100 disabled:opacity-50 transition-colors font-medium">
-              {generating ? '✨ 다듬는 중...' : '✨ AI 다듬기'}
+              className="flex min-h-10 items-center justify-center gap-1.5 text-xs px-3 py-1.5 rounded-xl disabled:opacity-40 transition-all font-medium"
+              style={{ backgroundColor: 'rgba(180,160,220,0.12)', color: '#8B6DB8', border: '1px solid rgba(180,160,220,0.25)' }}>
+              {generating ? '✨ 다듬는 중...' : '✨ AI로 다듬기'}
             </button>
           </div>
           <textarea
@@ -198,9 +199,9 @@ function FeedbackCard({ classItem, studentId, studentName, isOpen, onToggle }: {
             className="w-full px-3 py-2.5 border border-[rgba(175,196,216,0.3)] rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]-400 leading-relaxed"
           />
           <button onClick={handleSave} disabled={saving || !content}
-            className={"w-full min-h-11 py-2.5 text-sm font-semibold rounded-xl transition-colors " +
-              (saved ? 'bg-green-500 text-white' : 'bg-[var(--sz-blue-soft)] text-white hover:opacity-90 disabled:opacity-40')}>
-            {saved ? '✓ 저장됨' : saving ? '저장 중...' : '저장하기'}
+            className="w-full min-h-11 py-2.5 text-sm font-semibold rounded-xl transition-all text-white disabled:opacity-35"
+            style={{ backgroundColor: saved ? 'var(--sz-sage)' : 'var(--sz-blue-soft)' }}>
+            {saved ? '✓ 저장됐어요' : saving ? '저장 중...' : content ? '저장하기' : '내용을 입력해주세요'}
           </button>
         </div>
       )}

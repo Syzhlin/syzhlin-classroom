@@ -115,7 +115,7 @@ function StudentCard({ student, onEdit, onDelete, onReport, favorites, onToggleF
 
       {/* 정보 */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <span className="font-bold text-sm" style={{ color: 'var(--sz-text-deep)' }}>
             {student.name}
           </span>
@@ -126,21 +126,25 @@ function StudentCard({ student, onEdit, onDelete, onReport, favorites, onToggleF
             </span>
           )}
         </div>
-        {hasInfo ? (
-          <>
-            {!!student.hourly_rate && (
-              <p className="text-xs mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
-                월 {student.hourly_rate.toLocaleString()}원
-              </p>
-            )}
-            {student.schedule_note && (
-              <p className="text-xs mt-0.5 font-medium truncate" style={{ color: 'var(--sz-blue-soft)' }}>
-                {student.schedule_note}
-              </p>
-            )}
-          </>
+        {student.schedule_note ? (
+          <p className="text-xs mt-0.5 font-medium truncate" style={{ color: 'var(--sz-blue-soft)' }}>
+            {student.schedule_note}
+          </p>
         ) : (
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(175,196,216,0.7)' }}>정보 미등록</p>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full mt-0.5 inline-block"
+            style={{ backgroundColor: 'rgba(240,150,100,0.12)', color: '#E07050' }}>
+            정기수업 미등록
+          </span>
+        )}
+        {!!student.hourly_rate ? (
+          <p className="text-xs mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
+            월 {student.hourly_rate.toLocaleString()}원
+          </p>
+        ) : (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full mt-0.5 inline-block ml-1"
+            style={{ backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)' }}>
+            결제 미등록
+          </span>
         )}
       </div>
 

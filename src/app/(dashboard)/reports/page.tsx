@@ -62,9 +62,18 @@ export default function ReportsPage() {
       {/* 오른쪽: 리포트 목록 */}
       <div className="min-w-0 flex-1 overflow-y-auto">
         {!selectedStudentId ? (
-          <div className="flex min-h-64 flex-col items-center justify-center h-full text-center text-[var(--sz-text-muted)] opacity-70">
-            <div className="text-5xl mb-3">📊</div>
-            <p className="text-sm font-medium">왼쪽에서 학생을 선택하세요</p>
+          <div className="flex min-h-64 flex-col items-center justify-center h-full text-center px-6">
+            <div className="w-14 h-14 rounded-3xl flex items-center justify-center mb-4"
+              style={{ backgroundColor: 'var(--sz-blue-pale)' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--sz-blue-soft)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--sz-text-deep)' }}>학생을 선택해주세요</p>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--sz-text-muted)' }}>
+              위에서 학생을 선택하면<br/>월간 성장 리포트를 확인하거나 작성할 수 있어요
+            </p>
           </div>
         ) : (
           <ReportsList
