@@ -215,12 +215,12 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
 function SiblingSwitch() {
   const { data: profile } = useProfile()
-  const { selectedStudentId, setSelectedStudentId, siblings, hasSiblings } = usePortalStudent()
+  const { selectedStudentId, setSelectedStudentId, siblings, hasSiblings, linkedStudentName } = usePortalStudent()
   if (!hasSiblings || !profile?.linked_student_id) return null
 
   // 현재 선택된 학생 이름 가져오기
   const allStudents = [
-    { id: profile.linked_student_id, name: profile.display_name ?? '내 아이' },
+    { id: profile.linked_student_id, name: linkedStudentName ?? profile.display_name ?? '내 아이' },
     ...siblings,
   ]
   const current = allStudents.find(s => s.id === selectedStudentId)

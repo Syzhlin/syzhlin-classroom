@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import {
   parseISO, isBefore, startOfDay, format, addMonths, subMonths,
   startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameMonth,
-  isToday, isBefore as dfIsBefore,
+  isToday, isBefore as dfIsBefore, isSameDay,
 } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, X, Check } from 'lucide-react'
@@ -27,7 +27,6 @@ const TYPE_LABELS: Record<'reschedule' | 'cancel' | 'makeup', string> = {
   makeup:     '보강 요청',
 }
 
-// 시간 슬롯 (오전 9시 ~ 오후 10시, 30분 단위)
 const TIME_SLOTS: string[] = []
 for (let h = 9; h <= 22; h++) {
   TIME_SLOTS.push(`${h}:00`)
@@ -55,7 +54,124 @@ type ClassItem = {
   students?: { color?: string }
 }
 
-// ── 달력 + 시간 선택 ─────────────────────────────────────────
+// ── 읽기 전용 월간 캘린더 ────────────────────────────────────
+function MonthlyCalendar({
+  classes,
+  onDayClick,
+  selectedDate,
+}: {
+  classes: ClassItem[]
+  onDayClick: (date: string) => void
+  selectedDate: string | null
+}) {
+  const [viewMonth, setViewMonth] = useState(new Date())
+
+  const days = useMemo(() => {
+    const start = startOfMonth(viewMonth)
+    const end   = endOfMonth(viewMonth)
+    const cells: (Date | null)[] = []
+    for (let i = 0; i < getDay(start); i++) cells.push(null)
+    eachDayOfInterval({ start, end }).forEach(d => cells.push(d))
+    return cells
+  }, [viewMonth])
+
+  // 날짜별 수업 맵
+  const classDateMap = useMemo(() => {
+    const map: Record<string, ClassItem[]> = {}
+    for (const cls of classes) {
+      if (!map[cls.date]) map[cls.date] = []
+      map[cls.date].push(cls)
+    }
+    return map
+  }, [classes])
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+      {/* 헤더 */}
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={() => setViewMonth(m => subMonths(m, 1))}
+          className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4 text-gray-600" />
+        </button>
+        <span className="text-sm font-bold text-gray-900">
+          {format(viewMonth, 'yyyy년 M월', { locale: ko })}
+        </span>
+        <button
+          onClick={() => setViewMonth(m => addMonths(m, 1))}
+          className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
+        >
+          <ChevronRight className="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+
+      {/* 요일 헤더 */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAY_LABELS.map((d, i) => (
+          <div
+            key={d}
+            className={`text-center text-[10px] font-semibold py-1 ${
+              i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-gray-400'
+            }`}
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* 날짜 그리드 */}
+      <div className="grid grid-cols-7 gap-0.5">
+        {days.map((d, i) => {
+          if (!d) return <div key={`e-${i}`} />
+          const ds = format(d, 'yyyy-MM-dd')
+          const hasClass = !!classDateMap[ds]
+          const clsItems = classDateMap[ds] ?? []
+          const isSelected = selectedDate === ds
+          const isTodayDate = isToday(d)
+          const inMonth = isSameMonth(d, viewMonth)
+          const dow = getDay(d)
+
+          // 수업 상태 색상 (첫 번째 수업 기준)
+          const dotColor = clsItems[0]?.students?.color ?? '#6366f1'
+
+          return (
+            <button
+              key={ds}
+              onClick={() => hasClass && onDayClick(ds)}
+              className={[
+                'relative flex flex-col items-center justify-center h-10 w-full rounded-xl text-xs font-medium transition-colors',
+                hasClass ? 'cursor-pointer hover:bg-indigo-50' : 'cursor-default',
+                isSelected ? 'bg-indigo-600 text-white' : '',
+                !isSelected && isTodayDate ? 'ring-2 ring-indigo-400 ring-inset' : '',
+                !isSelected && !hasClass && dow === 0 ? 'text-red-400' : '',
+                !isSelected && !hasClass && dow === 6 ? 'text-blue-400' : '',
+                !isSelected && hasClass ? 'text-gray-800 font-semibold' : '',
+                !isSelected && !hasClass ? 'text-gray-400' : '',
+                !inMonth ? 'opacity-30' : '',
+              ].filter(Boolean).join(' ')}
+            >
+              <span>{d.getDate()}</span>
+              {hasClass && (
+                <div className="flex gap-0.5 mt-0.5">
+                  {clsItems.slice(0, 3).map((cls, idx) => (
+                    <div
+                      key={idx}
+                      className="w-1 h-1 rounded-full"
+                      style={{ backgroundColor: isSelected ? 'white' : (cls.students?.color ?? '#6366f1') }}
+                    />
+                  ))}
+                </div>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ── DateTimePicker (변경요청용) ───────────────────────────────
 function DateTimePicker({
   selectedDates, selectedTimes, onToggleDate, onToggleTime,
 }: {
@@ -78,7 +194,6 @@ function DateTimePicker({
 
   return (
     <div className="space-y-4">
-      {/* 달력 */}
       <div>
         <p className="text-xs text-gray-500 mb-2">희망 날짜 <span className="text-gray-400">(복수 선택 가능)</span></p>
         <div className="bg-gray-50 rounded-xl p-3">
@@ -141,8 +256,6 @@ function DateTimePicker({
           </div>
         )}
       </div>
-
-      {/* 시간 토글 */}
       <div>
         <p className="text-xs text-gray-500 mb-2">희망 시간 <span className="text-gray-400">(복수 선택 가능)</span></p>
         <div className="grid grid-cols-4 gap-1.5">
@@ -188,7 +301,6 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
   function toggleTime(t: string) {
     setSelectedTimes(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
   }
-
   function buildPreferredDates() {
     if (!selectedDates.length && !selectedTimes.length) return undefined
     const dates = selectedDates.map(ds => format(parseISO(ds), 'M/d(EEE)', { locale: ko })).join(', ')
@@ -196,7 +308,6 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
     if (dates && times) return `${dates} / ${times}`
     return dates || times
   }
-
   async function handleSubmit() {
     await submit.mutateAsync({
       student_id: studentId,
@@ -215,11 +326,9 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
         className="relative bg-white rounded-t-2xl w-full max-h-[90vh] overflow-y-auto pb-8"
         onClick={e => e.stopPropagation()}
       >
-        {/* 핸들 */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-gray-200 rounded-full" />
         </div>
-
         <div className="px-5 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-gray-900">수업 변경 요청</h2>
@@ -227,14 +336,10 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               <X className="w-5 h-5" />
             </button>
           </div>
-
-          {/* 대상 수업 */}
           <div className="bg-indigo-50 rounded-xl px-4 py-3">
             <p className="text-sm font-semibold text-indigo-800">{formatClassDate(cls.date)}</p>
             <p className="text-xs text-indigo-600 mt-0.5">{cls.start_time.slice(0, 5)} – {cls.end_time.slice(0, 5)}</p>
           </div>
-
-          {/* 요청 유형 */}
           <div>
             <p className="text-xs text-gray-500 mb-2">요청 유형</p>
             <div className="flex gap-2">
@@ -248,8 +353,6 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               ))}
             </div>
           </div>
-
-          {/* 달력 + 시간 (취소 제외) */}
           {type !== 'cancel' && (
             <DateTimePicker
               selectedDates={selectedDates}
@@ -258,8 +361,6 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               onToggleTime={toggleTime}
             />
           )}
-
-          {/* 사유 */}
           <div>
             <p className="text-xs text-gray-500 mb-2">사유 <span className="text-gray-400">(선택)</span></p>
             <textarea
@@ -270,8 +371,6 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
-
-          {/* 버튼 */}
           <div className="flex gap-2 pt-1">
             <button onClick={onClose} className="flex-1 py-2.5 border border-gray-200 text-sm text-gray-600 rounded-xl">
               취소
@@ -290,8 +389,6 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
             </button>
           </div>
         </div>
-
-        {/* 확인 팝업 (바텀 시트 위에 오버레이) */}
         {showConfirm && (
           <div className="absolute inset-0 bg-black/30 rounded-t-2xl flex items-center justify-center p-6 z-10">
             <div className="bg-white rounded-2xl p-6 w-full shadow-xl space-y-4">
@@ -337,8 +434,10 @@ export default function PortalSchedulePage() {
   const { data: classes, isLoading: classesLoading } = usePortalClasses(linkedId)
   const [showPast, setShowPast] = useState(false)
   const [requestTarget, setRequestTarget] = useState<ClassItem | null>(null)
+  const [selectedCalDate, setSelectedCalDate] = useState<string | null>(null)
 
   const role = profile?.role
+  const isParent = role === 'parent'
   const canRequest = role === 'parent' || role === 'adult_learner'
 
   if (profileLoading) {
@@ -370,8 +469,9 @@ export default function PortalSchedulePage() {
   }
 
   const today = startOfDay(new Date())
-  const upcoming = (classes ?? []).filter(c => !isBefore(parseISO(c.date), today))
-  const past = (classes ?? []).filter(c => isBefore(parseISO(c.date), today)).slice(-5).reverse()
+  const allClasses = classes ?? []
+  const upcoming = allClasses.filter(c => !isBefore(parseISO(c.date), today))
+  const past = allClasses.filter(c => isBefore(parseISO(c.date), today)).slice(-5).reverse()
 
   function groupByDate(items: typeof upcoming) {
     const map: Record<string, typeof upcoming> = {}
@@ -381,6 +481,11 @@ export default function PortalSchedulePage() {
     }
     return Object.entries(map).sort(([a], [b]) => a.localeCompare(b))
   }
+
+  // 캘린더에서 선택된 날짜의 수업
+  const selectedDayClasses = selectedCalDate
+    ? allClasses.filter(c => c.date === selectedCalDate)
+    : []
 
   function ClassRow({ cls, showRequest }: { cls: ClassItem; showRequest: boolean }) {
     const statusInfo = STATUS_LABELS[cls.status] ?? { label: cls.status, color: 'bg-gray-100 text-gray-600' }
@@ -409,6 +514,100 @@ export default function PortalSchedulePage() {
     )
   }
 
+  // 학부모: 캘린더 메인 레이아웃
+  if (isParent) {
+    const upcomingGroups = groupByDate(upcoming).slice(0, 2) // 가장 가까운 2개 날짜
+    const pastGroups = groupByDate(past)
+
+    return (
+      <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
+        {/* 월간 캘린더 */}
+        <MonthlyCalendar
+          classes={allClasses as ClassItem[]}
+          onDayClick={ds => setSelectedCalDate(prev => prev === ds ? null : ds)}
+          selectedDate={selectedCalDate}
+        />
+
+        {/* 선택된 날짜 수업 디테일 */}
+        {selectedCalDate && selectedDayClasses.length > 0 && (
+          <div className="bg-white rounded-2xl border border-indigo-100 overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
+              <span className="text-xs font-semibold text-indigo-700">{formatClassDate(selectedCalDate)}</span>
+              <button onClick={() => setSelectedCalDate(null)} className="text-indigo-400 hover:text-indigo-600">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {selectedDayClasses.map(cls => (
+                <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 다가오는 수업 (2개 날짜) */}
+        <section>
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">다가오는 수업</h2>
+          {upcomingGroups.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-400">
+              예정된 수업이 없습니다
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {upcomingGroups.map(([date, items]) => (
+                <div key={date} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                    <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
+                  </div>
+                  <div className="divide-y divide-gray-50">
+                    {items.map(cls => <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} />)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 지난 수업 */}
+        <section>
+          <button
+            onClick={() => setShowPast(v => !v)}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3"
+          >
+            지난 수업
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              className={`transition-transform ${showPast ? 'rotate-180' : ''}`}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          {showPast && (
+            pastGroups.length === 0 ? (
+              <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-400">지난 수업이 없습니다</div>
+            ) : (
+              <div className="space-y-3">
+                {pastGroups.map(([date, items]) => (
+                  <div key={date} className="bg-white rounded-xl border border-gray-100 overflow-hidden opacity-70">
+                    <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                      <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
+                    </div>
+                    <div className="divide-y divide-gray-50">
+                      {items.map(cls => <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={false} />)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+        </section>
+
+        {requestTarget && linkedId && (
+          <ChangeRequestSheet cls={requestTarget} studentId={linkedId} onClose={() => setRequestTarget(null)} />
+        )}
+      </div>
+    )
+  }
+
+  // 학생 / 성인학습자: 기존 리스트 레이아웃
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
       <section>
