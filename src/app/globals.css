@@ -68,3 +68,32 @@ select,
 textarea {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* ── 페이지 전환 애니메이션 ── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+

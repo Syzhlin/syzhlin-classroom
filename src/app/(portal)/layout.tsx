@@ -6,6 +6,8 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { PortalStudentProvider, usePortalStudent } from '@/contexts/PortalStudentContext'
+import { useEffect, useRef } from 'react'
+import { playClickSound, playPageTransitionSound, playBackSound, playSiblingSwapSound } from '@/lib/sounds'
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,6 +25,35 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
   const { isTransitioning } = usePortalStudent()
   const role = profile?.role
+  const prevPathname = useRef(pathname)
+
+  // 페이지 전환음
+  useEffect(() => {
+    if (prevPathname.current !== pathname) {
+      playPageTransitionSound()
+      prevPathname.current = pathname
+    }
+  }, [pathname])
+
+  // 전역 버튼 클릭음
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      const target = e.target as HTMLElement
+      const btn = target.closest('button')
+      const link = target.closest('a')
+      if (!btn && !link) return
+
+      // 뒤로가기 버튼
+      if (btn?.getAttribute('aria-label') === 'back' || btn?.dataset.sound === 'back') {
+        playBackSound()
+        return
+      }
+      // 일반 클릭음
+      playClickSound()
+    }
+    document.addEventListener('click', handleClick, true)
+    return () => document.removeEventListener('click', handleClick, true)
+  }, [])
 
   const navItems = [
     {
@@ -189,7 +220,9 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className={`flex-1 pb-20 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-        {children}
+        <div key={pathname} className="page-enter">
+          {children}
+        </div>
       </main>
 
       {/* Bottom navigation */}
@@ -231,7 +264,7 @@ function SiblingSwitch() {
       {allStudents.map(s => (
         <button
           key={s.id}
-          onClick={() => setSelectedStudentId(s.id)}
+          onClick={() => { playSiblingSwapSound(); setSelectedStudentId(s.id) }}
           className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
             selectedStudentId === s.id
               ? 'bg-indigo-600 text-white'
