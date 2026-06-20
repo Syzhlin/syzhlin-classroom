@@ -109,3 +109,42 @@ export function useDeleteStudent() {
     },
   })
 }
+
+export function useResetAllPassportStamps() {
+  const queryClient = useQueryClient()
+  const supabase = createClient()
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('로그인이 필요합니다')
+
+      // 1. 선생님의 모든 활성 학생 조회
+      const { data: students, error: sErr } = await supabase
+        .from('students')
+        .select('id')
+        .eq('teacher_id', user.id)
+        .eq('is_active', true)
+      if (sErr) throw sErr
+
+      // 2. 각 학생의 완료 수업 수 조회 후 passport_base_classes 업데이트
+      await Promise.all(
+        (students ?? []).map(async (s) => {
+          const { count } = await supabase
+            .from('classes')
+            .select('id', { count: 'exact', head: true })
+            .eq('student_id', s.id)
+            .eq('status', 'completed')
+          await supabase
+            .from('students')
+            .update({ passport_base_classes: count ?? 0 })
+            .eq('id', s.id)
+        })
+      )
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] })
+      queryClient.invalidateQueries({ queryKey: ['growth-report'] })
+    },
+  })
+}

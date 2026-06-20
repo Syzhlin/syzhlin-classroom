@@ -112,7 +112,7 @@ export default function PassportPage() {
     )
   }
 
-  const completedCount = data?.totalClasses ?? 0
+  const completedCount = data?.passportClasses ?? 0
   const stampedCities = getStampedCities(completedCount)
   const currentCity = getCurrentCity(completedCount)
   const progressInCity = classesInCurrentCity(completedCount)

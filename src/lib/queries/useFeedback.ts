@@ -165,12 +165,19 @@ export function useGrowthReport(studentId: string | null) {
     enabled: !!studentId,
     queryFn: async () => {
       // 완료된 수업 전체
-      const { data: completedClasses } = await supabase
-        .from('classes')
-        .select('id, date, start_time, end_time')
-        .eq('student_id', studentId!)
-        .eq('status', 'completed')
-        .order('date', { ascending: true })
+      const [{ data: completedClasses }, { data: studentRow }] = await Promise.all([
+        supabase
+          .from('classes')
+          .select('id, date, start_time, end_time')
+          .eq('student_id', studentId!)
+          .eq('status', 'completed')
+          .order('date', { ascending: true }),
+        supabase
+          .from('students')
+          .select('passport_base_classes')
+          .eq('id', studentId!)
+          .single(),
+      ])
 
       const classes = (completedClasses ?? []) as Array<{ id: string; date: string; start_time: string; end_time: string }>
 
@@ -205,8 +212,10 @@ export function useGrowthReport(studentId: string | null) {
       // 숙제 있는 수업
       const homeworkCount = fbList.filter(f => f.has_homework).length
 
+      const passportBase = (studentRow as { passport_base_classes: number } | null)?.passport_base_classes ?? 0
       return {
         totalClasses: classes.length,
+        passportClasses: Math.max(0, classes.length - passportBase),
         totalFeedbacks: fbList.length,
         monthlyData,
         expressions,

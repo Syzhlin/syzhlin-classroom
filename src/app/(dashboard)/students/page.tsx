@@ -3,11 +3,11 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { useStudents, useDeleteStudent } from '@/lib/queries/useStudents'
+import { useStudents, useDeleteStudent, useResetAllPassportStamps } from '@/lib/queries/useStudents'
 import StudentFormDialog from '@/components/students/StudentFormDialog'
 import { GrowthReportModal } from '@/components/growth/GrowthReportModal'
 import type { Database } from '@/types/database'
-import { Search, Plus, Star, MoreHorizontal, Pencil, Trash2, BookOpen } from 'lucide-react'
+import { Search, Plus, Star, MoreHorizontal, Pencil, Trash2, BookOpen, Stamp } from 'lucide-react'
 
 type Student = Database['public']['Tables']['students']['Row']
 
@@ -167,6 +167,8 @@ function StudentCard({ student, onEdit, onDelete, onReport, favorites, onToggleF
 export default function StudentsPage() {
   const { data: students, isLoading } = useStudents()
   const deleteStudent = useDeleteStudent()
+  const resetStamps = useResetAllPassportStamps()
+  const [stampResetOpen, setStampResetOpen] = useState(false)
   const [formOpen, setFormOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Student | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Student | null>(null)
@@ -223,13 +225,23 @@ export default function StudentsPage() {
               총 {students?.length ?? 0}명
             </p>
           </div>
-          <button
-            onClick={handleAdd}
-            className="flex items-center gap-1.5 text-sm font-semibold px-3 py-2.5 rounded-xl text-white"
-            style={{ backgroundColor: 'var(--sz-blue-soft)' }}
-          >
-            <Plus className="w-4 h-4" />추가
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setStampResetOpen(true)}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2.5 rounded-xl"
+              style={{ backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)' }}
+              title="여권 스탬프 전체 초기화"
+            >
+              <Stamp className="w-3.5 h-3.5" />스탬프 초기화
+            </button>
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-1.5 text-sm font-semibold px-3 py-2.5 rounded-xl text-white"
+              style={{ backgroundColor: 'var(--sz-blue-soft)' }}
+            >
+              <Plus className="w-4 h-4" />추가
+            </button>
+          </div>
         </div>
 
         {/* 검색창 */}
@@ -312,6 +324,42 @@ export default function StudentsPage() {
           </div>
         )}
       </div>
+
+      {/* ── 스탬프 초기화 확인 모달 ── */}
+      {stampResetOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center pb-[env(safe-area-inset-bottom)]"
+          style={{ backgroundColor: 'rgba(30,45,78,0.35)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setStampResetOpen(false)}>
+          <div className="w-full max-w-md rounded-t-3xl p-6"
+            style={{ backgroundColor: 'var(--sz-card-pastel)' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="text-2xl mb-3 text-center">🗺️</div>
+            <p className="text-base font-bold mb-1 text-center" style={{ color: 'var(--sz-text-deep)' }}>
+              여권 스탬프 전체 초기화
+            </p>
+            <p className="text-sm mb-5 text-center" style={{ color: 'var(--sz-text-muted)' }}>
+              모든 학생의 스탬프가 0부터 다시 시작돼요. 수업 회차와 기록은 그대로 유지됩니다.
+            </p>
+            <div className="flex gap-2">
+              <button onClick={() => setStampResetOpen(false)}
+                className="flex-1 py-3 rounded-2xl text-sm font-semibold"
+                style={{ backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)' }}>
+                취소
+              </button>
+              <button
+                onClick={async () => {
+                  await resetStamps.mutateAsync()
+                  setStampResetOpen(false)
+                }}
+                disabled={resetStamps.isPending}
+                className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white disabled:opacity-50"
+                style={{ backgroundColor: 'var(--sz-blue-soft)' }}>
+                {resetStamps.isPending ? '초기화 중...' : '초기화'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── 삭제 확인 모달 ── */}
       {deleteTarget && (

@@ -47,6 +47,7 @@ export interface Database {
           schedule_note: string | null
           recurring_schedule: Array<{ day: number; start_time: string; end_time: string }>
           total_sessions: number
+          passport_base_classes: number
           created_at: string
         }
         Insert: {
@@ -64,6 +65,7 @@ export interface Database {
           notes?: string | null
           schedule_note?: string | null
           recurring_schedule?: Array<{ day: number; start_time: string; end_time: string }>
+          passport_base_classes?: number
           created_at?: string
         }
         Update: {
@@ -80,6 +82,7 @@ export interface Database {
           is_active?: boolean
           notes?: string | null
           schedule_note?: string | null
+          passport_base_classes?: number
           created_at?: string
         }
         Relationships: []
