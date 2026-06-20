@@ -459,6 +459,7 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
         const file = new File([blob], `rec.${ext}`, { type: actualType })
         const fd = new FormData()
         fd.append('audio', file)
+        fd.append('hint', sentence.en)  // Whisper 힌트 → 인식 정확도 향상
         const res = await fetch('/api/speech-to-text', { method: 'POST', body: fd })
         if (!res.ok) { analyze(''); return }
         const data = await res.json()
