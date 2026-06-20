@@ -18,7 +18,7 @@ function StampCard({ cityIndex, completedCount }: { cityIndex: number; completed
 
   if (status === 'locked') {
     return (
-      <div className="flex flex-col items-center gap-1 p-2.5 rounded-xl border border-dashed border-gray-100">
+      <div className="flex flex-col items-center gap-1 p-2.5 rounded-xl" style={{opacity: 0.35}}>
         <span className="text-xl opacity-20">{city.landmark}</span>
         <span className="text-[9px] text-gray-200 text-center font-medium">{city.name}</span>
       </div>
@@ -27,17 +27,17 @@ function StampCard({ cityIndex, completedCount }: { cityIndex: number; completed
 
   if (status === 'next') {
     return (
-      <div className="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 border-dashed" style={{borderColor:"var(--sz-beige)",backgroundColor:"rgba(250,248,243,0.8)"}}>
+      <div className="flex flex-col items-center gap-1 p-2.5" style={{backgroundColor: 'var(--sz-blue-pale)', border: '2px dashed var(--sz-blue-soft)', borderRadius: '16px'}}>
         <span className="text-xl">{city.landmark}</span>
-        <span className="text-[9px] text-center font-medium leading-tight" style={{color:"var(--sz-warm-gray)"}}>{city.name}</span>
-        <span className="text-[8px]" style={{color:"var(--sz-beige)"}}>다음 도시</span>
+        <span className="text-[9px] text-center font-medium leading-tight" style={{color:'var(--sz-text-deep)'}}>{city.name}</span>
+        <span className="text-[8px]" style={{color:'var(--sz-blue-soft)'}}>다음 도시</span>
       </div>
     )
   }
 
   if (status === 'arrived') {
     return (
-      <div className="flex flex-col items-center gap-1 p-2.5 rounded-xl border-2" style={{borderColor:"var(--sz-gold)",backgroundColor:"var(--sz-gold-light)"}}>
+      <div className="flex flex-col items-center gap-1 p-2.5" style={{backgroundColor: 'var(--sz-peach-pale)', borderRadius: '16px'}}>
         <div className="relative">
           <span className="text-xl opacity-70">{city.landmark}</span>
           <span className="absolute -top-1 -right-2 text-[8px] bg-amber-400 text-white rounded-full px-1 py-0.5 font-bold">1/2</span>
@@ -50,7 +50,7 @@ function StampCard({ cityIndex, completedCount }: { cityIndex: number; completed
 
   // stamped
   return (
-    <div className="flex flex-col items-center gap-1 p-2.5 rounded-xl border" style={{backgroundColor:"var(--sz-paper)",borderColor:"var(--sz-beige)"}}>
+    <div className="flex flex-col items-center gap-1 p-2.5" style={{backgroundColor: 'var(--sz-peach-pale)', borderRadius: '16px'}}>
       <div className="relative">
         <span className="text-xl">{city.landmark}</span>
         <span className="absolute -top-1 -right-1.5 text-[8px] text-white rounded-full w-3.5 h-3.5 flex items-center justify-center" style={{backgroundColor:"var(--sz-navy)"}}>✓</span>
@@ -107,7 +107,7 @@ export default function PassportPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{borderColor:"var(--sz-navy)",borderTopColor:"transparent"}} />
+        <div className="w-6 h-6 rounded-full animate-spin" style={{border: '2px solid var(--sz-blue-soft)', borderTopColor: 'transparent'}} />
       </div>
     )
   }

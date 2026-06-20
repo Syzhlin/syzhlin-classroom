@@ -6,10 +6,10 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePortalPayment } from '@/lib/queries/usePayments'
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  '완납': { bg: 'bg-green-100', text: 'text-green-700', label: '완납' },
-  '미납': { bg: 'bg-red-100', text: 'text-red-700', label: '미납' },
-  '부분납': { bg: 'bg-amber-100', text: 'text-amber-700', label: '부분납' },
+const STATUS_STYLES: Record<string, { bg: string; text: string; label: string; style: React.CSSProperties }> = {
+  '완납': { bg: '', text: '', label: '완납', style: {backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)'} },
+  '미납': { bg: '', text: '', label: '미납', style: {backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)'} },
+  '부분납': { bg: '', text: '', label: '부분납', style: {backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)'} },
 }
 
 const ACCOUNT = { bank: '카카오뱅크', number: '3333-05-6910585', name: '김세진' }
@@ -25,7 +25,8 @@ function AccountCopyButton() {
   return (
     <button
       onClick={handleCopy}
-      className="w-full flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 transition-colors hover:bg-yellow-100 active:bg-yellow-200"
+      className="w-full flex items-center justify-between rounded-2xl px-4 py-3"
+      style={{backgroundColor: 'var(--sz-peach-pale)', borderRadius: '16px'}}
     >
       <div className="flex items-center gap-2.5">
         <span className="text-lg">🏦</span>
@@ -53,7 +54,7 @@ export default function PortalPaymentPage() {
   if (profileLoading || paymentLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 rounded-full animate-spin" style={{border: '2px solid var(--sz-blue-soft)', borderTopColor: 'transparent'}} />
       </div>
     )
   }
@@ -75,7 +76,7 @@ export default function PortalPaymentPage() {
   if (!payment) {
     return (
       <div className="max-w-lg mx-auto px-4 py-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+        <h2 className="text-sm font-semibold text-[var(--sz-text-muted)] mb-4">
           {year}년 {month}월 결제 현황
         </h2>
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-sm text-gray-400">
@@ -85,29 +86,29 @@ export default function PortalPaymentPage() {
     )
   }
 
-  const statusStyle = STATUS_STYLES[payment.status] ?? { bg: 'bg-gray-100', text: 'text-gray-600', label: payment.status }
+  const statusStyle = STATUS_STYLES[payment.status] ?? { bg: '', text: '', label: payment.status, style: {backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)'} }
   const progress = payment.total_sessions > 0
     ? Math.round((payment.completed_sessions / payment.total_sessions) * 100)
     : 0
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+      <h2 className="text-sm font-semibold text-[var(--sz-text-muted)]">
         {year}년 {month}월 결제 현황
       </h2>
 
       {/* Status card */}
-      <div className="rounded-2xl border p-6 space-y-5" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+      <div className="sz-widget rounded-3xl p-6 space-y-5" style={{backgroundColor: 'var(--sz-card-pastel)'}}>
         {/* Big status badge */}
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-800">납부 상태</span>
-          <span className={`text-sm font-bold px-4 py-1.5 rounded-full ${statusStyle.bg} ${statusStyle.text}`}>
+          <span className="text-sm font-bold px-4 py-1.5 rounded-full" style={statusStyle.style}>
             {statusStyle.label}
           </span>
         </div>
 
         {/* Amount */}
-        <div className="flex items-center justify-between border-t border-gray-50 pt-4">
+        <div className="flex items-center justify-between border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
           <span className="text-sm text-gray-500">수업료</span>
           <span className="text-lg font-bold text-gray-900">
             {payment.amount.toLocaleString()}원
@@ -115,14 +116,14 @@ export default function PortalPaymentPage() {
         </div>
 
         {/* Session progress */}
-        <div className="space-y-2 border-t border-gray-50 pt-4">
+        <div className="space-y-2 border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">수업 진행</span>
             <span className="text-sm font-medium text-gray-800">
               {payment.completed_sessions} / {payment.total_sessions}회
             </span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2">
+          <div className="w-full rounded-full h-2" style={{backgroundColor: 'rgba(175,196,216,0.15)'}}>
             <div
               className="h-2 rounded-full transition-all"
               style={{backgroundColor: "var(--sz-navy)", width: `${progress}%`}}
@@ -136,7 +137,7 @@ export default function PortalPaymentPage() {
 
         {/* Payment period */}
         {payment.payment_period && (
-          <div className="flex items-center justify-between border-t border-gray-50 pt-4">
+          <div className="flex items-center justify-between border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
             <span className="text-sm text-gray-500">결제 기간</span>
             <span className="text-sm text-gray-700">{payment.payment_period}</span>
           </div>
@@ -144,7 +145,7 @@ export default function PortalPaymentPage() {
 
         {/* Payment method */}
         {payment.payment_method && (
-          <div className="flex items-center justify-between border-t border-gray-50 pt-4">
+          <div className="flex items-center justify-between border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
             <span className="text-sm text-gray-500">결제 방법</span>
             <span className="text-sm text-gray-700">{payment.payment_method}</span>
           </div>
@@ -152,7 +153,7 @@ export default function PortalPaymentPage() {
 
         {/* Payment link */}
         {payment.payment_link && (
-          <div className="border-t border-gray-50 pt-4">
+          <div className="border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
             <a
               href={payment.payment_link}
               target="_blank"
@@ -170,14 +171,14 @@ export default function PortalPaymentPage() {
 
 
         {/* 계좌 정보 */}
-        <div className="border-t border-gray-50 pt-4">
+        <div className="border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
           <p className="text-xs text-gray-400 mb-2">입금 계좌</p>
           <AccountCopyButton />
         </div>
 
         {/* Notes */}
         {payment.notes && (
-          <div className="border-t border-gray-50 pt-4">
+          <div className="border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
             <p className="text-xs text-gray-400 leading-relaxed">{payment.notes}</p>
           </div>
         )}

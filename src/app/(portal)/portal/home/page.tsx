@@ -57,146 +57,132 @@ export default function PortalHomePage() {
   }
 
   // ── 학부모 / 성인학습자 홈 ──
-  return (
-    <div className="p-4 space-y-4 max-w-lg mx-auto">
-      {/* 인사말 + 다음 수업 */}
-      <div className="rounded-2xl p-5 text-white" style={{ backgroundColor: 'var(--sz-navy)' }}>
-        <p className="text-sm text-indigo-200">
-          안녕하세요, {profile?.display_name ?? ''}{profile?.role === 'parent' ? '학부모' : ''}님 👋
-        </p>
-        {nextClass ? (
-          <>
-            <p className="mt-2 text-lg font-bold leading-snug">
-              다음 수업은<br />
-              <span className="text-indigo-100">{formatDate(nextClass.date)}</span>
-            </p>
-            <p className="mt-1 text-2xl font-bold">{formatTime(nextClass.start_time)}</p>
-          </>
-        ) : (
-          <p className="mt-2 text-base font-semibold text-indigo-100">예정된 수업이 없어요</p>
-        )}
-      </div>
+  const completedCount = growthData?.totalClasses ?? 0
+  const stampedCities = getStampedCities(completedCount)
+  const currentCity = getCurrentCity(completedCount)
+  const progressInCity = classesInCurrentCity(completedCount)
+  const isArrived = progressInCity === 1
 
-      {/* 선생님의 편지 — 학부모 전용 */}
-      {profile?.role === 'parent' && (
-        <div className="sz-card rounded-2xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">💌</span>
-            <h2 className="font-semibold text-gray-900 text-sm">선생님의 편지</h2>
-            {latestCompleted && (
-              <span className="ml-auto text-xs text-gray-400">{formatDate(latestCompleted.date)}</span>
-            )}
-          </div>
-          {feedback ? (
-            <div className="space-y-3">
-              {feedback.parent_summary && (
-                <p className="text-sm text-gray-700 leading-relaxed bg-blue-50 rounded-xl px-4 py-3">
-                  "{feedback.parent_summary}"
-                </p>
-              )}
-              {feedback.topic && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-400 mb-1">수업 주제</p>
-                  <p className="text-sm text-gray-700">{feedback.topic}</p>
-                </div>
-              )}
-              {feedback.expressions?.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-400 mb-1.5">오늘 배운 표현</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {feedback.expressions.map((e: string) => (
-                      <span key={e} className="text-xs px-2.5 py-1 rounded-full font-medium"
-                        style={{ backgroundColor: 'var(--sz-gold-light)', color: 'var(--sz-navy)' }}>
-                        {e}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {feedback.good_points && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-400 mb-1">잘한 점 ✨</p>
-                  <p className="text-sm text-gray-700">{feedback.good_points}</p>
-                </div>
-              )}
-              {feedback.has_homework && feedback.homework_text && (
-                <div className="rounded-xl px-4 py-3" style={{ backgroundColor: 'var(--sz-gold-light)' }}>
-                  <p className="text-xs font-semibold mb-1" style={{ color: 'var(--sz-gold)' }}>📌 숙제</p>
-                  <p className="text-sm text-gray-700">{feedback.homework_text}</p>
-                </div>
-              )}
-            </div>
+  return (
+    <div className="p-4 max-w-lg mx-auto" style={{ paddingTop: '16px' }}>
+      <div className="grid grid-cols-2 gap-3">
+
+        {/* 1. 대형 위젯: 인사말 + 다음 수업 (col-span-2) */}
+        <div
+          className="col-span-2 sz-widget sz-widget-navy rounded-3xl p-5 text-white"
+          style={{ background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)' }}
+        >
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            안녕하세요, {profile?.display_name ?? ''}{profile?.role === 'parent' ? '학부모' : ''}님 👋
+          </p>
+          {nextClass ? (
+            <>
+              <p className="mt-2 text-base font-bold leading-snug">
+                다음 수업은<br />
+                <span style={{ color: 'rgba(240,230,198,0.9)' }}>{formatDate(nextClass.date)}</span>
+              </p>
+              <p className="mt-1 text-2xl font-bold" style={{ color: 'var(--sz-gold)' }}>
+                {formatTime(nextClass.start_time)}
+              </p>
+            </>
           ) : (
-            <div className="py-6 text-center">
-              <p className="text-2xl mb-2">✏️</p>
-              <p className="text-sm text-gray-400">선생님이 곧 편지를 보낼 예정입니다</p>
-            </div>
+            <p className="mt-2 text-base font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              예정된 수업이 없어요
+            </p>
           )}
         </div>
-      )}
 
-      {/* 다음 일정 */}
-      {data?.nextClasses && data.nextClasses.length > 0 && (
-        <div className="sz-card rounded-2xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">📅</span>
-            <h2 className="font-semibold text-gray-900 text-sm">앞으로의 수업</h2>
-          </div>
-          <div className="space-y-2">
-            {data.nextClasses.map((cls, i) => (
-              <div key={cls.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-gray-800">{formatDate(cls.date)}</p>
-                  <p className="text-xs text-gray-400">{formatTime(cls.start_time)}</p>
-                </div>
-                {i === 0 && (
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                    style={{ backgroundColor: 'var(--sz-navy)', color: 'var(--sz-cream)' }}>
-                    다음 수업
-                  </span>
+        {/* 2. 선생님의 편지 — 학부모 전용 (col-span-2) */}
+        {profile?.role === 'parent' && (
+          <div className="col-span-2 sz-widget rounded-3xl p-5" style={{ backgroundColor: 'var(--sz-card-pastel, #fff)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-base">💌</span>
+              <h2 className="font-semibold text-sm" style={{ color: 'var(--sz-text-deep)' }}>선생님의 편지</h2>
+              {latestCompleted && (
+                <span className="ml-auto text-xs" style={{ color: 'var(--sz-text-muted)' }}>{formatDate(latestCompleted.date)}</span>
+              )}
+            </div>
+            {feedback ? (
+              <div className="space-y-3">
+                {feedback.parent_summary && (
+                  <p className="text-sm leading-relaxed rounded-xl px-4 py-3"
+                    style={{ color: 'var(--sz-text-deep)', backgroundColor: 'var(--sz-blue-pale)' }}>
+                    "{feedback.parent_summary}"
+                  </p>
                 )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 세계 여권 위젯 */}
-      {(() => {
-        const completedCount = growthData?.totalClasses ?? 0
-        const stampedCities = getStampedCities(completedCount)
-        const currentCity = getCurrentCity(completedCount)
-        const progress = classesInCurrentCity(completedCount)
-        const isArrived = progress === 1
-        const lastCity = stampedCities[stampedCities.length - 1] ?? null
-        return (
-          <Link href="/portal/passport">
-            <div className="rounded-2xl p-4 text-white cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, var(--sz-navy) 0%, var(--sz-navy-light) 100%)' }}>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🌍</span>
-                  <p className="text-sm font-semibold">세계 여권</p>
-                </div>
-                <span className="text-xs" style={{ color: 'var(--sz-gold)' }}>여권 보기 →</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div>
-                  <p className="text-3xl font-bold">{stampedCities.length}</p>
-                  <p className="text-xs" style={{ color: 'var(--sz-gold-light)' }}>도시 스탬프</p>
-                </div>
-                {currentCity && (
-                  <div className="flex items-center gap-2 rounded-xl px-3 py-2">
-                    <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
-                    <div>
-                      <p className="text-xs font-semibold">{currentCity.name}</p>
-                      <p className={`text-[10px] ${isArrived ? 'text-amber-300' : 'text-blue-200'}`}>
-                        {isArrived ? '도착 완료 · 1/2' : '다음 도시 · 0/2'}
-                      </p>
+                {feedback.topic && (
+                  <div>
+                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--sz-text-muted)' }}>수업 주제</p>
+                    <p className="text-sm" style={{ color: 'var(--sz-text-deep)' }}>{feedback.topic}</p>
+                  </div>
+                )}
+                {feedback.expressions?.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold mb-1.5" style={{ color: 'var(--sz-text-muted)' }}>오늘 배운 표현</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {feedback.expressions.map((e: string) => (
+                        <span key={e} className="text-xs px-2.5 py-1 rounded-full font-medium"
+                          style={{ backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)' }}>
+                          {e}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 )}
-                {lastCity && (
+                {feedback.good_points && (
+                  <div>
+                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--sz-text-muted)' }}>잘한 점 ✨</p>
+                    <p className="text-sm" style={{ color: 'var(--sz-text-deep)' }}>{feedback.good_points}</p>
+                  </div>
+                )}
+                {feedback.has_homework && feedback.homework_text && (
+                  <div className="rounded-xl px-4 py-3" style={{ backgroundColor: 'var(--sz-gold-light)' }}>
+                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--sz-gold)' }}>📌 숙제</p>
+                    <p className="text-sm" style={{ color: 'var(--sz-text-deep)' }}>{feedback.homework_text}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="py-6 text-center">
+                <p className="text-2xl mb-2">✏️</p>
+                <p className="text-sm" style={{ color: 'var(--sz-text-muted)' }}>선생님이 곧 편지를 보낼 예정입니다</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 3. 세계 여권 위젯 (col-span-2) */}
+        <Link href="/portal/passport" className="col-span-2">
+          <div
+            className="sz-widget rounded-3xl p-4 text-white"
+            style={{ background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)' }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🌍</span>
+                <p className="text-sm font-semibold">세계 여권</p>
+              </div>
+              <span className="text-xs" style={{ color: 'var(--sz-gold)' }}>여권 보기 →</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div>
+                <p className="text-3xl font-bold">{stampedCities.length}</p>
+                <p className="text-xs" style={{ color: 'var(--sz-gold-light)' }}>도시 스탬프</p>
+              </div>
+              {currentCity && (
+                <div className="flex items-center gap-2 rounded-xl px-3 py-2">
+                  <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
+                  <div>
+                    <p className="text-xs font-semibold">{currentCity.name}</p>
+                    <p className={`text-[10px] ${isArrived ? 'text-amber-300' : 'text-blue-200'}`}>
+                      {isArrived ? '도착 완료 · 1/2' : '다음 도시 · 0/2'}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {stampedCities.length > 0 && (() => {
+                const lastCity = stampedCities[stampedCities.length - 1]
+                return (
                   <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
                     <span className="text-xl">{lastCity.landmark}</span>
                     <div>
@@ -204,67 +190,80 @@ export default function PortalHomePage() {
                       <p className="text-[10px] text-blue-200">최근 스탬프</p>
                     </div>
                   </div>
+                )
+              })()}
+            </div>
+          </div>
+        </Link>
+
+        {/* 4. 이번 달 수업 흐름 — 학부모 전용, payment가 있을 때 (col-span-2) */}
+        {payment && profile?.role === 'parent' && (
+          <div className="col-span-2 sz-widget rounded-3xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-base">🎯</span>
+              <h2 className="font-semibold text-sm" style={{ color: 'var(--sz-text-deep)' }}>이번 달 수업 흐름</h2>
+            </div>
+            <div className="flex items-end justify-between mb-3">
+              <div>
+                <p className="text-2xl font-bold" style={{ color: 'var(--sz-text-deep)' }}>
+                  {payment.completed_sessions}
+                  <span className="text-sm font-normal" style={{ color: 'var(--sz-text-muted)' }}> / {payment.total_sessions}번</span>
+                </p>
+                {remaining !== null && remaining > 0 && (
+                  <p className="text-sm mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
+                    앞으로 <span className="font-semibold" style={{ color: 'var(--sz-gold)' }}>{remaining}번</span> 남았어요
+                  </p>
+                )}
+                {remaining === 0 && (
+                  <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--sz-sage)' }}>이번 달 수업 모두 완료 🎉</p>
                 )}
               </div>
-            </div>
-          </Link>
-        )
-      })()}
-
-      {/* 이번 달 수업 흐름 — 학부모 전용 */}
-      {payment && profile?.role !== 'student' && (
-        <div className="sz-card rounded-2xl p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">🎯</span>
-            <h2 className="font-semibold text-gray-900 text-sm">
-              {profile?.role === 'parent' ? '이번 달 수업 흐름' : '이번 달 수업권'}
-            </h2>
-          </div>
-          <div className="flex items-end justify-between mb-3">
-            <div>
-              {profile?.role === 'parent' ? (
-                <>
-                  <p className="text-2xl font-bold text-gray-900">{payment.completed_sessions}
-                    <span className="text-sm font-normal text-gray-400"> / {payment.total_sessions}번</span>
-                  </p>
-                  {remaining !== null && remaining > 0 && (
-                    <p className="text-sm text-gray-500 mt-0.5">앞으로 <span className="font-semibold" style={{ color: 'var(--sz-gold)' }}>{remaining}번</span> 남았어요</p>
-                  )}
-                  {remaining === 0 && (
-                    <p className="text-sm text-green-600 font-medium mt-0.5">이번 달 수업 모두 완료 🎉</p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <p className="text-3xl font-bold text-gray-900">{payment.completed_sessions}
-                    <span className="text-base font-normal text-gray-400"> / {payment.total_sessions}회</span>
-                  </p>
-                  {remaining !== null && remaining > 0 && (
-                    <p className="text-sm text-gray-500 mt-0.5">남은 수업 <span className="font-semibold" style={{ color: 'var(--sz-gold)' }}>{remaining}회</span></p>
-                  )}
-                  {remaining === 0 && (
-                    <p className="text-sm text-green-600 font-medium mt-0.5">이번 달 수업 완료 🎉</p>
-                  )}
-                </>
+              {payment.bonus_sessions > 0 && (
+                <span className="text-xs px-2 py-1 rounded-full font-medium"
+                  style={{ backgroundColor: 'var(--sz-gold-light)', color: 'var(--sz-gold)' }}>
+                  +{payment.bonus_sessions} 보너스
+                </span>
               )}
             </div>
-            {payment.bonus_sessions > 0 && (
-              <span className="text-xs px-2 py-1 rounded-full font-medium"
-                style={{ backgroundColor: 'var(--sz-gold-light)', color: 'var(--sz-gold)' }}>
-                +{payment.bonus_sessions} 보너스
-              </span>
-            )}
+            <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(175,196,216,0.2)' }}>
+              <div className="h-full rounded-full transition-all"
+                style={{
+                  width: `${payment.total_sessions > 0 ? Math.min(100, (payment.completed_sessions / payment.total_sessions) * 100) : 0}%`,
+                  backgroundColor: 'var(--sz-blue-soft)',
+                }}
+              />
+            </div>
           </div>
-          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full rounded-full transition-all"
-              style={{
-                width: `${payment.total_sessions > 0 ? Math.min(100, (payment.completed_sessions / payment.total_sessions) * 100) : 0}%`,
-                backgroundColor: 'var(--sz-navy)',
-              }}
-            />
+        )}
+
+        {/* 5. 앞으로의 수업 (col-span-2, nextClasses가 있을 때) */}
+        {data?.nextClasses && data.nextClasses.length > 0 && (
+          <div className="col-span-2 sz-widget sz-widget-blue rounded-3xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-base">📅</span>
+              <h2 className="font-semibold text-sm" style={{ color: 'var(--sz-text-deep)' }}>앞으로의 수업</h2>
+            </div>
+            <div className="space-y-2">
+              {data.nextClasses.map((cls: any, i: number) => (
+                <div key={cls.id} className="flex items-center justify-between py-2 rounded-xl px-3"
+                  style={{ backgroundColor: i === 0 ? 'var(--sz-blue-pale)' : 'rgba(175,196,216,0.1)' }}>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--sz-text-deep)' }}>{formatDate(cls.date)}</p>
+                    <p className="text-xs" style={{ color: 'var(--sz-text-muted)' }}>{formatTime(cls.start_time)}</p>
+                  </div>
+                  {i === 0 && (
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ backgroundColor: 'var(--sz-blue-soft)', color: '#fff' }}>
+                      다음 수업
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+      </div>
     </div>
   )
 }

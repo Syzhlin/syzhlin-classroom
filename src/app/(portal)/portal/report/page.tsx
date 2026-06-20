@@ -38,7 +38,7 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
     : null
 
   return (
-    <div className="rounded-2xl border shadow-sm overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+    <div className="sz-widget rounded-3xl overflow-hidden">
       {/* 헤더 (항상 표시) */}
       <button
         onClick={() => setOpen(v => !v)}
@@ -46,7 +46,7 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
       >
         <div className="flex items-center gap-3">
           {/* 월 라벨 */}
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor: "var(--sz-navy)"}}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor: "var(--sz-blue-soft)"}}>
             <span className="text-white text-xs font-bold leading-tight text-center">
               {report.period.split('-')[1]}월
             </span>
@@ -68,7 +68,7 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
 
       {/* 펼쳐지는 내용 */}
       {open && (
-        <div className="px-5 pb-5 space-y-4 border-t border-gray-50">
+        <div className="px-5 pb-5 space-y-4 border-t" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
           {/* 레이더 차트 */}
           {hasScores && (
             <div className="pt-4">
@@ -82,13 +82,13 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
                   return (
                     <div key={label} className="flex items-center gap-3">
                       <span className="text-xs text-gray-500 w-20 shrink-0">{label}</span>
-                      <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                      <div className="flex-1 rounded-full h-1.5" style={{backgroundColor: 'rgba(175,196,216,0.15)'}}>
                         <div
-                          className="bg-[var(--sz-navy)] h-1.5 rounded-full transition-all"
-                          style={{ width: `${(score / 5) * 100}%` }}
+                          className="h-1.5 rounded-full transition-all"
+                          style={{backgroundColor: 'var(--sz-blue-soft)', width: `${(score / 5) * 100}%`}}
                         />
                       </div>
-                      <span className="text-xs font-bold text-[var(--sz-navy)] w-4 text-right">{score}</span>
+                      <span className="text-xs font-bold w-4 text-right" style={{color: 'var(--sz-blue-soft)'}}>{score}</span>
                     </div>
                   )
                 })}
@@ -105,11 +105,11 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
                 const score = report[scoreKey] as number | null
                 if (!note) return null
                 return (
-                  <div key={label} className="bg-[var(--sz-cream)] rounded-xl px-4 py-3">
+                  <div key={label} className="rounded-xl px-4 py-3" style={{backgroundColor: 'var(--sz-blue-pale)'}}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-semibold text-gray-700">{label}</span>
                       {score && (
-                        <span className="text-xs text-[var(--sz-navy)] font-bold">{score}/5</span>
+                        <span className="text-xs font-bold" style={{color: 'var(--sz-blue-soft)'}}>{score}/5</span>
                       )}
                     </div>
                     <p className="text-xs text-gray-600 leading-relaxed">{note}</p>
@@ -121,8 +121,8 @@ function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; 
 
           {/* 선생님 종합 코멘트 */}
           {report.generated_report && (
-            <div className="bg-[var(--sz-gold-light)] rounded-xl px-4 py-4">
-              <p className="text-xs font-semibold text-[var(--sz-navy)] mb-2">📝 선생님의 코멘트</p>
+            <div className="rounded-xl px-4 py-4" style={{backgroundColor: 'var(--sz-peach-pale)'}}>
+              <p className="text-xs font-semibold mb-2" style={{color: 'var(--sz-text-deep)'}}>📝 선생님의 코멘트</p>
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {report.generated_report}
               </p>
@@ -144,7 +144,7 @@ export default function PortalReportPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 rounded-full animate-spin" style={{border: '2px solid var(--sz-blue-soft)', borderTopColor: 'transparent'}} />
       </div>
     )
   }
@@ -171,7 +171,7 @@ export default function PortalReportPage() {
       <div className="relative">
         {/* 왼쪽 타임라인 선 */}
         {reports.length > 1 && (
-          <div className="absolute left-5 top-10 bottom-10 w-0.5 z-0" style={{backgroundColor: "var(--sz-beige)"}} />
+          <div className="absolute left-5 top-10 bottom-10 w-0.5 z-0" style={{backgroundColor: 'rgba(175,196,216,0.3)'}} />
         )}
 
         <div className="space-y-3 relative z-10">

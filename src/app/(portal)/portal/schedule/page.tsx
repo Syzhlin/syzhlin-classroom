@@ -14,10 +14,10 @@ import { usePortalClasses } from '@/lib/queries/useClasses'
 import { useSubmitChangeRequest } from '@/lib/queries/useChangeRequests'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  scheduled: { label: '예정', color: 'bg-blue-100 text-blue-700' },
-  completed: { label: '완료', color: 'bg-green-100 text-green-700' },
-  cancelled: { label: '취소', color: 'bg-red-100 text-red-600' },
-  makeup:    { label: '보강', color: 'bg-amber-100 text-amber-700' },
+  scheduled: { label: '예정', color: '' },
+  completed: { label: '완료', color: '' },
+  cancelled: { label: '취소', color: '' },
+  makeup:    { label: '보강', color: '' },
 }
 
 const DAY_LABELS  = ['일', '월', '화', '수', '목', '금', '토']
@@ -86,12 +86,12 @@ function MonthlyCalendar({
   }, [classes])
 
   return (
-    <div className="rounded-2xl border p-4 shadow-sm" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+    <div className="sz-widget rounded-3xl p-4">
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setViewMonth(m => subMonths(m, 1))}
-          className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
+          className="p-1.5 rounded-xl transition-colors" style={{backgroundColor: "transparent"}} onMouseEnter={e=>(e.currentTarget.style.backgroundColor="var(--sz-blue-pale)")} onMouseLeave={e=>(e.currentTarget.style.backgroundColor="transparent")}
         >
           <ChevronLeft className="w-4 h-4 text-gray-600" />
         </button>
@@ -100,7 +100,7 @@ function MonthlyCalendar({
         </span>
         <button
           onClick={() => setViewMonth(m => addMonths(m, 1))}
-          className="p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
+          className="p-1.5 rounded-xl transition-colors" style={{backgroundColor: "transparent"}} onMouseEnter={e=>(e.currentTarget.style.backgroundColor="var(--sz-blue-pale)")} onMouseLeave={e=>(e.currentTarget.style.backgroundColor="transparent")}
         >
           <ChevronRight className="w-4 h-4 text-gray-600" />
         </button>
@@ -141,9 +141,9 @@ function MonthlyCalendar({
               onClick={() => hasClass && onDayClick(ds)}
               className={[
                 'relative flex flex-col items-center justify-center h-10 w-full rounded-xl text-xs font-medium transition-colors',
-                hasClass ? 'cursor-pointer hover:bg-[var(--sz-gold-light)]' : 'cursor-default',
-                isSelected ? 'bg-[var(--sz-navy)] text-white' : '',
-                !isSelected && isTodayDate ? 'ring-2 ring-[var(--sz-gold)] ring-inset' : '',
+                hasClass ? 'cursor-pointer hover:bg-[var(--sz-blue-pale)]' : 'cursor-default',
+                isSelected ? 'text-white' : '',
+                !isSelected && isTodayDate ? 'ring-2 ring-inset' : '',
                 !isSelected && !hasClass && dow === 0 ? 'text-red-400' : '',
                 !isSelected && !hasClass && dow === 6 ? 'text-blue-400' : '',
                 !isSelected && hasClass ? 'text-gray-800 font-semibold' : '',
@@ -196,7 +196,7 @@ function DateTimePicker({
     <div className="space-y-4">
       <div>
         <p className="text-xs text-gray-500 mb-2">희망 날짜 <span className="text-gray-400">(복수 선택 가능)</span></p>
-        <div className="bg-[var(--sz-cream)] rounded-xl p-3">
+        <div className="rounded-2xl p-3" style={{backgroundColor: "rgba(175,196,216,0.1)"}}>
           <div className="flex items-center justify-between mb-2">
             <button onClick={() => setViewMonth(m => subMonths(m, 1))} className="p-1 rounded-lg hover:bg-gray-200">
               <ChevronLeft className="w-4 h-4 text-gray-600" />
@@ -231,7 +231,7 @@ function DateTimePicker({
                   className={[
                     'h-8 w-full rounded-lg text-xs font-medium transition-colors',
                     isPast ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[var(--sz-gold-light)]',
-                    isSelected ? 'bg-[var(--sz-navy)] text-white hover:bg-[var(--sz-navy-light)]' : '',
+                    isSelected ? 'text-white' : '',
                     !isSelected && !isPast && dow === 0 ? 'text-red-500' : '',
                     !isSelected && !isPast && dow === 6 ? 'text-blue-500' : '',
                     !isSelected && !isPast && dow !== 0 && dow !== 6 ? 'text-gray-700' : '',
@@ -488,7 +488,14 @@ export default function PortalSchedulePage() {
     : []
 
   function ClassRow({ cls, showRequest }: { cls: ClassItem; showRequest: boolean }) {
-    const statusInfo = STATUS_LABELS[cls.status] ?? { label: cls.status, color: 'bg-gray-100 text-gray-600' }
+    const statusInfo = STATUS_LABELS[cls.status] ?? { label: cls.status, color: '' }
+          const statusStyle = cls.status === 'scheduled'
+            ? { backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)' }
+            : cls.status === 'completed'
+            ? { backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }
+            : cls.status === 'cancelled'
+            ? { backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)' }
+            : { backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)' }
     const studentColor = cls.students?.color ?? '#6366f1'
     return (
       <div className="px-4 py-3 flex items-center gap-3">
@@ -498,13 +505,13 @@ export default function PortalSchedulePage() {
           {cls.notes && <p className="text-xs text-gray-400 mt-0.5 truncate">{cls.notes}</p>}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusInfo.color}`}>
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={statusStyle}>
             {statusInfo.label}
           </span>
           {showRequest && cls.status === 'scheduled' && (
             <button
               onClick={() => setRequestTarget(cls)}
-              className="text-xs border px-2.5 py-0.5 rounded-full hover:bg-[var(--sz-gold-light)] transition-colors" style={{color: "var(--sz-navy)", borderColor: "var(--sz-beige)"}}
+              className="text-xs px-2.5 py-0.5 rounded-full transition-colors" style={{backgroundColor: "var(--sz-blue-pale)", color: "var(--sz-blue-soft)"}}
             >
               변경요청
             </button>

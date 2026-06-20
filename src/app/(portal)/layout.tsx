@@ -26,7 +26,6 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
   const { isTransitioning } = usePortalStudent()
   const role = profile?.role
-  const isStudent = role === 'student'
   const prevPathname = useRef(pathname)
 
   useEffect(() => {
@@ -77,7 +76,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       href: '/portal/schedule',
       label: '일정',
       icon: <CalendarIcon />,
-      roles: ['teacher', 'adult_learner', 'student', 'parent'],
+      roles: ['teacher', 'adult_learner', 'parent'],
     },
     {
       href: '/portal/change-request',
@@ -119,7 +118,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       href: '/portal/game',
       label: '게임',
       icon: <GameIcon />,
-      roles: ['student'],
+      roles: [],
     },
     {
       href: '/portal/homework',
@@ -143,20 +142,16 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ backgroundColor: isStudent ? 'var(--sz-bg-pastel)' : 'var(--sz-cream)' }}
+      style={{ backgroundColor: 'var(--sz-bg-pastel)' }}
     >
       {/* Top header */}
       <header
         className="px-4 py-3 flex items-center justify-between sticky top-0 z-10"
         style={{
-          backgroundColor: isStudent
-            ? 'rgba(255,253,246,0.88)'
-            : 'rgba(254,252,248,0.88)',
+          backgroundColor: 'rgba(255,253,246,0.88)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          borderBottom: isStudent
-            ? '1px solid rgba(175,196,216,0.2)'
-            : '1px solid var(--sz-beige)',
+          borderBottom: '1px solid rgba(175,196,216,0.2)',
         }}
       >
         <div className="flex items-center gap-2">
@@ -170,7 +165,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
           </button>
           <div
             className="w-7 h-7 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: isStudent ? 'var(--sz-blue-soft)' : 'var(--sz-navy)' }}
+            style={{ backgroundColor: 'var(--sz-blue-soft)' }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
@@ -179,7 +174,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
           <span
             className="font-bold text-sm"
-            style={{ color: isStudent ? 'var(--sz-text-deep)' : 'var(--sz-navy)' }}
+            style={{ color: 'var(--sz-text-deep)' }}
           >
             Syzhlin Class
           </span>
@@ -217,14 +212,10 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       <nav
         className="fixed bottom-0 left-0 right-0 flex z-10"
         style={{
-          backgroundColor: isStudent
-            ? 'rgba(255,253,246,0.92)'
-            : 'rgba(254,252,248,0.92)',
+          backgroundColor: 'rgba(255,253,246,0.92)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          borderTop: isStudent
-            ? '1px solid rgba(175,196,216,0.25)'
-            : '1px solid var(--sz-beige)',
+          borderTop: '1px solid rgba(175,196,216,0.25)',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
@@ -241,23 +232,15 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
                 <span
                   className="absolute top-1.5 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full"
                   style={{
-                    backgroundColor: isStudent ? 'var(--sz-blue-soft)' : 'var(--sz-navy)',
+                    backgroundColor: 'var(--sz-blue-soft)',
                   }}
                 />
               )}
               <span
                 className="flex items-center justify-center w-9 h-7 rounded-2xl transition-all"
                 style={{
-                  backgroundColor: isActive
-                    ? isStudent
-                      ? 'var(--sz-blue-pale)'
-                      : 'rgba(26,39,68,0.08)'
-                    : 'transparent',
-                  color: isActive
-                    ? isStudent
-                      ? 'var(--sz-blue-soft)'
-                      : 'var(--sz-navy)'
-                    : 'var(--sz-text-muted)',
+                  backgroundColor: isActive ? 'var(--sz-blue-pale)' : 'transparent',
+                  color: isActive ? 'var(--sz-blue-soft)' : 'var(--sz-text-muted)',
                   transform: isActive ? 'scale(1.08)' : 'scale(1)',
                 }}
               >
@@ -266,9 +249,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
               <span
                 className="text-[9px] font-semibold tracking-tight"
                 style={{
-                  color: isActive
-                    ? isStudent ? 'var(--sz-blue-soft)' : 'var(--sz-navy)'
-                    : 'var(--sz-text-muted)',
+                  color: isActive ? 'var(--sz-blue-soft)' : 'var(--sz-text-muted)',
                 }}
               >
                 {item.label}

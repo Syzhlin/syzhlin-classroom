@@ -60,12 +60,12 @@ export default function HomeworkPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-6 pb-24 space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">숙제 제출 ✏️</h1>
-        <p className="text-xs text-gray-400 mt-0.5">사진을 찍거나 골라서 선생님께 보내요</p>
+        <h1 className="text-xl font-bold" style={{color: 'var(--sz-text-deep)'}}>숙제 제출 ✏️</h1>
+        <p className="text-xs mt-0.5" style={{color: 'var(--sz-text-muted)'}}>사진을 찍거나 골라서 선생님께 보내요</p>
       </div>
 
       {/* 제출 폼 */}
-      <div className="rounded-2xl border shadow-sm p-5 space-y-4" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+      <div className="sz-widget rounded-3xl p-5 space-y-4">
 
         {/* 사진 영역 */}
         {previewUrl ? (
@@ -84,7 +84,7 @@ export default function HomeworkPage() {
             {/* 카메라 촬영 */}
             <button
               onClick={() => cameraRef.current?.click()}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 border-dashed border-[var(--sz-beige)] text-[var(--sz-navy)] hover:bg-[var(--sz-gold-light)] transition-colors" style={{backgroundColor: "var(--sz-gold-light)"}}
+              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl transition-colors" style={{backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)', border: '2px dashed var(--sz-blue-soft)'}}
             >
               <Camera className="w-7 h-7" />
               <span className="text-xs font-medium">사진 찍기</span>
@@ -92,7 +92,7 @@ export default function HomeworkPage() {
             {/* 갤러리 선택 */}
             <button
               onClick={() => galleryRef.current?.click()}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"
+              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl transition-colors" style={{backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)', border: '2px dashed var(--sz-pink-soft)'}}
             >
               <ImagePlus className="w-7 h-7" />
               <span className="text-xs font-medium">사진 고르기</span>
@@ -112,18 +112,15 @@ export default function HomeworkPage() {
           onChange={e => setNote(e.target.value)}
           rows={3}
           placeholder="선생님께 하고 싶은 말을 써도 돼요 😊"
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)]"
+          className="w-full px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]" style={{border: '1.5px solid rgba(175,196,216,0.3)', borderRadius: '16px', backgroundColor: 'rgba(175,196,216,0.08)'}}
         />
 
         {/* 제출 버튼 */}
         <button
           onClick={handleSubmit}
           disabled={submit.isPending || (!file && !note.trim())}
-          className={`w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${
-            done
-              ? 'bg-green-500 text-white'
-              : 'bg-[var(--sz-navy)] text-white disabled:opacity-40'
-          }`}
+          className={`w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors text-white disabled:opacity-40`}
+          style={done ? {backgroundColor: 'var(--sz-sage)'} : {backgroundColor: 'var(--sz-blue-soft)'}}
         >
           {done ? (
             <><CheckCircle className="w-4 h-4" /> 제출 완료!</>
@@ -135,19 +132,19 @@ export default function HomeworkPage() {
 
       {/* 제출 내역 */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 mb-3">제출 내역</h2>
+        <h2 className="text-sm font-semibold mb-3" style={{color: 'var(--sz-text-muted)'}}>제출 내역</h2>
         {isLoading ? (
           <div className="flex justify-center py-6">
-            <div className="w-5 h-5 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 rounded-full animate-spin" style={{border: '2px solid var(--sz-blue-soft)', borderTopColor: 'transparent'}} />
           </div>
         ) : submissions.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 text-center text-sm text-gray-400">
+          <div className="sz-widget rounded-3xl p-6 text-center text-sm" style={{color: 'var(--sz-text-muted)'}}>
             아직 제출한 숙제가 없어요
           </div>
         ) : (
           <div className="space-y-3">
             {submissions.map(s => (
-              <div key={s.id} className="rounded-2xl border shadow-sm overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+              <div key={s.id} className="sz-widget rounded-3xl overflow-hidden">
                 {/* 사진 */}
                 {s.photo_url && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -156,18 +153,18 @@ export default function HomeworkPage() {
                 <div className="p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-400">{formatDate(s.created_at)}</p>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                      s.status === 'reviewed'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-amber-100 text-amber-600'
-                    }`}>
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={s.status === 'reviewed'
+                        ? {backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)'}
+                        : {backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)'}
+                      }>
                       {s.status === 'reviewed' ? '확인 완료' : '검토 중'}
                     </span>
                   </div>
                   {s.note && <p className="text-sm text-gray-700">{s.note}</p>}
                   {/* 선생님 코멘트 */}
                   {s.teacher_comment && (
-                    <div className="bg-[var(--sz-gold-light)] rounded-xl px-3 py-2.5 flex gap-2">
+                    <div className="rounded-xl px-3 py-2.5 flex gap-2" style={{backgroundColor: 'var(--sz-peach-pale)'}}>
                       <MessageSquare className="w-4 h-4 text-[var(--sz-warm-gray)] flex-shrink-0 mt-0.5" />
                       <p className="text-xs text-[var(--sz-navy)] leading-relaxed">{s.teacher_comment}</p>
                     </div>
