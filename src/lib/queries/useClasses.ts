@@ -74,26 +74,28 @@ export function useAllSessionClasses() {
   })
 }
 
-// 회차 맵 계산: { classId -> N회 } — 전체 이력 기반, total_sessions 단위로 순환
+// 회차 맵 계산: { classId -> N회 } — 월별 순번 방식
+// 같은 학생의 같은 연월(yyyy-MM) 수업끼리 날짜·시간 순으로 1, 2, 3... 부여
 export function buildSessionNumberMap(allClasses: ClassWithStudent[]): Record<string, number> {
-  const byStudent: Record<string, ClassWithStudent[]> = {}
+  // studentId + yearMonth 복합 키로 그룹핑
+  const byStudentMonth: Record<string, ClassWithStudent[]> = {}
 
   for (const cls of allClasses) {
-    const sid = cls.student_id
-    if (!byStudent[sid]) byStudent[sid] = []
-    byStudent[sid].push(cls)
+    const yearMonth = cls.date.slice(0, 7) // "yyyy-MM"
+    const key = `${cls.student_id}__${yearMonth}`
+    if (!byStudentMonth[key]) byStudentMonth[key] = []
+    byStudentMonth[key].push(cls)
   }
 
   const map: Record<string, number> = {}
-  for (const classes of Object.values(byStudent)) {
+  for (const classes of Object.values(byStudentMonth)) {
     classes.sort((a, b) =>
       a.date === b.date
         ? a.start_time.localeCompare(b.start_time)
         : a.date.localeCompare(b.date)
     )
-    const totalSessions = classes[0]?.students?.total_sessions ?? 8
     classes.forEach((cls, i) => {
-      map[cls.id] = (i % totalSessions) + 1
+      map[cls.id] = i + 1
     })
   }
 

@@ -54,17 +54,17 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
   return (
     <div className="flex h-full min-w-[760px] flex-col md:min-w-0">
       {/* 헤더 — 요일 */}
-      <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20">
+      <div className="flex sticky top-0 z-20" style={{borderBottom:"1px solid rgba(175,196,216,0.2)", backgroundColor:"var(--sz-card-pastel)"}}>
         <div className="w-14 shrink-0" />
         {weekDays.map((day, i) => {
           const isToday = today ? isSameDay(day, today) : false
           return (
             <div key={i} className="flex-1 text-center py-2 border-l border-gray-100 first:border-l-0">
-              <p className={`text-xs font-medium ${i >= 5 ? 'text-red-400' : 'text-gray-500'}`}>
+              <p className={`text-xs font-medium ${i >= 5 ? 'text-red-400' : 'text-[var(--sz-text-muted)]'}`}>
                 {DAYS[i]}
               </p>
-              <p className={`text-sm font-bold mt-0.5 w-7 h-7 mx-auto flex items-center justify-center rounded-full
-                ${isToday ? 'bg-indigo-600 text-white' : i >= 5 ? 'text-red-500' : 'text-gray-800'}`}>
+              <p className={`text-sm font-bold mt-0.5 w-7 h-7 mx-auto flex items-center justify-center rounded-full ${i >= 5 && !isToday ? 'text-red-500' : !isToday ? 'text-[var(--sz-text-deep)]' : 'text-white'}`}
+                style={{ backgroundColor: isToday ? 'var(--sz-blue-soft)' : undefined }}>
                 {format(day, 'd')}
               </p>
             </div>
@@ -78,8 +78,7 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
           {Array.from({ length: TOTAL_HOURS }, (_, i) => (
             <div
               key={i}
-              className="absolute right-2 text-[10px] text-gray-400 leading-none"
-              style={{ top: i * HOUR_PX - 6 }}
+              className="absolute right-2 text-[10px] leading-none" style={{color:"var(--sz-text-muted)", top: i * HOUR_PX - 6}}
             >
               {String(HOUR_START + i).padStart(2, '0')}:00
             </div>
@@ -91,19 +90,18 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
           return (
             <div
               key={di}
-              className="flex-1 relative border-l border-gray-100 first:border-l-0"
-              style={{ height: TOTAL_HOURS * HOUR_PX }}
+              className="flex-1 relative border-l first:border-l-0" style={{borderColor:"rgba(175,196,216,0.15)", height: TOTAL_HOURS * HOUR_PX}}
             >
               {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div key={i} className="absolute left-0 right-0 border-t border-gray-100" style={{ top: i * HOUR_PX }} />
+                <div key={i} className="absolute left-0 right-0 border-t" style={{borderColor:"rgba(175,196,216,0.15)", top: i * HOUR_PX}} />
               ))}
               {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div key={`half-${i}`} className="absolute left-0 right-0 border-t border-gray-50" style={{ top: i * HOUR_PX + HOUR_PX / 2 }} />
+                <div key={`half-${i}`} className="absolute left-0 right-0 border-t" style={{borderColor:"rgba(175,196,216,0.07)", top: i * HOUR_PX + HOUR_PX / 2}} />
               ))}
               {Array.from({ length: TOTAL_HOURS * 2 }, (_, i) => (
                 <div
                   key={`slot-${i}`}
-                  className="absolute left-0 right-0 hover:bg-indigo-50 cursor-pointer"
+                  className="absolute left-0 right-0 hover:bg-[var(--sz-blue-pale)] cursor-pointer transition-colors"
                   style={{ top: i * (HOUR_PX / 2), height: HOUR_PX / 2 }}
                   onClick={() => onSlotClick(day, HOUR_START + i * 0.5)}
                 />
