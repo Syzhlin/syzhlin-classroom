@@ -426,13 +426,17 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
   }
 
   function analyze(transcript: string) {
+    const empty = !transcript.trim()
+    if (empty) setNoSpeech(true)
     setPhase('analyzing')
     timerRef.current = setTimeout(() => {
       const { wordScores, total } = scorePhrase(sentence.en, transcript)
       setResult({ wordScores, total, transcript })
       setPhase('result')
-      setSessionDone(prev => prev + 1)
-      onAttemptComplete(total, city.slug, sentence.en, transcript)
+      if (!empty) {
+        setSessionDone(prev => prev + 1)
+        onAttemptComplete(total, city.slug, sentence.en, transcript)
+      }
     }, 900)
   }
 
@@ -500,9 +504,9 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
 
           <p style={{ fontSize: 13, color: '#8B9BB0' }}>{sentence?.ko}</p>
 
-          {phase === 'result' && result?.transcript && (
+          {phase === 'result' && (
             <p style={{ fontSize: 11, color: '#B8C4D0', marginTop: 8 }}>
-              들린 내용: "{result.transcript}"
+              {result?.transcript ? `들린 내용: "${result.transcript}"` : '🎙️ 음성이 인식되지 않았어요'}
             </p>
           )}
         </div>
@@ -598,12 +602,15 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
                 </div>
               </div>
 
-              <p style={{ fontSize: 15, fontWeight: 700, color: label.color }}>{label.text}</p>
-
-              {noSpeech && (
-                <p style={{ fontSize: 11, color: '#B8C4D0', textAlign: 'center' }}>
-                  음성 인식은 Chrome 브라우저에서 가능해요.
-                </p>
+              {noSpeech ? (
+                <>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: '#8B9BB0' }}>음성을 인식하지 못했어요 🎙️</p>
+                  <p style={{ fontSize: 12, color: '#B8C4D0', textAlign: 'center', lineHeight: 1.6 }}>
+                    마이크 권한을 허용했는지 확인하고<br/>다시 도전해봐요!
+                  </p>
+                </>
+              ) : (
+                <p style={{ fontSize: 15, fontWeight: 700, color: label.color }}>{label.text}</p>
               )}
 
               <div style={{ display: 'flex', gap: 10 }}>
