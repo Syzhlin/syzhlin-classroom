@@ -130,7 +130,7 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
                         cls={cls}
                         topPx={topPx}
                         heightPx={heightPx}
-                        sessionNumber={sessionNumberMap[cls.id]}
+
                         onClick={() => onClassClick(cls)}
                         onNameClick={() => onNameClick(cls)}
                       />
