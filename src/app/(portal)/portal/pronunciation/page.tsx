@@ -403,25 +403,32 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
       return
     }
 
+    // iOS는 audio/mp4만 지원, 안 되면 기본값 사용
     const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
-      : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : 'audio/ogg'
+      : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+      : ''
 
-    const recorder = new MediaRecorder(stream, { mimeType })
+    const recorder = mimeType
+      ? new MediaRecorder(stream, { mimeType })
+      : new MediaRecorder(stream)
     mediaRecorderRef.current = recorder
+    const actualType = recorder.mimeType || 'audio/mp4'
 
     recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
     recorder.onstop = async () => {
       stream.getTracks().forEach(t => t.stop())
-      const blob = new Blob(chunksRef.current, { type: mimeType })
-      if (blob.size < 1000) { analyze(''); return }
+      const blob = new Blob(chunksRef.current, { type: actualType })
 
       setPhase('analyzing')
       try {
-        const ext = mimeType.includes('mp4') ? 'm4a' : mimeType.includes('ogg') ? 'ogg' : 'webm'
-        const file = new File([blob], `rec.${ext}`, { type: mimeType })
+        const ext = actualType.includes('mp4') ? 'm4a'
+          : actualType.includes('ogg') ? 'ogg'
+          : actualType.includes('wav') ? 'wav' : 'webm'
+        const file = new File([blob], `rec.${ext}`, { type: actualType })
         const fd = new FormData()
         fd.append('audio', file)
         const res = await fetch('/api/speech-to-text', { method: 'POST', body: fd })
+        if (!res.ok) { analyze(''); return }
         const data = await res.json()
         analyze(data.transcript ?? '')
       } catch {
