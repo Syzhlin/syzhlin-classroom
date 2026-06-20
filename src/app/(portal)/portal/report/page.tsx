@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePublishedReports, type GrowthReport } from '@/lib/queries/useGrowthReports'
 import { PentagonChart } from '@/components/growth/PentagonChart'
 
@@ -131,7 +132,7 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
 // ── 메인 페이지 ──────────────────────────────────────────────
 export default function PortalReportPage() {
   const { data: profile } = useProfile()
-  const studentId = profile?.linked_student_id ?? null
+  const { selectedStudentId: studentId } = usePortalStudent()
   const { data: reports, isLoading } = usePublishedReports(studentId)
 
   if (isLoading) {

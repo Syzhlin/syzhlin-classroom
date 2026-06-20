@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { useMyChangeRequests, useSubmitChangeRequest } from '@/lib/queries/useChangeRequests'
 import { usePortalClasses } from '@/lib/queries/useClasses'
 
@@ -19,7 +20,7 @@ const STATUS_STYLES = {
 
 export default function ChangeRequestPage() {
   const { data: profile } = useProfile()
-  const studentId = profile?.linked_student_id ?? null
+  const { selectedStudentId: studentId } = usePortalStudent()
 
   const { data: requests = [], isLoading } = useMyChangeRequests(studentId)
   const { data: classes = [] } = usePortalClasses(studentId)

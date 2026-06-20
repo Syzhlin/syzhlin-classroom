@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { useMessages, useSendMessage, useMarkMessagesRead } from '@/lib/queries/useMessages'
 
 export default function InquiryPage() {
   const { data: profile } = useProfile()
-  const studentId = profile?.linked_student_id ?? null
+  const { selectedStudentId: studentId } = usePortalStudent()
   const role = (profile?.role ?? 'parent') as 'parent' | 'student'
 
   const { data: messages = [], isLoading } = useMessages(studentId)

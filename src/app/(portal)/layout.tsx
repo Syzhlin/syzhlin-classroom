@@ -5,8 +5,17 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useProfile } from '@/lib/queries/useProfile'
 import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { PortalStudentProvider, usePortalStudent } from '@/contexts/PortalStudentContext'
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <PortalStudentProvider>
+      <PortalLayoutInner>{children}</PortalLayoutInner>
+    </PortalStudentProvider>
+  )
+}
+
+function PortalLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -158,6 +167,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           </div>
           <span className="font-bold text-gray-900 text-sm">Syzhlin Class</span>
         </div>
+        <SiblingSwitch />
         <div className="flex items-center gap-3">
           {profile?.display_name && (
             <span className="text-sm text-gray-500">{profile.display_name}</span>
@@ -199,6 +209,37 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           )
         })}
       </nav>
+    </div>
+  )
+}
+
+function SiblingSwitch() {
+  const { data: profile } = useProfile()
+  const { selectedStudentId, setSelectedStudentId, siblings, hasSiblings } = usePortalStudent()
+  if (!hasSiblings || !profile?.linked_student_id) return null
+
+  // 현재 선택된 학생 이름 가져오기
+  const allStudents = [
+    { id: profile.linked_student_id, name: profile.display_name ?? '내 아이' },
+    ...siblings,
+  ]
+  const current = allStudents.find(s => s.id === selectedStudentId)
+
+  return (
+    <div className="flex items-center gap-1 mx-auto">
+      {allStudents.map(s => (
+        <button
+          key={s.id}
+          onClick={() => setSelectedStudentId(s.id)}
+          className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+            selectedStudentId === s.id
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+          }`}
+        >
+          {s.name}
+        </button>
+      ))}
     </div>
   )
 }

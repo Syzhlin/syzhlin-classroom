@@ -9,6 +9,7 @@ import {
 import { ko } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, X, Check } from 'lucide-react'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePortalClasses } from '@/lib/queries/useClasses'
 import { useSubmitChangeRequest } from '@/lib/queries/useChangeRequests'
 
@@ -332,7 +333,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
 // ── 메인 페이지 ───────────────────────────────────────────────
 export default function PortalSchedulePage() {
   const { data: profile, isLoading: profileLoading } = useProfile()
-  const linkedId = profile?.linked_student_id ?? null
+  const { selectedStudentId: linkedId } = usePortalStudent()
   const { data: classes, isLoading: classesLoading } = usePortalClasses(linkedId)
   const [showPast, setShowPast] = useState(false)
   const [requestTarget, setRequestTarget] = useState<ClassItem | null>(null)

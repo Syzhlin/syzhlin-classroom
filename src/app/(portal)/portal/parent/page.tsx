@@ -2,6 +2,7 @@
 
 import { format, parseISO } from 'date-fns'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePortalMaterials } from '@/lib/queries/useMaterials'
 
 const FILE_TYPE_CONFIG: Record<string, { icon: string; color: string; label: string }> = {
@@ -21,7 +22,7 @@ function formatDate(dateStr: string) {
 
 export default function ParentPortalPage() {
   const { data: profile, isLoading: profileLoading } = useProfile()
-  const linkedId = profile?.linked_student_id ?? null
+  const { selectedStudentId: linkedId } = usePortalStudent()
   const { data: materials, isLoading: materialsLoading } = usePortalMaterials(linkedId)
 
   if (profileLoading) {

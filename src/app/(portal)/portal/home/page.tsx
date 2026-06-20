@@ -3,6 +3,7 @@
 import { format, parseISO } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePushNotification } from '@/hooks/usePushNotification'
 import { usePortalHome } from '@/lib/queries/useFeedback'
 
@@ -21,7 +22,7 @@ function formatTime(t: string) {
 
 export default function PortalHomePage() {
   const { data: profile } = useProfile()
-  const studentId = profile?.linked_student_id ?? null
+  const { selectedStudentId: studentId } = usePortalStudent()
   const { data, isLoading } = usePortalHome(studentId)
 
   if (isLoading) {

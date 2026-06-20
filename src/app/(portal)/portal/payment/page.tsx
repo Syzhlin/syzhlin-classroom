@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { useProfile } from '@/lib/queries/useProfile'
+import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePortalPayment } from '@/lib/queries/usePayments'
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
@@ -44,7 +45,7 @@ function AccountCopyButton() {
 
 export default function PortalPaymentPage() {
   const { data: profile, isLoading: profileLoading } = useProfile()
-  const linkedId = profile?.linked_student_id ?? null
+  const { selectedStudentId: linkedId } = usePortalStudent()
   const [currentYearMonth, setCurrentYearMonth] = useState(format(new Date(), 'yyyy-MM'))
   useEffect(() => { setCurrentYearMonth(format(new Date(), 'yyyy-MM')) }, [])
   const { data: payment, isLoading: paymentLoading } = usePortalPayment(linkedId, currentYearMonth)
