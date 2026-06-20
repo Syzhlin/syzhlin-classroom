@@ -156,7 +156,7 @@ export function MobileScheduleView({ onClassClick, onNameClick, onAddClick }: {
   const todayList = weekClasses.filter(c => c.date === todayStr && active(c))
   const tomorrowList = weekClasses.filter(c => c.date === tomorrowStr && active(c))
   const restList = weekClasses
-    .filter(c => c.date !== todayStr && c.date !== tomorrowStr && c.date >= weekStartStr && c.date <= weekEndStr && active(c))
+    .filter(c => c.date > tomorrowStr && active(c))
     .sort((a, b) => a.date === b.date ? a.start_time.localeCompare(b.start_time) : a.date.localeCompare(b.date))
 
   const restByDay: Record<string, ClassWithStudent[]> = {}
