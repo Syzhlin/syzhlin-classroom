@@ -201,15 +201,15 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className={`flex-1 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
-        style={{ paddingBottom: 'calc(72px + env(safe-area-inset-bottom))' }}
+        style={{ paddingBottom: pathname === '/portal/inquiry' ? '0' : 'calc(72px + env(safe-area-inset-bottom))' }}
       >
         <div key={pathname} className="page-enter">
           {children}
         </div>
       </main>
 
-      {/* Bottom navigation — pastel style */}
-      <nav
+      {/* Bottom navigation — 문의 대화방에서는 숨김 */}
+      {pathname !== '/portal/inquiry' && <nav
         className="fixed bottom-0 left-0 right-0 flex z-10"
         style={{
           backgroundColor: 'rgba(255,253,246,0.92)',
@@ -257,7 +257,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
             </Link>
           )
         })}
-      </nav>
+      </nav>}
     </div>
   )
 }

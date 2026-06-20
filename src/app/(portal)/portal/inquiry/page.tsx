@@ -47,8 +47,8 @@ export default function InquiryPage() {
     <div
       className="flex flex-col"
       style={{
-        height: 'calc(100dvh - 56px)',   // 헤더 높이(56px) 제외, dvh로 Safari 주소창 대응
-        maxHeight: 'calc(100dvh - 56px)',
+        height: '100dvh',
+        maxHeight: '100dvh',
       }}
     >
       {/* 채팅 헤더 */}
@@ -176,7 +176,7 @@ export default function InquiryPage() {
         className="flex-shrink-0 flex items-end gap-2"
         style={{
           padding: '10px 12px',
-          paddingBottom: 'max(10px, env(safe-area-inset-bottom, 10px))',
+          paddingBottom: 'max(14px, env(safe-area-inset-bottom))',
           backgroundColor: 'rgba(255,253,246,0.97)',
           borderTop: '1px solid rgba(175,196,216,0.2)',
         }}

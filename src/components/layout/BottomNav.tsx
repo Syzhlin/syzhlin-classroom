@@ -100,8 +100,8 @@ export function BottomNav() {
         </div>
       )}
 
-      {/* 하단 탭바 */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center pb-[env(safe-area-inset-bottom)]" style={{backgroundColor: "rgba(255,253,246,0.92)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1px solid rgba(175,196,216,0.25)"}}>
+      {/* 하단 탭바 — 메시지 대화방에서는 숨김 */}
+      {pathname !== '/messages' && <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center pb-[env(safe-area-inset-bottom)]" style={{backgroundColor: "rgba(255,253,246,0.92)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1px solid rgba(175,196,216,0.25)"}}>
         {primaryNav.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
@@ -126,7 +126,7 @@ export function BottomNav() {
           </div>
           더보기
         </button>
-      </nav>
+      </nav>}
     </>
   )
 }
