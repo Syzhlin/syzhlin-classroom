@@ -154,23 +154,55 @@ const SENTENCES: Record<string, Sentence[]> = {
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
-function cleanWord(w: string) {
-  return w.toLowerCase().replace(/[—–\-]/g, ' ').replace(/[^a-z\s]/g, '').trim()
+function cleanStr(s: string) {
+  return s.toLowerCase().replace(/[—–\-]/g, ' ').replace(/[^a-z\s]/g, '').trim()
+}
+
+function levenshtein(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  )
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+  return dp[a.length][b.length]
 }
 
 function scorePhrase(original: string, recognized: string): { wordScores: WordScore[]; total: number } {
+  const origClean = cleanStr(original)
+  const recogClean = cleanStr(recognized)
+
   const origWords = original.split(/\s+/)
-  const recogSet = new Set(cleanWord(recognized).split(/\s+/).filter(Boolean))
+  const origKeys = origClean.split(/\s+/).filter(Boolean)
+  const recogWords = recogClean.split(/\s+/).filter(Boolean)
+  const recogSet = new Set(recogWords)
 
-  const wordScores: WordScore[] = origWords.map(w => {
-    const key = cleanWord(w)
-    const score = key && recogSet.has(key) ? 100 : 0
-    return { display: w, score }
+  // 1. 단어 순서 매칭 (60%)
+  let rIdx = 0
+  const wordMatched = origKeys.map(word => {
+    const start = rIdx
+    while (rIdx < recogWords.length && recogWords[rIdx] !== word) rIdx++
+    if (rIdx < recogWords.length) { rIdx++; return true }
+    rIdx = start
+    return recogSet.has(word) // 순서 무관하게라도 있으면 절반 점수
   })
-
-  const total = wordScores.length
-    ? Math.round(wordScores.reduce((s, w) => s + w.score, 0) / wordScores.length)
+  const wordScore = origKeys.length
+    ? wordMatched.filter(Boolean).length / origKeys.length
     : 0
+
+  // 2. 문장 전체 유사도 (40%) - 커버리지 기반
+  const coverageRatio = origKeys.length ? Math.min(1, recogWords.length / origKeys.length) : 0
+  // 텍스트 유사도 (레벤슈타인)
+  const maxLen = Math.max(origClean.length, recogClean.length)
+  const editSimilarity = maxLen > 0 ? 1 - levenshtein(origClean, recogClean) / maxLen : 0
+  const sentenceScore = (coverageRatio * 0.5 + editSimilarity * 0.5)
+
+  const total = Math.round((wordScore * 0.6 + sentenceScore * 0.4) * 100)
+
+  const wordScores: WordScore[] = origWords.map((w, i) => ({
+    display: w,
+    score: wordMatched[i] ? 100 : 0,
+  }))
 
   return { wordScores, total }
 }
