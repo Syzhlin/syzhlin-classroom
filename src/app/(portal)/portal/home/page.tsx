@@ -150,64 +150,126 @@ export default function PortalHomePage() {
         const progress = classesInCurrentCity(completedCount)
         const isArrived = progress === 1
         const lastCity = stampedCities[stampedCities.length - 1] ?? null
+        const isStudent = profile?.role === 'student'
         return (
           <Link href="/portal/passport">
             <div className="rounded-2xl p-4 text-white cursor-pointer" style={{background: "linear-gradient(135deg, var(--sz-navy) 0%, var(--sz-navy-light) 100%)"}}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🌍</span>
-                  <p className="text-sm font-semibold">세계 여권</p>
+                  <p className="text-sm font-semibold">{isStudent ? 'English World Passport' : '세계 여권'}</p>
                 </div>
                 <span className="text-xs" style={{color: "var(--sz-gold)"}}>여권 보기 →</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div>
-                  <p className="text-3xl font-bold">{stampedCities.length}</p>
-                  <p className="text-xs" style={{color: "var(--sz-gold-light)"}}>도시 스탬프</p>
+
+              {isStudent ? (
+                /* 학생 전용: 도시 중심 UI */
+                <div className="space-y-2">
+                  {currentCity ? (
+                    <>
+                      <div className="flex items-center gap-3 rounded-xl px-3 py-2.5" style={{backgroundColor: isArrived ? 'rgba(196,152,42,0.25)' : 'rgba(255,255,255,0.1)'}}>
+                        <span className="text-3xl">{currentCity.landmark}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold">{currentCity.name}</p>
+                          <p className="text-xs" style={{color: isArrived ? 'var(--sz-gold)' : 'rgba(250,248,243,0.6)'}}>
+                            {isArrived
+                              ? '다음 수업을 마치면 스탬프가 완성돼요! ✨'
+                              : '첫 번째 수업을 완료했어요 · 한 번 더!'}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-lg font-bold" style={{color: isArrived ? 'var(--sz-gold)' : 'rgba(250,248,243,0.5)'}}>
+                            {isArrived ? '1' : '0'}<span className="text-xs font-normal opacity-60">/2</span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">🏆</span>
+                          <span className="text-xs" style={{color: "var(--sz-gold-light)"}}>{stampedCities.length}개 도시 스탬프 완성</span>
+                        </div>
+                        {lastCity && (
+                          <span className="text-xs" style={{color: "rgba(250,248,243,0.4)"}}>마지막: {lastCity.name} {lastCity.landmark}</span>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-2">
+                      <p className="text-2xl mb-1">✈️</p>
+                      <p className="text-sm font-semibold">첫 번째 도시로 출발해요!</p>
+                      <p className="text-xs mt-1" style={{color: "rgba(250,248,243,0.5)"}}>수업을 시작하면 여권이 채워져요</p>
+                    </div>
+                  )}
                 </div>
-                {currentCity && (
-                  <div className={`flex items-center gap-2 rounded-xl px-3 py-2`}>
-                    <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
-                    <div>
-                      <p className="text-xs font-semibold">{currentCity.name}</p>
-                      <p className={`text-[10px] ${isArrived ? 'text-amber-300' : 'text-indigo-400'}`}>
-                        {isArrived ? '도착 완료 · 1/2' : '다음 도시 · 0/2'}
-                      </p>
-                    </div>
+              ) : (
+                /* 학부모/성인학습자: 기존 UI */
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="text-3xl font-bold">{stampedCities.length}</p>
+                    <p className="text-xs" style={{color: "var(--sz-gold-light)"}}>도시 스탬프</p>
                   </div>
-                )}
-                {lastCity && (
-                  <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
-                    <span className="text-xl">{lastCity.landmark}</span>
-                    <div>
-                      <p className="text-xs font-semibold">{lastCity.name}</p>
-                      <p className="text-[10px] text-indigo-300">최근 스탬프</p>
+                  {currentCity && (
+                    <div className="flex items-center gap-2 rounded-xl px-3 py-2">
+                      <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
+                      <div>
+                        <p className="text-xs font-semibold">{currentCity.name}</p>
+                        <p className={`text-[10px] ${isArrived ? 'text-amber-300' : 'text-blue-200'}`}>
+                          {isArrived ? '도착 완료 · 1/2' : '다음 도시 · 0/2'}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                  {lastCity && (
+                    <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
+                      <span className="text-xl">{lastCity.landmark}</span>
+                      <div>
+                        <p className="text-xs font-semibold">{lastCity.name}</p>
+                        <p className="text-[10px] text-blue-200">최근 스탬프</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </Link>
         )
       })()}
 
-      {/* 잔여 회차 */}
-      {payment && (
+      {/* 이번 달 수업 — 학생에게는 숨김, 학부모에게는 부드럽게 표시 */}
+      {payment && profile?.role !== 'student' && (
         <div className="sz-card rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-base">🎯</span>
-            <h2 className="font-semibold text-gray-900 text-sm">이번 달 수업권</h2>
+            <h2 className="font-semibold text-gray-900 text-sm">
+              {profile?.role === 'parent' ? '이번 달 수업 흐름' : '이번 달 수업권'}
+            </h2>
           </div>
           <div className="flex items-end justify-between mb-3">
             <div>
-              <p className="text-3xl font-bold text-gray-900">{payment.completed_sessions}
-                <span className="text-base font-normal text-gray-400"> / {payment.total_sessions}회</span>
-              </p>
-              {remaining !== null && remaining > 0 && (
-                <p className="text-sm text-gray-500 mt-0.5">남은 수업 <span className="font-semibold" style={{color: "var(--sz-gold)"}}>{remaining}회</span></p>
-              )}
-              {remaining === 0 && (
-                <p className="text-sm text-green-600 font-medium mt-0.5">이번 달 수업 완료 🎉</p>
+              {profile?.role === 'parent' ? (
+                <>
+                  <p className="text-2xl font-bold text-gray-900">{payment.completed_sessions}
+                    <span className="text-sm font-normal text-gray-400"> / {payment.total_sessions}번</span>
+                  </p>
+                  {remaining !== null && remaining > 0 && (
+                    <p className="text-sm text-gray-500 mt-0.5">앞으로 <span className="font-semibold" style={{color: "var(--sz-gold)"}}>{remaining}번</span> 남았어요</p>
+                  )}
+                  {remaining === 0 && (
+                    <p className="text-sm text-green-600 font-medium mt-0.5">이번 달 수업 모두 완료 🎉</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="text-3xl font-bold text-gray-900">{payment.completed_sessions}
+                    <span className="text-base font-normal text-gray-400"> / {payment.total_sessions}회</span>
+                  </p>
+                  {remaining !== null && remaining > 0 && (
+                    <p className="text-sm text-gray-500 mt-0.5">남은 수업 <span className="font-semibold" style={{color: "var(--sz-gold)"}}>{remaining}회</span></p>
+                  )}
+                  {remaining === 0 && (
+                    <p className="text-sm text-green-600 font-medium mt-0.5">이번 달 수업 완료 🎉</p>
+                  )}
+                </>
               )}
             </div>
             {payment.bonus_sessions > 0 && (
@@ -225,7 +287,9 @@ export default function PortalHomePage() {
               }}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-2">예정 {payment.planned_sessions}회 · 총 {payment.total_sessions}회</p>
+          {profile?.role !== 'parent' && (
+            <p className="text-xs text-gray-400 mt-2">예정 {payment.planned_sessions}회 · 총 {payment.total_sessions}회</p>
+          )}
         </div>
       )}
     </div>

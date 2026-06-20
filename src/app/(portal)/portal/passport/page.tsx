@@ -131,7 +131,7 @@ export default function PassportPage() {
             <div>
               <p className="text-4xl font-bold">{totalStamped}</p>
               <p className="text-xs mt-0.5" style={{color:"var(--sz-gold-light)"}}>완성된 도시 스탬프</p>
-              <p className="text-xs mt-0.5" style={{color:"rgba(250,248,243,0.5)"}}>{completedCount}회 수업 완료</p>
+              <p className="text-xs mt-0.5" style={{color:"rgba(250,248,243,0.5)"}}>Travel Log · {completedCount} lessons</p>
             </div>
             <div className="text-right space-y-1">
               {currentCity && (
@@ -145,7 +145,7 @@ export default function PassportPage() {
             </div>
           </div>
 
-          {/* 전체 진행 바 (240회 기준) */}
+          {/* 전체 진행 바 (120도시 × 2 = 240 수업 기준) */}
           <div className="mt-4">
             <div className="w-full h-1.5 rounded-full overflow-hidden" style={{backgroundColor:"rgba(255,255,255,0.1)"}}>
               <div
@@ -154,7 +154,7 @@ export default function PassportPage() {
               />
             </div>
             <div className="flex justify-between mt-1 text-[9px]" style={{color:"rgba(250,248,243,0.4)"}}>
-              <span>시작</span><span>40회</span><span>100회</span><span>180회</span><span>240회</span>
+              <span>출발</span><span>20도시</span><span>50도시</span><span>90도시</span><span>120도시</span>
             </div>
           </div>
         </div>

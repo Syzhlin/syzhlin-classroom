@@ -21,7 +21,7 @@ const CATEGORIES = [
 ] as const
 
 // ── 월별 리포트 카드 (아코디언) ─────────────────────────────
-function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaultOpen: boolean }) {
+function MonthReportCard({ report, defaultOpen, role }: { report: GrowthReport; defaultOpen: boolean; role?: string }) {
   const [open, setOpen] = useState(defaultOpen)
 
   const scores = [
@@ -53,7 +53,12 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
           </div>
           <div className="text-left">
             <p className="text-sm font-bold text-gray-900">{formatPeriod(report.period)}</p>
-            <p className="text-xs text-gray-400">수업 {report.lesson_count}회 · 평균 {avgScore ?? '—'}</p>
+            <p className="text-xs text-gray-400">
+              {role === 'student'
+                ? `평균 ${avgScore ?? '—'}`
+                : `수업 ${report.lesson_count}번 · 평균 ${avgScore ?? '—'}`
+              }
+            </p>
           </div>
         </div>
         <ChevronDown
@@ -133,6 +138,7 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
 export default function PortalReportPage() {
   const { data: profile } = useProfile()
   const { selectedStudentId: studentId } = usePortalStudent()
+  const role = profile?.role
   const { data: reports, isLoading } = usePublishedReports(studentId)
 
   if (isLoading) {
@@ -173,7 +179,8 @@ export default function PortalReportPage() {
             <MonthReportCard
               key={report.id}
               report={report}
-              defaultOpen={i === 0}   // 최신 월만 기본 펼침
+              defaultOpen={i === 0}
+              role={role ?? undefined}
             />
           ))}
         </div>
