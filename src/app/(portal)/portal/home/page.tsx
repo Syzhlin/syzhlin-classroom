@@ -54,6 +54,7 @@ export default function PortalHomePage() {
       latestCompleted={latestCompleted}
       growthData={growthData}
       data={data}
+      linkedStudentName={linkedStudentName}
     />
   }
 
@@ -808,15 +809,16 @@ function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growt
 /* ═══════════════════════════════════════════
    학생 전용 위젯 홈 (Pastel Soft Neumorphism)
 ═══════════════════════════════════════════ */
-function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData, data }: {
+function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData, data, linkedStudentName }: {
   profile: any
   nextClass: any
   feedback: any
   latestCompleted: any
   growthData: any
   data: any
+  linkedStudentName: string | null
 }) {
-  const completedCount = growthData?.totalClasses ?? 0
+  const completedCount = growthData?.passportClasses ?? 0
   const stampedCities = getStampedCities(completedCount)
   const currentCity = getCurrentCity(completedCount)
   const nextCityObj = getNextCity(completedCount)
@@ -824,7 +826,7 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
   const isArrived = progress === 1
 
   const hasHomework = feedback?.has_homework && feedback?.homework_text
-  const studentName = profile?.display_name ?? ''
+  const studentName = profile?.display_name || linkedStudentName || ''
 
   // D-day
   const daysUntil = nextClass
@@ -840,175 +842,180 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
     return d.getMonth() === thisMonth && d.getFullYear() === thisYear && c.status === 'completed'
   }).length
 
-  // 공통 카드 스타일
-  const lightCard = {
-    borderRadius: '24px',
-    backgroundColor: '#FFFDF8',
-    boxShadow: '7px 7px 20px rgba(100,88,65,0.10), -4px -4px 12px rgba(255,255,255,0.92)',
-    border: '1px solid rgba(255,255,255,0.75)',
-  } as React.CSSProperties
-
-  const mintCard = {
-    borderRadius: '24px',
-    backgroundColor: '#FFFDF8',
-    boxShadow: '7px 7px 20px rgba(100,170,150,0.12), -4px -4px 12px rgba(255,255,255,0.92)',
-    border: '1px solid rgba(190,230,215,0.4)',
-  } as React.CSSProperties
-
-  const pinkCard = {
-    borderRadius: '24px',
-    backgroundColor: '#FFFDF8',
-    boxShadow: '7px 7px 20px rgba(200,150,160,0.12), -4px -4px 12px rgba(255,255,255,0.92)',
-    border: '1px solid rgba(255,215,220,0.4)',
-  } as React.CSSProperties
-
-  const blueCard = {
-    borderRadius: '24px',
-    backgroundColor: '#FFFDF8',
-    boxShadow: '7px 7px 20px rgba(140,170,210,0.12), -4px -4px 12px rgba(255,255,255,0.92)',
-    border: '1px solid rgba(195,215,240,0.4)',
-  } as React.CSSProperties
+  // ── Clay Neumorphic 카드 스타일 ──
+  const clay = (shadow: string, border: string): React.CSSProperties => ({
+    borderRadius: '28px',
+    backgroundColor: '#FEFCF8',
+    boxShadow: shadow,
+    border: `1px solid ${border}`,
+  })
+  const lightCard = clay(
+    '9px 9px 26px rgba(175,165,148,0.22), -5px -5px 16px rgba(255,255,255,1)',
+    'rgba(255,255,255,0.92)'
+  )
+  const mintCard = clay(
+    '9px 9px 26px rgba(148,195,175,0.20), -5px -5px 16px rgba(255,255,255,1)',
+    'rgba(195,235,218,0.55)'
+  )
+  const pinkCard = clay(
+    '9px 9px 26px rgba(210,165,172,0.20), -5px -5px 16px rgba(255,255,255,1)',
+    'rgba(255,210,218,0.55)'
+  )
+  const blueCard = clay(
+    '9px 9px 26px rgba(155,180,218,0.20), -5px -5px 16px rgba(255,255,255,1)',
+    'rgba(195,218,245,0.55)'
+  )
 
   return (
-    <div style={{ paddingTop: '20px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '8px', maxWidth: '480px', margin: '0 auto' }}>
+    <div style={{ position: 'relative', paddingTop: '20px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '24px', maxWidth: '480px', margin: '0 auto' }}>
+
+      {/* ── 파스텔 배경 ── */}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: -1,
+        background: 'linear-gradient(160deg, #dff0e8 0%, #fdf0e4 45%, #e6eaf8 100%)',
+      }} />
 
       {/* ── 상단 인사 ── */}
       <div style={{ marginBottom: '22px' }}>
-        <p style={{ fontSize: '23px', fontWeight: '800', color: '#27324A', lineHeight: 1.2 }}>
+        <p style={{ fontSize: '24px', fontWeight: '800', color: '#2A3244', lineHeight: 1.2 }}>
           안녕, {studentName} 👋
         </p>
-        <p style={{ fontSize: '13px', color: '#7E8797', marginTop: '5px' }}>
+        <p style={{ fontSize: '13px', color: '#8C96A8', marginTop: '5px' }}>
           오늘도 영어 여행을 시작해볼까?
         </p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
-        {/* ── 1. Hero 위젯: 다음 영어 여행 ── */}
+        {/* ── 1. Hero: 다음 영어 여행 ── */}
         <Link href="/portal/schedule">
           <div style={{
-            borderRadius: '28px',
-            background: 'linear-gradient(145deg, #3D5678 0%, #2B4060 60%, #243660 100%)',
-            boxShadow: '10px 10px 28px rgba(36,54,96,0.30), -2px -2px 8px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.14)',
-            padding: '22px',
+            borderRadius: '32px',
+            background: 'linear-gradient(145deg, #6B8ED6 0%, #5578C4 55%, #4A6AB8 100%)',
+            boxShadow: '10px 10px 30px rgba(80,108,185,0.38), -3px -3px 10px rgba(255,255,255,0.55), inset 0 1px 0 rgba(255,255,255,0.22)',
+            padding: '24px',
             position: 'relative',
             overflow: 'hidden',
           }} className="active:scale-[0.98] transition-transform">
-            {/* 배경 장식 */}
             <div style={{
-              position: 'absolute', right: '-5%', top: '-20%',
-              width: '160px', height: '160px', borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.09) 0%, transparent 70%)',
+              position: 'absolute', right: '-8%', top: '-25%',
+              width: '180px', height: '180px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 65%)',
               pointerEvents: 'none',
             }} />
             <div style={{
-              position: 'absolute', bottom: '-20%', left: '-5%',
-              width: '100px', height: '100px', borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(240,210,130,0.15) 0%, transparent 70%)',
+              position: 'absolute', bottom: '-25%', left: '-8%',
+              width: '130px', height: '130px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,230,160,0.22) 0%, transparent 65%)',
               pointerEvents: 'none',
             }} />
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.28)' }} />
 
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', color: 'rgba(240,230,198,0.65)', marginBottom: '10px' }}>
-                다음 영어 여행
+              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.14em', color: 'rgba(220,232,255,0.72)', marginBottom: '12px' }}>
+                ✈️ 다음 영어 여행
               </p>
               {nextClass ? (
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                   <div>
-                    <p style={{ fontSize: '20px', fontWeight: '800', color: '#fff', lineHeight: 1.15 }}>
+                    <p style={{ fontSize: '21px', fontWeight: '800', color: '#fff', lineHeight: 1.15 }}>
                       {formatDate(nextClass.date)}
                     </p>
-                    <p style={{ fontSize: '14px', color: 'rgba(240,210,130,0.9)', marginTop: '5px', fontWeight: '600' }}>
+                    <p style={{ fontSize: '14px', color: 'rgba(255,235,160,0.92)', marginTop: '6px', fontWeight: '600' }}>
                       {formatTime(nextClass.start_time)} · {studentName}
                     </p>
                   </div>
                   {daysUntil !== null && (
                     <div style={{
                       flexShrink: 0,
-                      borderRadius: '18px',
-                      padding: '10px 14px',
-                      background: 'rgba(255,255,255,0.11)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255,255,255,0.16)',
+                      borderRadius: '20px',
+                      padding: '12px 16px',
+                      background: 'rgba(255,255,255,0.18)',
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.28)',
                       textAlign: 'center',
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)',
                     }}>
                       {daysUntil <= 0 ? (
                         <>
-                          <p style={{ fontSize: '18px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>오늘</p>
-                          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', marginTop: '2px' }}>수업이에요!</p>
+                          <p style={{ fontSize: '18px', fontWeight: '800', color: '#FFE89A', lineHeight: 1 }}>오늘</p>
+                          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.65)', marginTop: '3px' }}>수업이에요!</p>
                         </>
                       ) : (
                         <>
-                          <p style={{ fontSize: '18px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>D-{daysUntil}</p>
-                          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.50)', marginTop: '2px' }}>곧 만나요!</p>
+                          <p style={{ fontSize: '18px', fontWeight: '800', color: '#FFE89A', lineHeight: 1 }}>D-{daysUntil}</p>
+                          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.60)', marginTop: '3px' }}>곧 만나요!</p>
                         </>
                       )}
                     </div>
                   )}
                 </div>
               ) : (
-                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.45)' }}>예정된 수업이 없어요</p>
+                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.50)' }}>예정된 수업이 없어요</p>
               )}
             </div>
           </div>
         </Link>
 
-        {/* ── 2. 2열 소형 위젯: 오늘의 미션 + 숙제 제출 ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        {/* ── 2. 2열: 오늘의 미션 + 숙제 제출 ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
 
-          {/* 오늘의 미션 */}
           <Link href="/portal/homework">
-            <div style={{ ...mintCard, padding: '16px', minHeight: '148px', display: 'flex', flexDirection: 'column' }}
+            <div style={{ ...mintCard, padding: '18px', minHeight: '156px', display: 'flex', flexDirection: 'column' }}
               className="active:scale-[0.97] transition-transform">
               <div style={{
-                width: '38px', height: '38px', borderRadius: '13px', marginBottom: '10px',
-                background: 'rgba(190,230,215,0.45)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+                width: '44px', height: '44px', borderRadius: '16px', marginBottom: '12px',
+                background: 'linear-gradient(145deg, #d0f0e2, #b8e8d2)',
+                boxShadow: '4px 4px 10px rgba(140,200,170,0.3), -3px -3px 8px rgba(255,255,255,0.9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px',
               }}>⭐</div>
-              <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A', marginBottom: '4px' }}>오늘의 미션</p>
+              <p style={{ fontSize: '12px', fontWeight: '800', color: '#2A3244', marginBottom: '5px' }}>오늘의 미션</p>
               {feedback ? (
                 <>
-                  <p style={{ fontSize: '10px', color: '#7E8797', lineHeight: 1.55, flex: 1 }}>
+                  <p style={{ fontSize: '10px', color: '#8C96A8', lineHeight: 1.6, flex: 1 }}>
                     {hasHomework ? '숙제를 사진으로 올려요' : '배운 표현을 복습해요'}
                   </p>
                   <span style={{
-                    alignSelf: 'flex-start', marginTop: '8px',
-                    fontSize: '9px', fontWeight: '700', padding: '3px 8px', borderRadius: '999px',
-                    background: 'rgba(190,230,215,0.5)', color: '#4A9B7F',
+                    alignSelf: 'flex-start', marginTop: '10px',
+                    fontSize: '9px', fontWeight: '700', padding: '4px 10px', borderRadius: '999px',
+                    background: 'linear-gradient(135deg, #c8eedd, #a8dcc8)',
+                    color: '#3A8A68',
+                    boxShadow: '2px 2px 6px rgba(120,180,150,0.25)',
                   }}>계속하기 →</span>
                 </>
               ) : (
-                <p style={{ fontSize: '10px', color: '#A8AFBA', lineHeight: 1.55, flex: 1 }}>
+                <p style={{ fontSize: '10px', color: '#B0B8C5', lineHeight: 1.6, flex: 1 }}>
                   선생님이 곧 준비해줄 거예요
                 </p>
               )}
             </div>
           </Link>
 
-          {/* 숙제 제출 */}
           <Link href="/portal/homework">
-            <div style={{ ...pinkCard, padding: '16px', minHeight: '148px', display: 'flex', flexDirection: 'column' }}
+            <div style={{ ...pinkCard, padding: '18px', minHeight: '156px', display: 'flex', flexDirection: 'column' }}
               className="active:scale-[0.97] transition-transform">
               <div style={{
-                width: '38px', height: '38px', borderRadius: '13px', marginBottom: '10px',
-                background: 'rgba(255,215,220,0.45)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+                width: '44px', height: '44px', borderRadius: '16px', marginBottom: '12px',
+                background: 'linear-gradient(145deg, #fcd8e0, #f8beca)',
+                boxShadow: '4px 4px 10px rgba(210,155,165,0.28), -3px -3px 8px rgba(255,255,255,0.9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px',
               }}>📸</div>
-              <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A', marginBottom: '4px' }}>숙제 제출</p>
+              <p style={{ fontSize: '12px', fontWeight: '800', color: '#2A3244', marginBottom: '5px' }}>숙제 제출</p>
               {hasHomework ? (
                 <>
-                  <p style={{ fontSize: '10px', color: '#7E8797', lineHeight: 1.55, flex: 1 }}>
+                  <p style={{ fontSize: '10px', color: '#8C96A8', lineHeight: 1.6, flex: 1 }}>
                     사진으로 바로 보내요
                   </p>
                   <span style={{
-                    alignSelf: 'flex-start', marginTop: '8px',
-                    fontSize: '9px', fontWeight: '700', padding: '3px 8px', borderRadius: '999px',
-                    background: 'rgba(255,180,195,0.4)', color: '#B57B87',
+                    alignSelf: 'flex-start', marginTop: '10px',
+                    fontSize: '9px', fontWeight: '700', padding: '4px 10px', borderRadius: '999px',
+                    background: 'linear-gradient(135deg, #fcd0d8, #f8b8c4)',
+                    color: '#B06070',
+                    boxShadow: '2px 2px 6px rgba(200,140,150,0.25)',
                   }}>📌 숙제 있음</span>
                 </>
               ) : (
-                <p style={{ fontSize: '10px', color: '#A8AFBA', lineHeight: 1.55, flex: 1 }}>
+                <p style={{ fontSize: '10px', color: '#B0B8C5', lineHeight: 1.6, flex: 1 }}>
                   오늘은 복습만 해도 좋아요
                 </p>
               )}
@@ -1016,37 +1023,36 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
           </Link>
         </div>
 
-        {/* ── 3. 영어 여권 시그니처 위젯 ── */}
+        {/* ── 3. 영어 여권 ── */}
         <Link href="/portal/passport">
           <div style={{
-            borderRadius: '28px',
-            background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)',
-            boxShadow: '10px 10px 28px rgba(36,54,96,0.28), -2px -2px 8px rgba(255,255,255,0.06)',
-            padding: '22px',
+            borderRadius: '32px',
+            background: 'linear-gradient(145deg, #5870A8 0%, #485E98 55%, #3D5088 100%)',
+            boxShadow: '10px 10px 30px rgba(60,80,150,0.32), -3px -3px 10px rgba(255,255,255,0.50), inset 0 1px 0 rgba(255,255,255,0.20)',
+            padding: '24px',
             position: 'relative',
             overflow: 'hidden',
           }} className="active:scale-[0.98] transition-transform">
             <div style={{
-              position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
-              fontSize: '90px', opacity: 0.06, userSelect: 'none', lineHeight: 1, pointerEvents: 'none',
+              position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+              fontSize: '100px', opacity: 0.07, userSelect: 'none', lineHeight: 1, pointerEvents: 'none',
             }}>🌍</div>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.22)' }} />
 
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', color: 'rgba(240,230,198,0.65)', marginBottom: '14px' }}>
-                나의 영어 여권
+              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.14em', color: 'rgba(210,225,255,0.65)', marginBottom: '16px' }}>
+                🗺 나의 영어 여권
               </p>
-
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '18px', gap: '12px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {currentCity ? (
                     <>
-                      <p style={{ fontSize: '24px', fontWeight: '800', color: '#fff', lineHeight: 1.15 }}>
+                      <p style={{ fontSize: '25px', fontWeight: '800', color: '#fff', lineHeight: 1.15 }}>
                         {currentCity.landmark} {currentCity.name}
                       </p>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginTop: '3px' }}>현재 여행 중</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(200,215,255,0.6)', marginTop: '4px' }}>현재 여행 중</p>
                       {nextCityObj && (
-                        <p style={{ fontSize: '11px', color: 'rgba(240,210,130,0.75)', marginTop: '6px' }}>
+                        <p style={{ fontSize: '11px', color: 'rgba(255,235,155,0.82)', marginTop: '7px' }}>
                           {nextCityObj.name}까지 {isArrived ? 1 : 2}번 남았어요
                         </p>
                       )}
@@ -1054,46 +1060,51 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
                   ) : (
                     <>
                       <p style={{ fontSize: '22px', fontWeight: '800', color: '#fff' }}>✈️ 출발 준비!</p>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.50)', marginTop: '3px' }}>첫 수업 후 여권이 시작돼요</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(200,215,255,0.55)', marginTop: '4px' }}>첫 수업 후 여권이 시작돼요</p>
                     </>
                   )}
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <p style={{ fontSize: '38px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>
+                  <p style={{ fontSize: '42px', fontWeight: '800', color: '#FFE89A', lineHeight: 1 }}>
                     {stampedCities.length}
                   </p>
-                  <p style={{ fontSize: '10px', color: 'rgba(240,230,198,0.65)' }}>도시 스탬프</p>
+                  <p style={{ fontSize: '10px', color: 'rgba(210,225,255,0.65)' }}>도시 스탬프</p>
                 </div>
               </div>
 
               {currentCity && (
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+                    <p style={{ fontSize: '11px', color: 'rgba(200,215,255,0.65)' }}>
                       {isArrived ? '다음 수업 후 스탬프 완성! ✨' : '첫 번째 수업 완료'}
                     </p>
-                    <p style={{ fontSize: '11px', fontWeight: '700', color: isArrived ? 'var(--sz-gold)' : 'rgba(255,255,255,0.4)' }}>
+                    <p style={{ fontSize: '11px', fontWeight: '700', color: isArrived ? '#FFE89A' : 'rgba(255,255,255,0.35)' }}>
                       {isArrived ? '1' : '0'} / 2
                     </p>
                   </div>
-                  <div style={{ width: '100%', height: '8px', borderRadius: '999px', background: 'rgba(255,255,255,0.1)' }}>
+                  <div style={{
+                    width: '100%', height: '10px', borderRadius: '999px',
+                    background: 'rgba(255,255,255,0.12)',
+                    boxShadow: 'inset 2px 2px 5px rgba(0,0,0,0.15)',
+                  }}>
                     <div style={{
-                      height: '8px', borderRadius: '999px',
+                      height: '10px', borderRadius: '999px',
                       width: isArrived ? '50%' : '0%',
-                      background: 'linear-gradient(to right, var(--sz-gold), #E8C56A)',
+                      background: 'linear-gradient(to right, #FFE89A, #FFD060)',
                       transition: 'width 0.7s ease',
-                      boxShadow: '0 2px 8px rgba(240,210,130,0.4)',
+                      boxShadow: '0 2px 10px rgba(255,220,100,0.5)',
                     }} />
                   </div>
                 </div>
               )}
 
-              <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
                 <span style={{
-                  fontSize: '11px', fontWeight: '700', padding: '6px 14px', borderRadius: '999px',
-                  background: 'rgba(255,255,255,0.12)',
-                  border: '1px solid rgba(255,255,255,0.16)',
-                  color: 'rgba(255,255,255,0.75)',
+                  fontSize: '11px', fontWeight: '700', padding: '7px 16px', borderRadius: '999px',
+                  background: 'rgba(255,255,255,0.15)',
+                  border: '1px solid rgba(255,255,255,0.22)',
+                  color: 'rgba(255,255,255,0.80)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.2)',
                 }}>여권 보기 →</span>
               </div>
             </div>
@@ -1102,76 +1113,89 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
 
         {/* ── 4. 이번 달 진행률 ── */}
         {completedCount > 0 && (
-          <div style={{ ...blueCard, padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <span style={{ fontSize: '16px' }}>📖</span>
-              <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A' }}>이번 달 수업 흐름</p>
+          <div style={{ ...blueCard, padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '13px',
+                background: 'linear-gradient(145deg, #d0e4f8, #b8d2f0)',
+                boxShadow: '3px 3px 8px rgba(140,175,218,0.28), -2px -2px 6px rgba(255,255,255,0.9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px',
+              }}>📖</div>
+              <p style={{ fontSize: '13px', fontWeight: '800', color: '#2A3244' }}>이번 달 수업 흐름</p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '10px' }}>
-              <p style={{ fontSize: '32px', fontWeight: '800', color: '#27324A', lineHeight: 1 }}>{monthlyClasses}</p>
-              <p style={{ fontSize: '14px', color: '#7E8797' }}>번 완료</p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '12px' }}>
+              <p style={{ fontSize: '34px', fontWeight: '800', color: '#2A3244', lineHeight: 1 }}>{monthlyClasses}</p>
+              <p style={{ fontSize: '14px', color: '#8C96A8' }}>번 완료</p>
             </div>
             <div style={{
-              width: '100%', height: '10px', borderRadius: '999px',
-              background: 'rgba(175,196,216,0.15)',
-              boxShadow: 'inset 2px 2px 5px rgba(120,130,150,0.1), inset -2px -2px 5px rgba(255,255,255,0.9)',
-              marginBottom: '8px',
+              width: '100%', height: '12px', borderRadius: '999px',
+              background: 'rgba(160,192,230,0.15)',
+              boxShadow: 'inset 3px 3px 6px rgba(120,150,190,0.15), inset -2px -2px 5px rgba(255,255,255,0.95)',
+              marginBottom: '10px',
             }}>
               <div style={{
-                height: '10px', borderRadius: '999px',
+                height: '12px', borderRadius: '999px',
                 width: `${Math.min(100, (monthlyClasses / 8) * 100)}%`,
-                background: 'linear-gradient(to right, rgba(175,200,240,0.85), rgba(120,170,220,0.9))',
-                boxShadow: '0 2px 6px rgba(140,180,220,0.4)',
+                background: 'linear-gradient(to right, #88B8E8, #6498D0)',
+                boxShadow: '0 2px 8px rgba(120,168,220,0.45)',
                 transition: 'width 0.7s ease',
               }} />
             </div>
-            <p style={{ fontSize: '11px', color: '#A8AFBA' }}>
+            <p style={{ fontSize: '11px', color: '#B0B8C5' }}>
               이번 달 영어 여행이 차곡차곡 쌓이고 있어요 🌟
             </p>
           </div>
         )}
 
-        {/* ── 5. 선생님 응원 카드 ── */}
-        <div style={{ ...pinkCard, padding: '18px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <span style={{ fontSize: '16px' }}>💌</span>
-            <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A' }}>오늘의 응원</p>
+        {/* ── 5. 오늘의 응원 ── */}
+        <div style={{ ...pinkCard, padding: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '13px',
+              background: 'linear-gradient(145deg, #fcd8e0, #f8beca)',
+              boxShadow: '3px 3px 8px rgba(210,155,165,0.28), -2px -2px 6px rgba(255,255,255,0.9)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px',
+            }}>💌</div>
+            <p style={{ fontSize: '13px', fontWeight: '800', color: '#2A3244' }}>오늘의 응원</p>
           </div>
           {feedback?.good_points ? (
             <div style={{
-              padding: '12px 14px', borderRadius: '16px',
-              background: 'rgba(255,215,220,0.18)',
-              border: '1px solid rgba(255,195,205,0.3)',
+              padding: '14px 16px', borderRadius: '18px',
+              background: 'rgba(252,210,220,0.22)',
+              border: '1px solid rgba(248,185,200,0.35)',
             }}>
-              <p style={{ fontSize: '13px', color: '#27324A', lineHeight: 1.65 }}>
+              <p style={{ fontSize: '13px', color: '#2A3244', lineHeight: 1.7 }}>
                 ✨ {feedback.good_points}
               </p>
             </div>
           ) : (
-            <p style={{ fontSize: '13px', color: '#7E8797', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '13px', color: '#8C96A8', lineHeight: 1.75 }}>
               틀려도 괜찮아.<br />다시 말해보는 힘이 진짜 실력이야.
             </p>
           )}
         </div>
 
         {/* ── 6. 오늘의 문장 ── */}
-        <div style={{ ...lightCard, padding: '18px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-            <span style={{ fontSize: '16px' }}>💬</span>
-            <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A' }}>오늘의 문장</p>
+        <div style={{ ...lightCard, padding: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '13px',
+              background: 'linear-gradient(145deg, #e8eaf8, #d8dcf4)',
+              boxShadow: '3px 3px 8px rgba(160,165,210,0.25), -2px -2px 6px rgba(255,255,255,0.9)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px',
+            }}>💬</div>
+            <p style={{ fontSize: '13px', fontWeight: '800', color: '#2A3244' }}>오늘의 문장</p>
           </div>
           {feedback?.expressions && feedback.expressions.length > 0 ? (
-            <div>
-              <p style={{ fontSize: '16px', fontWeight: '700', color: '#27324A', lineHeight: 1.35 }}>
-                {feedback.expressions[0]}
-              </p>
-            </div>
+            <p style={{ fontSize: '17px', fontWeight: '700', color: '#2A3244', lineHeight: 1.4 }}>
+              {feedback.expressions[0]}
+            </p>
           ) : (
             <>
-              <p style={{ fontSize: '16px', fontWeight: '700', color: '#27324A', lineHeight: 1.35 }}>
+              <p style={{ fontSize: '17px', fontWeight: '700', color: '#2A3244', lineHeight: 1.4 }}>
                 I can try again.
               </p>
-              <p style={{ fontSize: '12px', color: '#7E8797', marginTop: '4px' }}>
+              <p style={{ fontSize: '12px', color: '#8C96A8', marginTop: '5px' }}>
                 나는 다시 해볼 수 있어요.
               </p>
             </>
@@ -1181,18 +1205,25 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
         {/* ── 7. 최근 수업자료 ── */}
         {latestCompleted && (
           <Link href="/portal/homework">
-            <div style={{ ...lightCard, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}
+            <div style={{ ...lightCard, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}
               className="active:scale-[0.98] transition-transform">
-              <span style={{ fontSize: '20px' }}>📂</span>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '14px', flexShrink: 0,
+                background: 'linear-gradient(145deg, #ede8e0, #e0d8cc)',
+                boxShadow: '3px 3px 8px rgba(165,155,138,0.22), -2px -2px 6px rgba(255,255,255,0.9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+              }}>📂</div>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '12px', fontWeight: '700', color: '#27324A' }}>최근 수업자료</p>
-                <p style={{ fontSize: '11px', color: '#7E8797', marginTop: '2px' }}>
+                <p style={{ fontSize: '12px', fontWeight: '800', color: '#2A3244' }}>최근 수업자료</p>
+                <p style={{ fontSize: '11px', color: '#8C96A8', marginTop: '3px' }}>
                   {formatDate(latestCompleted.date)} 수업자료
                 </p>
               </div>
               <span style={{
-                fontSize: '10px', fontWeight: '700', padding: '5px 12px', borderRadius: '999px',
-                background: 'rgba(175,196,216,0.18)', color: '#5B7A9E', flexShrink: 0,
+                fontSize: '10px', fontWeight: '700', padding: '6px 14px', borderRadius: '999px',
+                background: 'linear-gradient(135deg, #d8e4f4, #c8d8ee)',
+                color: '#5878A8', flexShrink: 0,
+                boxShadow: '2px 2px 6px rgba(140,165,205,0.25)',
               }}>바로 보기</span>
             </div>
           </Link>
