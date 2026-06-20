@@ -228,7 +228,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   placeholder="example@email.com"
                   required
-                  className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
+                  className="w-full px-4 py-3 rounded-2xl focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)", fontSize: "16px"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
                 />
               </div>
               <div>
@@ -240,7 +240,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   required
-                  className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
+                  className="w-full px-4 py-3 rounded-2xl focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)", fontSize: "16px"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
                 />
               </div>
             </>
@@ -255,7 +255,7 @@ export default function LoginPage() {
                 autoComplete="off"
                 autoCapitalize="off"
                 required
-                className="w-full px-4 py-3 rounded-2xl text-sm font-mono tracking-widest text-center focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
+                className="w-full px-4 py-3 rounded-2xl font-mono tracking-widest text-center focus:outline-none focus:ring-2" style={{border: "1.5px solid rgba(175,196,216,0.35)", backgroundColor: "rgba(175,196,216,0.08)", color: "var(--sz-text-deep)", fontSize: "16px"}} onFocus={e=>e.currentTarget.style.borderColor="var(--sz-blue-soft)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(175,196,216,0.35)"}
               />
               <p className="mt-1.5 text-xs text-gray-400 text-center">선생님께 받은 코드를 입력하세요</p>
             </div>
