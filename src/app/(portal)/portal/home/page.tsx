@@ -57,7 +57,20 @@ export default function PortalHomePage() {
     />
   }
 
-  // ── 학부모 / 성인학습자 홈 ──
+  if (profile?.role === 'adult_learner') {
+    return <AdultLearnerHome
+      profile={profile}
+      nextClass={nextClass}
+      feedback={feedback}
+      latestCompleted={latestCompleted}
+      growthData={growthData}
+      data={data}
+      payment={payment}
+      remaining={remaining}
+    />
+  }
+
+  // ── 학부모 홈 ──
   const completedCount = growthData?.totalClasses ?? 0
   const stampedCities = getStampedCities(completedCount)
   const currentCity = getCurrentCity(completedCount)
@@ -423,6 +436,371 @@ function ParentLetterCard({ feedback, latestCompleted }: { feedback: any; latest
           <p style={{ fontSize: '13px', color: 'var(--sz-text-muted)' }}>선생님이 곧 편지를 보낼 예정입니다</p>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════
+   성인학습자 전용 홈
+═══════════════════════════════════════════ */
+function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growthData, data, payment, remaining }: {
+  profile: any
+  nextClass: any
+  feedback: any
+  latestCompleted: any
+  growthData: any
+  data: any
+  payment: any
+  remaining: number | null
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  const completedCount = growthData?.totalClasses ?? 0
+  const stampedCities = getStampedCities(completedCount)
+  const currentCity = getCurrentCity(completedCount)
+  const nextCityObj = getNextCity(completedCount)
+  const progressInCity = classesInCurrentCity(completedCount)
+  const isArrived = progressInCity === 1
+
+  const daysUntil = nextClass
+    ? differenceInCalendarDays(parseISO(nextClass.date), new Date())
+    : null
+
+  const displayName = profile?.display_name ?? ''
+
+  const lightCard = {
+    borderRadius: '24px',
+    backgroundColor: '#FFFDF8',
+    boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)',
+    border: '1px solid rgba(255,255,255,0.75)',
+  } as React.CSSProperties
+
+  const blueCard = {
+    borderRadius: '24px',
+    backgroundColor: '#FFFDF8',
+    boxShadow: '7px 7px 20px rgba(140,170,210,0.12), -4px -4px 12px rgba(255,255,255,0.92)',
+    border: '1px solid rgba(195,215,240,0.4)',
+  } as React.CSSProperties
+
+  const pinkCard = {
+    borderRadius: '24px',
+    backgroundColor: '#FFFDF8',
+    boxShadow: '7px 7px 20px rgba(200,150,160,0.12), -4px -4px 12px rgba(255,255,255,0.92)',
+    border: '1px solid rgba(255,215,220,0.4)',
+  } as React.CSSProperties
+
+  return (
+    <div className="relative max-w-lg mx-auto px-4" style={{ paddingTop: '20px' }}>
+
+      {/* ── 상단 인사 ── */}
+      <div style={{ marginBottom: '20px' }}>
+        <p style={{ fontSize: '22px', fontWeight: '800', color: '#27324A', lineHeight: 1.2 }}>
+          안녕하세요, {displayName}님 👋
+        </p>
+        <p style={{ fontSize: '13px', color: '#7E8797', marginTop: '5px' }}>
+          오늘도 영어 여행을 함께 떠나봐요.
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+        {/* ── 1. 다음 수업 Hero ── */}
+        <Link href="/portal/schedule">
+          <div style={{
+            borderRadius: '28px',
+            background: 'linear-gradient(145deg, #3D5678 0%, #2B4060 60%, #243660 100%)',
+            boxShadow: '10px 10px 28px rgba(36,54,96,0.32), -2px -2px 8px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.14)',
+            padding: '22px',
+            position: 'relative',
+            overflow: 'hidden',
+          }} className="active:scale-[0.98] transition-transform">
+            <div style={{
+              position: 'absolute', top: '-20%', right: '-8%',
+              width: '140px', height: '140px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }} />
+            <div style={{
+              position: 'absolute', bottom: '-30%', left: '10%',
+              width: '90px', height: '90px', borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(240,210,130,0.18) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', color: 'rgba(240,230,198,0.65)', marginBottom: '10px' }}>
+                다음 수업
+              </p>
+              {nextClass ? (
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                  <div>
+                    <p style={{ fontSize: '20px', fontWeight: '800', color: '#fff', lineHeight: 1.15 }}>
+                      {formatDate(nextClass.date)}
+                    </p>
+                    <p style={{ fontSize: '14px', color: 'rgba(240,210,130,0.9)', marginTop: '5px', fontWeight: '600' }}>
+                      {formatTime(nextClass.start_time)}
+                    </p>
+                  </div>
+                  {daysUntil !== null && (
+                    <div style={{
+                      flexShrink: 0,
+                      borderRadius: '18px',
+                      padding: '10px 14px',
+                      background: 'rgba(255,255,255,0.11)',
+                      backdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255,255,255,0.16)',
+                      textAlign: 'center',
+                    }}>
+                      {daysUntil <= 0 ? (
+                        <>
+                          <p style={{ fontSize: '18px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>오늘</p>
+                          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', marginTop: '2px' }}>수업이에요!</p>
+                        </>
+                      ) : (
+                        <>
+                          <p style={{ fontSize: '18px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>D-{daysUntil}</p>
+                          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.50)', marginTop: '2px' }}>{daysUntil}일 후</p>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.45)' }}>예정된 수업이 없어요</p>
+              )}
+            </div>
+          </div>
+        </Link>
+
+        {/* ── 2. 선생님의 편지 ── */}
+        <div style={{ ...lightCard, padding: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <span style={{ fontSize: '16px' }}>💌</span>
+            <p style={{ fontSize: '13px', fontWeight: '700', color: '#27324A' }}>선생님의 편지</p>
+            {latestCompleted && (
+              <span style={{ marginLeft: 'auto', fontSize: '11px', color: '#7E8797' }}>
+                {(() => { const d = parseISO(latestCompleted.date); return `${d.getMonth()+1}월 ${d.getDate()}일` })()}
+              </span>
+            )}
+          </div>
+          {feedback ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {feedback.parent_summary && (
+                <div>
+                  <p
+                    style={{
+                      fontSize: '13px', color: '#27324A', lineHeight: 1.65,
+                      padding: '12px 16px', borderRadius: '16px',
+                      backgroundColor: 'rgba(175,196,216,0.12)',
+                      border: '1px solid rgba(175,196,216,0.2)',
+                      ...(expanded ? {} : {
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                      } as any),
+                    }}
+                  >
+                    "{feedback.parent_summary}"
+                  </p>
+                  <button
+                    onClick={() => setExpanded(v => !v)}
+                    style={{ marginTop: '6px', fontSize: '11px', fontWeight: '600', color: 'var(--sz-blue-soft)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  >
+                    {expanded ? '접기 ↑' : '전체 보기 →'}
+                  </button>
+                </div>
+              )}
+              {feedback.topic && (
+                <div>
+                  <p style={{ fontSize: '11px', fontWeight: '700', color: '#7E8797', marginBottom: '4px' }}>수업 주제</p>
+                  <p style={{ fontSize: '13px', color: '#27324A' }}>{feedback.topic}</p>
+                </div>
+              )}
+              {feedback.expressions?.length > 0 && (
+                <div>
+                  <p style={{ fontSize: '11px', fontWeight: '700', color: '#7E8797', marginBottom: '6px' }}>오늘 배운 표현</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {feedback.expressions.map((e: string) => (
+                      <span key={e} style={{
+                        fontSize: '11px', padding: '4px 10px', borderRadius: '999px', fontWeight: '600',
+                        backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)',
+                      }}>{e}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {feedback.good_points && (
+                <div>
+                  <p style={{ fontSize: '11px', fontWeight: '700', color: '#7E8797', marginBottom: '4px' }}>잘한 점 ✨</p>
+                  <p style={{ fontSize: '13px', color: '#27324A' }}>{feedback.good_points}</p>
+                </div>
+              )}
+              {feedback.has_homework && feedback.homework_text && (
+                <div style={{ borderRadius: '12px', padding: '12px 14px', backgroundColor: 'var(--sz-gold-light)' }}>
+                  <p style={{ fontSize: '11px', fontWeight: '700', color: 'var(--sz-gold)', marginBottom: '4px' }}>📌 숙제</p>
+                  <p style={{ fontSize: '13px', color: '#27324A' }}>{feedback.homework_text}</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              padding: '14px 16px', borderRadius: '16px',
+              background: 'rgba(175,196,216,0.07)',
+              border: '1.5px dashed rgba(175,196,216,0.35)',
+            }}>
+              <span style={{ fontSize: '20px' }}>✏️</span>
+              <p style={{ fontSize: '13px', color: '#7E8797' }}>선생님이 곧 편지를 보낼 예정이에요</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── 3. 2열: 영어 여권 미니 + 수업 진행 ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+
+          {/* 영어 여권 */}
+          <Link href="/portal/passport">
+            <div style={{
+              borderRadius: '24px',
+              background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)',
+              boxShadow: '7px 7px 20px rgba(36,54,96,0.25), -2px -2px 8px rgba(255,255,255,0.06)',
+              padding: '16px',
+              minHeight: '130px',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'hidden',
+            }} className="active:scale-[0.97] transition-transform">
+              <div style={{ position: 'absolute', right: '8px', bottom: '8px', fontSize: '50px', opacity: 0.07, pointerEvents: 'none', lineHeight: 1 }}>🌍</div>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+              <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', color: 'rgba(240,230,198,0.6)', marginBottom: '10px' }}>나의 여권</p>
+              <p style={{ fontSize: '30px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>{stampedCities.length}</p>
+              <p style={{ fontSize: '10px', color: 'rgba(240,230,198,0.6)', marginTop: '2px' }}>도시 스탬프</p>
+              {currentCity && (
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.65)', marginTop: '6px' }}>
+                  {currentCity.landmark} {currentCity.name}
+                </p>
+              )}
+              <span style={{ marginTop: 'auto', paddingTop: '8px', fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>보기 →</span>
+            </div>
+          </Link>
+
+          {/* 이번 달 수업 */}
+          {payment ? (
+            <div style={{ ...blueCard, padding: '16px', minHeight: '130px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{
+                width: '38px', height: '38px', borderRadius: '13px', marginBottom: '10px',
+                background: 'rgba(195,215,240,0.45)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+              }}>🎯</div>
+              <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A', marginBottom: '4px' }}>이번 달 수업</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                <p style={{ fontSize: '22px', fontWeight: '800', color: '#27324A', lineHeight: 1 }}>{payment.completed_sessions}</p>
+                <p style={{ fontSize: '11px', color: '#7E8797' }}>/ {payment.total_sessions}회</p>
+              </div>
+              <div style={{
+                width: '100%', height: '6px', borderRadius: '999px',
+                background: 'rgba(175,196,216,0.2)',
+                boxShadow: 'inset 1px 1px 3px rgba(120,130,150,0.1), inset -1px -1px 3px rgba(255,255,255,0.9)',
+                marginTop: '8px',
+              }}>
+                <div style={{
+                  height: '6px', borderRadius: '999px',
+                  width: `${payment.total_sessions > 0 ? Math.min(100, (payment.completed_sessions / payment.total_sessions) * 100) : 0}%`,
+                  background: 'linear-gradient(to right, rgba(175,200,240,0.85), rgba(120,170,220,0.9))',
+                  transition: 'width 0.7s ease',
+                }} />
+              </div>
+              {remaining !== null && remaining > 0 && (
+                <p style={{ fontSize: '10px', color: '#7E8797', marginTop: '6px' }}>앞으로 {remaining}번 남음</p>
+              )}
+            </div>
+          ) : (
+            <div style={{ ...blueCard, padding: '16px', minHeight: '130px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{
+                width: '38px', height: '38px', borderRadius: '13px', marginBottom: '10px',
+                background: 'rgba(195,215,240,0.45)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px',
+              }}>📖</div>
+              <p style={{ fontSize: '12px', fontWeight: '800', color: '#27324A', marginBottom: '4px' }}>총 수업</p>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                <p style={{ fontSize: '22px', fontWeight: '800', color: '#27324A', lineHeight: 1 }}>{completedCount}</p>
+                <p style={{ fontSize: '11px', color: '#7E8797' }}>회 완료</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── 4. 여권 진행 현황 ── */}
+        {currentCity && (
+          <Link href="/portal/passport">
+            <div style={{
+              borderRadius: '28px',
+              background: 'linear-gradient(145deg, #3A5272 0%, #2A3F5F 100%)',
+              boxShadow: '10px 10px 28px rgba(36,54,96,0.28), -2px -2px 8px rgba(255,255,255,0.06)',
+              padding: '18px 20px',
+              position: 'relative',
+              overflow: 'hidden',
+            }} className="active:scale-[0.98] transition-transform">
+              <div style={{
+                position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                fontSize: '70px', opacity: 0.05, pointerEvents: 'none', lineHeight: 1,
+              }}>🌍</div>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px', gap: '10px' }}>
+                  <div>
+                    <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', color: 'rgba(240,230,198,0.65)', marginBottom: '4px' }}>나의 영어 여권</p>
+                    <p style={{ fontSize: '20px', fontWeight: '800', color: '#fff', lineHeight: 1.15 }}>
+                      {currentCity.landmark} {currentCity.name}
+                    </p>
+                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginTop: '3px' }}>
+                      현재 여행 중 {nextCityObj ? `· ${nextCityObj.name}까지 ${isArrived ? 1 : 2}번 남음` : ''}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <p style={{ fontSize: '30px', fontWeight: '800', color: 'var(--sz-gold)', lineHeight: 1 }}>{stampedCities.length}</p>
+                    <p style={{ fontSize: '10px', color: 'rgba(240,230,198,0.65)' }}>스탬프</p>
+                  </div>
+                </div>
+                <div style={{ width: '100%', height: '7px', borderRadius: '999px', background: 'rgba(255,255,255,0.1)' }}>
+                  <div style={{
+                    height: '7px', borderRadius: '999px',
+                    width: isArrived ? '50%' : '0%',
+                    background: 'linear-gradient(to right, var(--sz-gold), #E8C56A)',
+                    transition: 'width 0.7s ease',
+                    boxShadow: '0 2px 8px rgba(240,210,130,0.4)',
+                  }} />
+                </div>
+              </div>
+            </div>
+          </Link>
+        )}
+
+        {/* ── 5. 최근 자료 ── */}
+        {latestCompleted && (
+          <Link href="/portal/parent">
+            <div style={{ ...lightCard, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}
+              className="active:scale-[0.98] transition-transform">
+              <span style={{ fontSize: '20px' }}>📂</span>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: '12px', fontWeight: '700', color: '#27324A' }}>최근 수업자료</p>
+                <p style={{ fontSize: '11px', color: '#7E8797', marginTop: '2px' }}>
+                  {formatDate(latestCompleted.date)} 수업자료
+                </p>
+              </div>
+              <span style={{
+                fontSize: '10px', fontWeight: '700', padding: '5px 12px', borderRadius: '999px',
+                background: 'rgba(175,196,216,0.18)', color: '#5B7A9E', flexShrink: 0,
+              }}>바로 보기</span>
+            </div>
+          </Link>
+        )}
+
+      </div>
     </div>
   )
 }

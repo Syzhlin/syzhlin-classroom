@@ -525,9 +525,9 @@ export default function PortalSchedulePage() {
     )
   }
 
-  // 학부모: 캘린더 메인 레이아웃
+  // 학부모 / 성인학습자: 캘린더 메인 레이아웃
   const { linkedStudentName } = usePortalStudent()
-  if (isParent) {
+  if (isParent || role === 'adult_learner') {
     const upcomingGroups = groupByDate(upcoming).slice(0, 2) // 가장 가까운 2개 날짜
     const pastGroups = groupByDate(past)
     const studentName = linkedStudentName ?? undefined
