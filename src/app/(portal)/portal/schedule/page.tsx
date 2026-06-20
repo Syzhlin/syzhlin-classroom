@@ -470,8 +470,8 @@ export default function PortalSchedulePage() {
 
   const today = startOfDay(new Date())
   const allClasses = classes ?? []
-  const upcoming = allClasses.filter(c => !isBefore(parseISO(c.date), today))
-  const past = allClasses.filter(c => isBefore(parseISO(c.date), today)).slice(-5).reverse()
+  const upcoming = allClasses.filter(c => !isBefore(parseISO(c.date), today) && (c.status === 'scheduled' || c.status === 'makeup'))
+  const past = allClasses.filter(c => isBefore(parseISO(c.date), today) || c.status === 'completed' || c.status === 'cancelled').slice(-5).reverse()
 
   function groupByDate(items: typeof upcoming) {
     const map: Record<string, typeof upcoming> = {}
