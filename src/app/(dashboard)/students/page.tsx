@@ -10,8 +10,8 @@ import type { Database } from '@/types/database'
 type Student = Database['public']['Tables']['students']['Row']
 
 const SUBJECT_COLORS: Record<string, string> = {
-  영어: 'bg-green-100 text-green-700',
-  중국어: 'bg-red-100 text-red-700',
+  영어: 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
+  중국어: 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]',
 }
 
 export default function StudentsPage() {
@@ -42,14 +42,14 @@ export default function StudentsPage() {
       {/* 헤더 */}
       <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">학생 관리</h1>
-          <p className="mt-0.5 text-sm text-gray-500">
+          <h1 className="text-xl font-bold text-[var(--sz-text-deep)]">학생 관리</h1>
+          <p className="mt-0.5 text-sm text-[var(--sz-text-muted)]">
             {isLoading ? '...' : `총 ${students?.length ?? 0}명`}
           </p>
         </div>
         <button
           onClick={handleAdd}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          className="flex min-h-11 shrink-0 items-center gap-1.5 px-4 py-2 bg-[var(--sz-blue-soft)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
         >
           <span className="text-lg leading-none">+</span> 학생 추가
         </button>
@@ -59,7 +59,7 @@ export default function StudentsPage() {
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-36 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-36 bg-[rgba(175,196,216,0.1)] rounded-xl animate-pulse" />
           ))}
         </div>
       )}
@@ -68,11 +68,11 @@ export default function StudentsPage() {
       {!isLoading && (!students || students.length === 0) && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="text-5xl mb-4">👨‍🎓</div>
-          <p className="font-medium text-gray-700">아직 등록된 학생이 없어요</p>
-          <p className="mt-1 text-sm text-gray-400">학생을 추가하면 수업 일정에서 선택할 수 있어요</p>
+          <p className="font-medium text-[var(--sz-text-deep)]">아직 등록된 학생이 없어요</p>
+          <p className="mt-1 text-sm text-[var(--sz-text-muted)] opacity-70">학생을 추가하면 수업 일정에서 선택할 수 있어요</p>
           <button
             onClick={handleAdd}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-[var(--sz-blue-soft)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
           >
             첫 번째 학생 추가하기
           </button>
@@ -95,16 +95,16 @@ export default function StudentsPage() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-gray-900">{student.name}</h3>
+                    <h3 className="font-semibold text-[var(--sz-text-deep)]">{student.name}</h3>
                     {student.grade && (
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                      <span className="text-xs text-[var(--sz-text-muted)] bg-[rgba(175,196,216,0.1)] px-2 py-0.5 rounded-full">
                         {student.grade}
                       </span>
                     )}
                   </div>
 
                   {student.school && (
-                    <p className="mt-0.5 text-xs text-gray-500">{student.school}</p>
+                    <p className="mt-0.5 text-xs text-[var(--sz-text-muted)]">{student.school}</p>
                   )}
 
                   {/* 과목 태그 */}
@@ -113,7 +113,7 @@ export default function StudentsPage() {
                       {student.subjects.map(s => (
                         <span
                           key={s}
-                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${SUBJECT_COLORS[s] ?? 'bg-gray-100 text-gray-600'}`}
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${SUBJECT_COLORS[s] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}
                         >
                           {s}
                         </span>
@@ -123,21 +123,21 @@ export default function StudentsPage() {
 
                   {/* 수업료 */}
                   {!!student.hourly_rate && (
-                    <p className="mt-2 text-xs text-gray-500">
+                    <p className="mt-2 text-xs text-[var(--sz-text-muted)]">
                       한달 {student.hourly_rate.toLocaleString()}원
                     </p>
                   )}
 
                   {/* 정기 수업 시간 */}
                   {student.schedule_note && (
-                  <p className="mt-1.5 text-xs text-indigo-600 font-medium break-words">
+                  <p className="mt-1.5 text-xs text-[var(--sz-blue-soft)] font-medium break-words">
                       🕐 {student.schedule_note}
                     </p>
                   )}
 
                   {/* 연락처 */}
                   {(student.phone || student.parent_phone) && (
-                    <p className="mt-1 text-xs text-gray-400 break-words">
+                    <p className="mt-1 text-xs text-[var(--sz-text-muted)] opacity-70 break-words">
                       {student.phone && `📱 ${student.phone}`}
                       {student.phone && student.parent_phone && '  ·  '}
                       {student.parent_phone && `👨‍👩‍👧 ${student.parent_phone}`}
@@ -149,7 +149,7 @@ export default function StudentsPage() {
                 <div className="flex shrink-0 gap-1">
                   <button
                     onClick={() => setReportTarget(student)}
-                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
+                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-[var(--sz-text-muted)] opacity-70 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
                     title="성장리포트"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -158,7 +158,7 @@ export default function StudentsPage() {
                   </button>
                   <button
                     onClick={() => handleEdit(student)}
-                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="inline-flex min-h-10 min-w-10 items-center justify-center text-[var(--sz-text-muted)] opacity-70 hover:text-[var(--sz-blue-soft)] hover:bg-[var(--sz-blue-pale)] rounded-lg transition-colors"
                     title="수정"
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -176,7 +176,7 @@ export default function StudentsPage() {
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(null)}
-                        className="min-h-10 px-3 py-1 text-xs border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="min-h-10 px-3 py-1 text-xs border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] rounded-lg hover:bg-[var(--sz-bg-pastel)] transition-colors"
                       >
                         취소
                       </button>
@@ -184,7 +184,7 @@ export default function StudentsPage() {
                   ) : (
                     <button
                       onClick={() => setDeleteConfirm(student.id)}
-                      className="inline-flex min-h-10 min-w-10 items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      className="inline-flex min-h-10 min-w-10 items-center justify-center text-[var(--sz-text-muted)] opacity-70 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                       title="삭제"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

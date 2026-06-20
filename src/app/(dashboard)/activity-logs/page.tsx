@@ -96,10 +96,10 @@ export default function ActivityLogsPage() {
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-28">
       {/* 헤더: 제목 + 새로고침 */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-bold text-gray-900">활동 로그</h1>
+        <h1 className="text-lg font-bold text-[var(--sz-text-deep)]">활동 로그</h1>
         <button
           onClick={fetchLogs}
-          className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+          className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)] rounded-lg hover:bg-gray-200 transition-colors font-medium"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
@@ -111,7 +111,7 @@ export default function ActivityLogsPage() {
 
       {/* 검색창 — 모바일 풀너비 */}
       <div className="relative mb-3">
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--sz-text-muted)] opacity-70" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input
@@ -119,7 +119,7 @@ export default function ActivityLogsPage() {
           placeholder="코드·이름·내용 검색..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 text-sm border border-gray-200 rounded-2xl outline-none focus:border-indigo-400 bg-white"
+          className="w-full pl-9 pr-4 text-sm border border-[rgba(175,196,216,0.3)] rounded-2xl outline-none focus:border-indigo-400 bg-white"
           style={{ height: '44px' }}
         />
       </div>
@@ -132,8 +132,8 @@ export default function ActivityLogsPage() {
             onClick={() => setFilter(key)}
             className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-colors whitespace-nowrap ${
               filter === key
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                ? 'bg-[var(--sz-blue-soft)] text-white'
+                : 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)] hover:bg-gray-200'
             }`}
           >
             {label}
@@ -142,9 +142,9 @@ export default function ActivityLogsPage() {
       </div>
 
       {loading ? (
-        <div className="text-center py-16 text-gray-400">불러오는 중...</div>
+        <div className="text-center py-16 text-[var(--sz-text-muted)] opacity-70">불러오는 중...</div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">로그가 없습니다</div>
+        <div className="text-center py-16 text-[var(--sz-text-muted)] opacity-70">로그가 없습니다</div>
       ) : (
         <>
           {/* 모바일 카드 리스트 (md 미만) */}
@@ -156,24 +156,24 @@ export default function ActivityLogsPage() {
               >
                 {/* 상단: 시간 + 액션 배지 */}
                 <div className="flex items-center justify-between gap-2 mb-2.5">
-                  <span className="text-xs text-gray-400 font-mono">{formatTimeShort(log.created_at)}</span>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 font-medium whitespace-nowrap">
+                  <span className="text-xs text-[var(--sz-text-muted)] opacity-70 font-mono">{formatTimeShort(log.created_at)}</span>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--sz-blue-pale)] text-[var(--sz-blue-soft)] font-medium whitespace-nowrap">
                     {ACTION_LABEL[log.action] ?? log.action}
                   </span>
                 </div>
                 {/* 코드 + 역할 */}
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="font-semibold text-gray-800 text-sm break-all">{log.user_code ?? '-'}</span>
+                  <span className="font-semibold text-[var(--sz-text-deep)] text-sm break-all">{log.user_code ?? '-'}</span>
                   {log.user_role && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${ROLE_COLOR[log.user_role] ?? 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${ROLE_COLOR[log.user_role] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
                       {ROLE_LABEL[log.user_role] ?? log.user_role}
                     </span>
                   )}
                 </div>
                 {/* 상세 내용 */}
                 {(log.student_name || log.detail) && (
-                  <p className="text-xs text-gray-500 leading-relaxed break-words">
-                    {log.student_name ? <span className="font-medium text-gray-700">[{log.student_name}] </span> : null}
+                  <p className="text-xs text-[var(--sz-text-muted)] leading-relaxed break-words">
+                    {log.student_name ? <span className="font-medium text-[var(--sz-text-deep)]">[{log.student_name}] </span> : null}
                     {log.detail}
                   </p>
                 )}
@@ -182,49 +182,49 @@ export default function ActivityLogsPage() {
           </div>
 
           {/* 데스크톱 테이블 (md 이상) */}
-          <div className="hidden md:block bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="hidden md:block sz-widget rounded-2xl overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-[var(--sz-bg-pastel)] border-b border-[rgba(175,196,216,0.15)]">
                 <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-44">시간 (KST)</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-24">코드</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-24">역할</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-28">액션</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">상세</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-[var(--sz-text-muted)] w-44">시간 (KST)</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-[var(--sz-text-muted)] w-24">코드</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-[var(--sz-text-muted)] w-24">역할</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-[var(--sz-text-muted)] w-28">액션</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-[var(--sz-text-muted)]">상세</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map(log => (
-                  <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-2.5 text-xs text-gray-500 font-mono whitespace-nowrap">
+                  <tr key={log.id} className="hover:bg-[var(--sz-bg-pastel)] transition-colors">
+                    <td className="px-4 py-2.5 text-xs text-[var(--sz-text-muted)] font-mono whitespace-nowrap">
                       {formatTime(log.created_at)}
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className="font-medium text-gray-800 break-all">{log.user_code ?? '-'}</span>
+                      <span className="font-medium text-[var(--sz-text-deep)] break-all">{log.user_code ?? '-'}</span>
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${ROLE_COLOR[log.user_role ?? ''] ?? 'bg-gray-100 text-gray-500'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${ROLE_COLOR[log.user_role ?? ''] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
                         {ROLE_LABEL[log.user_role ?? ''] ?? (log.user_role ?? '-')}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-600 whitespace-nowrap">
+                    <td className="px-4 py-2.5 text-xs text-[var(--sz-text-muted)] whitespace-nowrap">
                       {ACTION_LABEL[log.action] ?? log.action}
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-gray-500 break-words max-w-[200px]">
-                      {log.student_name ? <span className="font-medium text-gray-700">[{log.student_name}] </span> : null}
+                    <td className="px-4 py-2.5 text-xs text-[var(--sz-text-muted)] break-words max-w-[200px]">
+                      {log.student_name ? <span className="font-medium text-[var(--sz-text-deep)]">[{log.student_name}] </span> : null}
                       {log.detail ?? '-'}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="px-4 py-2.5 text-xs text-gray-400 border-t border-gray-50">
+            <div className="px-4 py-2.5 text-xs text-[var(--sz-text-muted)] opacity-70 border-t border-gray-50">
               총 {filtered.length}개 ({logs.length}개 중)
             </div>
           </div>
 
           {/* 모바일 카운트 */}
-          <p className="md:hidden text-xs text-gray-400 text-center mt-3">
+          <p className="md:hidden text-xs text-[var(--sz-text-muted)] opacity-70 text-center mt-3">
             총 {filtered.length}개 ({logs.length}개 중)
           </p>
         </>

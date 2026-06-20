@@ -52,10 +52,10 @@ export function BottomNav() {
       {showMore && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowMore(false)} />
-          <div className="relative bg-white rounded-t-2xl px-4 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10">
+          <div className="relative rounded-t-3xl px-4 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] z-10" style={{backgroundColor: "var(--sz-card-pastel)", boxShadow: "0 -4px 24px rgba(46,53,69,0.06)"}}>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-semibold text-gray-500">더보기</span>
-              <button onClick={() => setShowMore(false)} className="min-h-11 min-w-11 inline-flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100">
+              <span className="text-sm font-semibold" style={{color: "var(--sz-text-muted)"}}>더보기</span>
+              <button onClick={() => setShowMore(false)} className="min-h-11 min-w-11 inline-flex items-center justify-center rounded-full" style={{color: "var(--sz-text-muted)", backgroundColor: "rgba(175,196,216,0.15)"}}>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -66,17 +66,16 @@ export function BottomNav() {
                   href={href}
                   onClick={() => setShowMore(false)}
                   className={cn(
-                    'flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl px-1 text-center',
-                    pathname === href ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600'
+                    'flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl px-1 text-center'
                   )}
                 >
                   <div className="relative">
                     <Icon className="w-6 h-6" />
                     {href === '/messages' && totalUnread > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 text-white text-[10px] rounded-full flex items-center justify-center">{totalUnread}</span>
+                      <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px] rounded-full flex items-center justify-center font-semibold" style={{backgroundColor: "var(--sz-blue-soft)"}}>{totalUnread}</span>
                     )}
                     {href === '/requests' && pendingRequests > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-white text-[10px] rounded-full flex items-center justify-center">{pendingRequests}</span>
+                      <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px] rounded-full flex items-center justify-center font-semibold" style={{backgroundColor: "var(--sz-peach)"}}>{pendingRequests}</span>
                     )}
                   </div>
                   <span className="text-xs">{label}</span>
@@ -85,7 +84,7 @@ export function BottomNav() {
             </div>
             <button
               onClick={handleLogout}
-              className="flex min-h-11 items-center gap-2 w-full px-4 py-3 rounded-xl text-sm text-red-500 bg-red-50"
+              className="flex min-h-11 items-center gap-2 w-full px-4 py-3 rounded-2xl text-sm font-medium" style={{color: "var(--sz-pink-soft)", backgroundColor: "var(--sz-pink-pale)"}}
             >
               <LogOut className="w-5 h-5" />
               로그아웃
@@ -95,15 +94,13 @@ export function BottomNav() {
       )}
 
       {/* 하단 탭바 */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 flex items-center pb-[env(safe-area-inset-bottom)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center pb-[env(safe-area-inset-bottom)]" style={{backgroundColor: "rgba(255,253,246,0.92)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1px solid rgba(175,196,216,0.25)"}}>
         {primaryNav.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
-            className={cn(
-              'flex-1 min-h-16 flex flex-col items-center justify-center gap-1 text-xs font-medium',
-              pathname === href ? 'text-indigo-600' : 'text-gray-400'
-            )}
+            className="flex-1 min-h-16 flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors"
+            style={{ color: pathname === href ? 'var(--sz-blue-soft)' : 'var(--sz-text-muted)' }}
           >
             <Icon className="w-5 h-5" />
             {label}
@@ -111,15 +108,13 @@ export function BottomNav() {
         ))}
         <button
           onClick={() => setShowMore(true)}
-          className={cn(
-            'flex-1 min-h-16 flex flex-col items-center justify-center gap-1 text-xs font-medium relative',
-            isMoreActive ? 'text-indigo-600' : 'text-gray-400'
-          )}
+          className="flex-1 min-h-16 flex flex-col items-center justify-center gap-1 text-xs font-semibold relative transition-colors"
+          style={{ color: isMoreActive ? 'var(--sz-blue-soft)' : 'var(--sz-text-muted)' }}
         >
           <div className="relative">
             <MoreHorizontal className="w-5 h-5" />
             {(totalUnread > 0 || pendingRequests > 0) && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{backgroundColor: "var(--sz-pink-soft)"}} />
             )}
           </div>
           더보기

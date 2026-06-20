@@ -17,11 +17,11 @@ import { useAllChangeRequests } from '@/lib/queries/useChangeRequests'
 import { useAllSessionClasses } from '@/lib/queries/useClasses'
 
 const STATUS_COLORS: Record<string, string> = {
-  scheduled: 'bg-blue-100 text-blue-700',
-  completed:  'bg-green-100 text-green-700',
-  cancelled:  'bg-red-100 text-red-600',
-  postponed:  'bg-gray-100 text-gray-500',
-  makeup:     'bg-amber-100 text-amber-700',
+  scheduled: 'bg-[var(--sz-blue-pale)] text-[var(--sz-blue-soft)]',
+  completed:  'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
+  cancelled:  'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]',
+  postponed:  'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]',
+  makeup:     'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]',
 }
 const STATUS_LABELS: Record<string, string> = {
   scheduled: '예정',
@@ -47,16 +47,16 @@ function SectionCard({
   badge?: number
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="sz-widget rounded-2xl shadow-sm overflow-hidden">
       <Link
         href={href}
-        className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+        className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 hover:bg-[var(--sz-bg-pastel)] transition-colors"
       >
         <div className="flex items-center gap-2.5">
           <Icon className="w-4 h-4 text-indigo-500" />
-          <span className="text-sm font-semibold text-gray-800">{title}</span>
+          <span className="text-sm font-semibold text-[var(--sz-text-deep)]">{title}</span>
           {badge !== undefined && badge > 0 && (
-            <span className="text-xs bg-indigo-600 text-white px-1.5 py-0.5 rounded-full leading-none">
+            <span className="text-xs bg-[var(--sz-blue-soft)] text-white px-1.5 py-0.5 rounded-full leading-none">
               {badge}
             </span>
           )}
@@ -99,15 +99,15 @@ export default function DashboardPage() {
     <div className="w-full max-w-4xl mx-auto space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* 헤더 */}
       <div>
-        <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
+        <p className="text-xs text-[var(--sz-text-muted)] opacity-70 font-medium uppercase tracking-wide">
           {format(now, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
         </p>
-        <h1 className="text-xl font-bold text-gray-900 mt-0.5">대시보드</h1>
+        <h1 className="text-xl font-bold text-[var(--sz-text-deep)] mt-0.5">대시보드</h1>
       </div>
 
       {/* KPI 4개 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Link href="/schedule" className="bg-indigo-600 rounded-xl p-4 text-white hover:bg-indigo-700 transition-colors">
+        <Link href="/schedule" className="bg-[var(--sz-blue-soft)] rounded-xl p-4 text-white hover:opacity-90 transition-colors">
           <p className="text-xs text-indigo-200 font-medium">오늘 수업</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1">
             {todayClasses.length}
@@ -116,31 +116,31 @@ export default function DashboardPage() {
           <p className="text-xs text-indigo-200 mt-1">완료 {completedToday} · 예정 {scheduledToday}</p>
         </Link>
 
-        <Link href="/students" className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all">
-          <p className="text-xs text-gray-400 font-medium">활성 학생</p>
-          <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
+        <Link href="/students" className="sz-widget rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-[rgba(175,196,216,0.4)] hover:shadow-md transition-all">
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 font-medium">활성 학생</p>
+          <p className="text-2xl sm:text-3xl font-bold mt-1 text-[var(--sz-text-deep)]">
             {students.length}
-            <span className="text-base font-normal text-gray-400">명</span>
+            <span className="text-base font-normal text-[var(--sz-text-muted)] opacity-70">명</span>
           </p>
-          <p className="text-xs text-gray-400 mt-1">이번 달 {thisMonthCompleted}회 완료</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-1">이번 달 {thisMonthCompleted}회 완료</p>
         </Link>
 
-        <Link href="/payments" className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all">
-          <p className="text-xs text-gray-400 font-medium">미납 현황</p>
-          <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
+        <Link href="/payments" className="sz-widget rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-[rgba(175,196,216,0.4)] hover:shadow-md transition-all">
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 font-medium">미납 현황</p>
+          <p className="text-2xl sm:text-3xl font-bold mt-1 text-[var(--sz-text-deep)]">
             {paymentStats.unpaid + paymentStats.partial}
-            <span className="text-base font-normal text-gray-400">건</span>
+            <span className="text-base font-normal text-[var(--sz-text-muted)] opacity-70">건</span>
           </p>
-          <p className="text-xs text-gray-400 mt-1">미납 {paymentStats.unpaid} · 부분납 {paymentStats.partial}</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-1">미납 {paymentStats.unpaid} · 부분납 {paymentStats.partial}</p>
         </Link>
 
-        <Link href="/messages" className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all">
-          <p className="text-xs text-gray-400 font-medium">미확인 알림</p>
-          <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
+        <Link href="/messages" className="sz-widget rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-[rgba(175,196,216,0.4)] hover:shadow-md transition-all">
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 font-medium">미확인 알림</p>
+          <p className="text-2xl sm:text-3xl font-bold mt-1 text-[var(--sz-text-deep)]">
             {totalUnread + pendingRequests.length}
-            <span className="text-base font-normal text-gray-400">건</span>
+            <span className="text-base font-normal text-[var(--sz-text-muted)] opacity-70">건</span>
           </p>
-          <p className="text-xs text-gray-400 mt-1">문의 {totalUnread} · 변경요청 {pendingRequests.length}</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-1">문의 {totalUnread} · 변경요청 {pendingRequests.length}</p>
         </Link>
       </div>
 
@@ -159,7 +159,7 @@ export default function DashboardPage() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex min-h-11 items-center justify-center rounded-lg bg-gray-50 px-3 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
+                className="flex min-h-11 items-center justify-center rounded-lg bg-[var(--sz-bg-pastel)] px-3 text-sm font-medium text-[var(--sz-text-deep)] hover:bg-[var(--sz-blue-pale)] hover:text-[var(--sz-blue-soft)]"
               >
                 {item.label}
               </Link>
@@ -174,7 +174,7 @@ export default function DashboardPage() {
               수업 피드백 AI 다듬기
               <ChevronRight className="h-4 w-4" />
             </Link>
-            <Link href="/reports" className="flex items-center justify-between rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-3 text-sm font-medium text-indigo-700">
+            <Link href="/reports" className="flex items-center justify-between rounded-lg border border-indigo-100 bg-[var(--sz-blue-pale)] px-3 py-3 text-sm font-medium text-[var(--sz-blue-soft)]">
               성장리포트 AI 생성
               <ChevronRight className="h-4 w-4" />
             </Link>
@@ -184,22 +184,22 @@ export default function DashboardPage() {
         {/* 수업 일정 */}
         <SectionCard href="/schedule" icon={CalendarDays} title="수업 일정">
           {loadingToday ? (
-            <p className="text-sm text-gray-400">로딩 중...</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">로딩 중...</p>
           ) : todayClasses.length === 0 ? (
-            <p className="text-sm text-gray-400">오늘 예정된 수업이 없어요</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">오늘 예정된 수업이 없어요</p>
           ) : (
             <div className="space-y-2">
               {todayClasses.map(cls => (
-                <Link key={cls.id} href="/schedule" className="flex items-center gap-3 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={cls.id} href="/schedule" className="flex items-center gap-3 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div
                     className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                     style={{ backgroundColor: cls.studentColor }}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{cls.studentName}</p>
-                    <p className="text-xs text-gray-400">{formatTime(cls.start_time)}</p>
+                    <p className="text-sm font-medium text-[var(--sz-text-deep)] truncate">{cls.studentName}</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] opacity-70">{formatTime(cls.start_time)}</p>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[cls.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[cls.status] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
                     {STATUS_LABELS[cls.status] ?? cls.status}
                   </span>
                 </Link>
@@ -211,11 +211,11 @@ export default function DashboardPage() {
         {/* 학생 관리 */}
         <SectionCard href="/students" icon={Users} title="학생 관리">
           {students.length === 0 ? (
-            <p className="text-sm text-gray-400">등록된 학생이 없어요</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">등록된 학생이 없어요</p>
           ) : (
             <div className="space-y-2">
               {students.slice(0, 5).map(s => (
-                <Link key={s.id} href="/students" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={s.id} href="/students" className="flex items-center gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div
                     className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white font-bold"
                     style={{ backgroundColor: s.color ?? '#6366f1' }}
@@ -223,15 +223,15 @@ export default function DashboardPage() {
                     {s.name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{s.name}</p>
+                    <p className="text-sm font-medium text-[var(--sz-text-deep)] truncate">{s.name}</p>
                     {s.subjects && s.subjects.length > 0 && (
-                      <p className="text-xs text-gray-400 truncate">{s.subjects.join(' · ')}</p>
+                      <p className="text-xs text-[var(--sz-text-muted)] opacity-70 truncate">{s.subjects.join(' · ')}</p>
                     )}
                   </div>
                 </Link>
               ))}
               {students.length > 5 && (
-                <p className="text-xs text-gray-400 text-right">외 {students.length - 5}명</p>
+                <p className="text-xs text-[var(--sz-text-muted)] opacity-70 text-right">외 {students.length - 5}명</p>
               )}
             </div>
           )}
@@ -240,14 +240,14 @@ export default function DashboardPage() {
         {/* 결제/정산 */}
         <SectionCard href="/payments" icon={CreditCard} title="결제/정산">
           {payments.length === 0 ? (
-            <p className="text-sm text-gray-400">{yearMonth.replace('-', '년 ')}월 결제 정보 없음</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">{yearMonth.replace('-', '년 ')}월 결제 정보 없음</p>
           ) : (
             <div className="space-y-2">
               {payments.filter(p => p.status !== '완납').slice(0, 4).map(p => (
-                <Link key={p.id} href="/payments" className="flex items-center justify-between hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
-                  <p className="text-sm text-gray-700 truncate flex-1">{p.student?.name}</p>
+                <Link key={p.id} href="/payments" className="flex items-center justify-between hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
+                  <p className="text-sm text-[var(--sz-text-deep)] truncate flex-1">{p.student?.name}</p>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ml-2 ${
-                    p.status === '미납' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-700'
+                    p.status === '미납' ? 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]' : 'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]'
                   }`}>
                     {p.status}
                   </span>
@@ -259,7 +259,7 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium">이번 달 전원 완납</p>
                 </div>
               )}
-              <div className="pt-1 border-t border-gray-50 flex justify-between text-xs text-gray-400">
+              <div className="pt-1 border-t border-gray-50 flex justify-between text-xs text-[var(--sz-text-muted)] opacity-70">
                 <span>완납 {paymentStats.paid}명</span>
                 <span>미납/부분납 {paymentStats.unpaid + paymentStats.partial}명</span>
               </div>
@@ -273,9 +273,9 @@ export default function DashboardPage() {
             {students.slice(0, 4).map(s => {
               const todayCls = todayClasses.find(c => c.student_id === s.id && c.status === 'completed')
               return (
-                <Link key={s.id} href="/feedback" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={s.id} href="/feedback" className="flex items-center gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color ?? '#6366f1' }} />
-                  <p className="text-sm text-gray-700 flex-1 truncate">{s.name}</p>
+                  <p className="text-sm text-[var(--sz-text-deep)] flex-1 truncate">{s.name}</p>
                   {todayCls
                     ? <span className="text-xs text-indigo-500 font-medium">작성 필요</span>
                     : <span className="text-xs text-gray-300">—</span>
@@ -288,20 +288,20 @@ export default function DashboardPage() {
                 오늘 완료 수업 {completedToday}건 피드백 확인
               </p>
             )}
-            {students.length === 0 && <p className="text-sm text-gray-400">학생을 먼저 등록해 주세요</p>}
+            {students.length === 0 && <p className="text-sm text-[var(--sz-text-muted)] opacity-70">학생을 먼저 등록해 주세요</p>}
           </div>
         </SectionCard>
 
         {/* 성장리포트 */}
         <SectionCard href="/reports" icon={TrendingUp} title="성장리포트">
           {students.length === 0 ? (
-            <p className="text-sm text-gray-400">학생을 먼저 등록해 주세요</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">학생을 먼저 등록해 주세요</p>
           ) : (
             <div className="space-y-2">
               {students.slice(0, 5).map(s => (
-                <Link key={s.id} href="/reports" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={s.id} href="/reports" className="flex items-center gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color ?? '#6366f1' }} />
-                  <p className="text-sm text-gray-700 flex-1 truncate">{s.name}</p>
+                  <p className="text-sm text-[var(--sz-text-deep)] flex-1 truncate">{s.name}</p>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
                 </Link>
               ))}
@@ -312,13 +312,13 @@ export default function DashboardPage() {
         {/* 수업 자료 */}
         <SectionCard href="/materials" icon={BookOpen} title="수업 자료">
           {students.length === 0 ? (
-            <p className="text-sm text-gray-400">학생을 먼저 등록해 주세요</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">학생을 먼저 등록해 주세요</p>
           ) : (
             <div className="space-y-2">
               {students.slice(0, 5).map(s => (
-                <Link key={s.id} href="/materials" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={s.id} href="/materials" className="flex items-center gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color ?? '#6366f1' }} />
-                  <p className="text-sm text-gray-700 flex-1 truncate">{s.name}</p>
+                  <p className="text-sm text-[var(--sz-text-deep)] flex-1 truncate">{s.name}</p>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
                 </Link>
               ))}
@@ -330,7 +330,7 @@ export default function DashboardPage() {
         <SectionCard href="/messages" icon={History} title="최근 활동" badge={totalUnread + pendingRequests.length}>
           <div className="space-y-2">
             {messageThreads.slice(0, 2).map(t => (
-              <Link key={`message-${t.student.id}`} href="/messages" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+              <Link key={`message-${t.student.id}`} href="/messages" className="flex items-start gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                 <div
                   className="mt-0.5 h-6 w-6 shrink-0 rounded-full flex items-center justify-center text-xs font-bold text-white"
                   style={{ backgroundColor: t.student.color ?? '#6366f1' }}
@@ -338,17 +338,17 @@ export default function DashboardPage() {
                   {t.student.name[0]}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-800">{t.student.name} 문의</p>
-                  <p className="truncate text-xs text-gray-400">{t.lastMsg.body}</p>
+                  <p className="truncate text-sm font-medium text-[var(--sz-text-deep)]">{t.student.name} 문의</p>
+                  <p className="truncate text-xs text-[var(--sz-text-muted)] opacity-70">{t.lastMsg.body}</p>
                 </div>
               </Link>
             ))}
             {pendingRequests.slice(0, 2).map(r => (
-              <Link key={`request-${r.id}`} href="/requests" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+              <Link key={`request-${r.id}`} href="/requests" className="flex items-start gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                 <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-800">{r.students?.name} 변경요청</p>
-                  <p className="truncate text-xs text-gray-400">
+                  <p className="truncate text-sm font-medium text-[var(--sz-text-deep)]">{r.students?.name} 변경요청</p>
+                  <p className="truncate text-xs text-[var(--sz-text-muted)] opacity-70">
                     {r.request_type === 'reschedule' ? '일정 변경'
                       : r.request_type === 'cancel' ? '수업 취소' : '보강 요청'}
                   </p>
@@ -356,7 +356,7 @@ export default function DashboardPage() {
               </Link>
             ))}
             {messageThreads.length === 0 && pendingRequests.length === 0 && (
-              <p className="text-sm text-gray-400">최근 확인할 활동이 없어요</p>
+              <p className="text-sm text-[var(--sz-text-muted)] opacity-70">최근 확인할 활동이 없어요</p>
             )}
           </div>
         </SectionCard>
@@ -364,11 +364,11 @@ export default function DashboardPage() {
         {/* 문의함 */}
         <SectionCard href="/messages" icon={MessageSquare} title="문의함" badge={totalUnread}>
           {messageThreads.length === 0 ? (
-            <p className="text-sm text-gray-400">새 문의가 없어요</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">새 문의가 없어요</p>
           ) : (
             <div className="space-y-2">
               {messageThreads.slice(0, 4).map(t => (
-                <Link key={t.student.id} href="/messages" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={t.student.id} href="/messages" className="flex items-start gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div
                     className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white font-bold mt-0.5"
                     style={{ backgroundColor: t.student.color ?? '#6366f1' }}
@@ -377,14 +377,14 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <p className="text-sm font-medium text-gray-800 truncate">{t.student.name}</p>
+                      <p className="text-sm font-medium text-[var(--sz-text-deep)] truncate">{t.student.name}</p>
                       {t.unread > 0 && (
-                        <span className="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+                        <span className="text-xs bg-indigo-100 text-[var(--sz-blue-soft)] px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
                           {t.unread}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 truncate">{t.lastMsg.body}</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] opacity-70 truncate">{t.lastMsg.body}</p>
                   </div>
                 </Link>
               ))}
@@ -395,15 +395,15 @@ export default function DashboardPage() {
         {/* 변경요청 */}
         <SectionCard href="/requests" icon={ClipboardList} title="변경요청" badge={pendingRequests.length}>
           {changeRequests.length === 0 ? (
-            <p className="text-sm text-gray-400">변경 요청이 없어요</p>
+            <p className="text-sm text-[var(--sz-text-muted)] opacity-70">변경 요청이 없어요</p>
           ) : (
             <div className="space-y-2">
               {pendingRequests.slice(0, 3).map(r => (
-                <Link key={r.id} href="/requests" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
+                <Link key={r.id} href="/requests" className="flex items-start gap-2.5 hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 bg-amber-400" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{r.students?.name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm font-medium text-[var(--sz-text-deep)] truncate">{r.students?.name}</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] opacity-70">
                       {r.request_type === 'reschedule' ? '일정 변경'
                         : r.request_type === 'cancel' ? '수업 취소' : '보강 요청'}
                       {r.classes && ` · ${r.classes.date}`}

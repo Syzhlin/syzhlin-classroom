@@ -21,15 +21,15 @@ import type { Database } from '@/types/database'
 type Student = Database['public']['Tables']['students']['Row']
 
 const SUBJECT_COLORS: Record<string, string> = {
-  영어: 'bg-green-100 text-green-700',
-  중국어: 'bg-red-100 text-red-700',
+  영어: 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
+  중국어: 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]',
 }
 
 const CLASS_STATUS: Record<string, { label: string; color: string }> = {
   scheduled: { label: '예정', color: 'text-blue-600 bg-blue-50' },
   completed: { label: '완료', color: 'text-green-600 bg-green-50' },
   cancelled: { label: '취소', color: 'text-red-500 bg-red-50' },
-  postponed: { label: '연기', color: 'text-gray-500 bg-gray-100' },
+  postponed: { label: '연기', color: 'text-[var(--sz-text-muted)] bg-[rgba(175,196,216,0.1)]' },
   makeup:    { label: '보강', color: 'text-amber-600 bg-amber-50' },
 }
 
@@ -52,7 +52,7 @@ function formatTime(t: string) {
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex items-center justify-center py-16">
-      <p className="text-sm text-gray-400">{message}</p>
+      <p className="text-sm text-[var(--sz-text-muted)] opacity-70">{message}</p>
     </div>
   )
 }
@@ -78,8 +78,8 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
   if (!student) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
-        <p className="text-gray-400">학생 정보를 찾을 수 없어요</p>
-        <Link href="/students" className="mt-3 text-sm text-indigo-600 hover:underline">목록으로 돌아가기</Link>
+        <p className="text-[var(--sz-text-muted)] opacity-70">학생 정보를 찾을 수 없어요</p>
+        <Link href="/students" className="mt-3 text-sm text-[var(--sz-blue-soft)] hover:underline">목록으로 돌아가기</Link>
       </div>
     )
   }
@@ -91,13 +91,13 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
     <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 space-y-5">
 
       {/* 뒤로가기 */}
-      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+      <Link href="/students" className="inline-flex items-center gap-1 text-sm text-[var(--sz-text-muted)] hover:text-[var(--sz-text-deep)] transition-colors">
         <ChevronLeft className="w-4 h-4" />
         학생 목록
       </Link>
 
       {/* 학생 헤더 카드 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+      <div className="sz-widget rounded-2xl shadow-sm p-5">
         <div className="flex items-start gap-4">
           <div
             className="w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xl font-bold shadow-sm"
@@ -109,19 +109,19 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h1 className="text-lg font-bold text-gray-900">{student.name}</h1>
+                <h1 className="text-lg font-bold text-[var(--sz-text-deep)]">{student.name}</h1>
                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
                   {student.grade && (
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{student.grade}</span>
+                    <span className="text-xs text-[var(--sz-text-muted)] bg-[rgba(175,196,216,0.1)] px-2 py-0.5 rounded-full">{student.grade}</span>
                   )}
                   {student.school && (
-                    <span className="text-xs text-gray-500">{student.school}</span>
+                    <span className="text-xs text-[var(--sz-text-muted)]">{student.school}</span>
                   )}
                 </div>
               </div>
               <button
                 onClick={() => setEditOpen(true)}
-                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--sz-text-muted)] border border-[rgba(175,196,216,0.3)] rounded-lg hover:bg-[var(--sz-bg-pastel)] transition-colors"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 수정
@@ -131,7 +131,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
             {student.subjects && student.subjects.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {student.subjects.map(s => (
-                  <span key={s} className={`text-xs px-2 py-0.5 rounded-full font-medium ${SUBJECT_COLORS[s] ?? 'bg-gray-100 text-gray-600'}`}>
+                  <span key={s} className={`text-xs px-2 py-0.5 rounded-full font-medium ${SUBJECT_COLORS[s] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
                     {s}
                   </span>
                 ))}
@@ -139,7 +139,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
             )}
 
             {(student.phone || student.parent_phone) && (
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 text-xs text-[var(--sz-text-muted)] opacity-70">
                 {student.phone && `📱 ${student.phone}`}
                 {student.phone && student.parent_phone && '  ·  '}
                 {student.parent_phone && `👨‍👩‍👧 ${student.parent_phone}`}
@@ -147,7 +147,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
             )}
 
             {student.schedule_note && (
-              <p className="mt-1.5 text-xs text-indigo-600 font-medium">🕐 {student.schedule_note}</p>
+              <p className="mt-1.5 text-xs text-[var(--sz-blue-soft)] font-medium">🕐 {student.schedule_note}</p>
             )}
           </div>
         </div>
@@ -155,21 +155,21 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
         {/* 미니 KPI */}
         <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-50">
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{completedCount}</p>
-            <p className="text-xs text-gray-400 mt-0.5">완료 수업</p>
+            <p className="text-xl font-bold text-[var(--sz-text-deep)]">{completedCount}</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">완료 수업</p>
           </div>
           <div className="text-center border-x border-gray-50">
-            <p className="text-xl font-bold text-gray-900">{scheduledCount}</p>
-            <p className="text-xs text-gray-400 mt-0.5">예정 수업</p>
+            <p className="text-xl font-bold text-[var(--sz-text-deep)]">{scheduledCount}</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">예정 수업</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-900">{reports.length}</p>
-            <p className="text-xs text-gray-400 mt-0.5">성장리포트</p>
+            <p className="text-xl font-bold text-[var(--sz-text-deep)]">{reports.length}</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">성장리포트</p>
           </div>
         </div>
 
         {!!student.hourly_rate && (
-          <p className="mt-3 text-xs text-gray-500 text-right">한달 {student.hourly_rate.toLocaleString()}원</p>
+          <p className="mt-3 text-xs text-[var(--sz-text-muted)] text-right">한달 {student.hourly_rate.toLocaleString()}원</p>
         )}
       </div>
 
@@ -181,8 +181,8 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
             onClick={() => setTab(key)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
               tab === key
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                ? 'bg-[var(--sz-blue-soft)] text-white'
+                : 'text-[var(--sz-text-muted)] hover:text-[var(--sz-text-deep)] hover:bg-[rgba(175,196,216,0.1)]'
             }`}
           >
             <Icon className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* 탭 콘텐츠 */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="sz-widget rounded-2xl shadow-sm overflow-hidden">
 
         {/* 수업이력 */}
         {tab === 'classes' && (
@@ -203,10 +203,10 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                 return (
                   <div key={cls.id} className="flex items-center gap-3 px-5 py-3.5">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800">
+                      <p className="text-sm font-medium text-[var(--sz-text-deep)]">
                         {format(new Date(cls.date), 'M월 d일 (EEE)', { locale: ko })}
                       </p>
-                      <p className="text-xs text-gray-400">{formatTime(cls.start_time)} – {formatTime(cls.end_time)}</p>
+                      <p className="text-xs text-[var(--sz-text-muted)] opacity-70">{formatTime(cls.start_time)} – {formatTime(cls.end_time)}</p>
                     </div>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${st.color}`}>
                       {st.label}
@@ -225,18 +225,18 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
               {payments.map(p => (
                 <div key={p.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
                   <div>
-                    <p className="text-sm font-medium text-gray-800">{p.year_month.replace('-', '년 ')}월</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm font-medium text-[var(--sz-text-deep)]">{p.year_month.replace('-', '년 ')}월</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] opacity-70">
                       {p.completed_sessions}/{p.planned_sessions}회
                       {p.payment_method && ` · ${p.payment_method}`}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-800">{p.amount.toLocaleString()}원</p>
+                    <p className="text-sm font-semibold text-[var(--sz-text-deep)]">{p.amount.toLocaleString()}원</p>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      p.status === '완납' ? 'bg-green-100 text-green-700'
-                        : p.status === '미납' ? 'bg-red-100 text-red-600'
-                        : 'bg-amber-100 text-amber-700'
+                      p.status === '완납' ? 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]'
+                        : p.status === '미납' ? 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]'
+                        : 'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]'
                     }`}>
                       {p.status}
                     </span>
@@ -254,20 +254,20 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
               {feedbacks.map((f: any) => (
                 <div key={f.id} className="px-5 py-4">
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <p className="text-sm font-semibold text-gray-800">
+                    <p className="text-sm font-semibold text-[var(--sz-text-deep)]">
                       {f.classes?.date
                         ? format(new Date(f.classes.date), 'M월 d일 (EEE)', { locale: ko })
                         : '날짜 미상'}
                     </p>
                     {f.classes?.start_time && (
-                      <p className="text-xs text-gray-400">{formatTime(f.classes.start_time)}</p>
+                      <p className="text-xs text-[var(--sz-text-muted)] opacity-70">{formatTime(f.classes.start_time)}</p>
                     )}
                   </div>
-                  {f.topic && <p className="text-xs text-indigo-600 font-medium mb-1">📌 {f.topic}</p>}
-                  {f.good_points && <p className="text-xs text-gray-600 mb-1">✅ {f.good_points}</p>}
-                  {f.practice_needed && <p className="text-xs text-gray-600 mb-1">🔧 {f.practice_needed}</p>}
+                  {f.topic && <p className="text-xs text-[var(--sz-blue-soft)] font-medium mb-1">📌 {f.topic}</p>}
+                  {f.good_points && <p className="text-xs text-[var(--sz-text-muted)] mb-1">✅ {f.good_points}</p>}
+                  {f.practice_needed && <p className="text-xs text-[var(--sz-text-muted)] mb-1">🔧 {f.practice_needed}</p>}
                   {f.parent_summary && (
-                    <p className="text-xs text-gray-500 mt-2 p-2 bg-gray-50 rounded-lg">{f.parent_summary}</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] mt-2 p-2 bg-[var(--sz-bg-pastel)] rounded-lg">{f.parent_summary}</p>
                   )}
                 </div>
               ))}
@@ -282,16 +282,16 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
               {reports.map(r => (
                 <div key={r.id} className="px-5 py-4">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <p className="text-sm font-semibold text-gray-800">{r.period} 리포트</p>
+                    <p className="text-sm font-semibold text-[var(--sz-text-deep)]">{r.period} 리포트</p>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      r.status === 'published' ? 'bg-green-100 text-green-700'
-                        : r.status === 'saved' ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-500'
+                      r.status === 'published' ? 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]'
+                        : r.status === 'saved' ? 'bg-[var(--sz-blue-pale)] text-[var(--sz-blue-soft)]'
+                        : 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'
                     }`}>
                       {r.status === 'published' ? '공개' : r.status === 'saved' ? '저장됨' : '초안'}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mb-3">{r.lesson_count}회 수업 기준</p>
+                  <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mb-3">{r.lesson_count}회 수업 기준</p>
                   <div className="grid grid-cols-5 gap-2">
                     {([
                       { label: '표현', score: r.score_expression },
@@ -301,16 +301,16 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                       { label: '의욕', score: r.score_willingness },
                     ] as { label: string; score: number | null }[]).map(({ label, score }) => score != null && (
                       <div key={label} className="text-center">
-                        <div className="text-sm font-bold text-indigo-600">{score}</div>
-                        <div className="h-1 bg-gray-100 rounded-full mt-0.5">
+                        <div className="text-sm font-bold text-[var(--sz-blue-soft)]">{score}</div>
+                        <div className="h-1 bg-[rgba(175,196,216,0.1)] rounded-full mt-0.5">
                           <div className="h-1 bg-indigo-400 rounded-full" style={{ width: `${(score / 5) * 100}%` }} />
                         </div>
-                        <div className="text-xs text-gray-400 mt-0.5">{label}</div>
+                        <div className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">{label}</div>
                       </div>
                     ))}
                   </div>
                   {r.teacher_comment && (
-                    <p className="text-xs text-gray-600 mt-3 p-2.5 bg-indigo-50 rounded-lg">{r.teacher_comment}</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] mt-3 p-2.5 bg-[var(--sz-blue-pale)] rounded-lg">{r.teacher_comment}</p>
                   )}
                 </div>
               ))}
@@ -324,12 +324,12 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
             <div className="divide-y divide-gray-50">
               {materials.map((m: any) => (
                 <div key={m.id} className="flex items-center gap-3 px-5 py-3.5">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[var(--sz-blue-pale)] flex items-center justify-center flex-shrink-0">
                     <BookOpen className="w-4 h-4 text-indigo-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{m.title}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm font-medium text-[var(--sz-text-deep)] truncate">{m.title}</p>
+                    <p className="text-xs text-[var(--sz-text-muted)] opacity-70">
                       {m.created_at ? format(new Date(m.created_at), 'M월 d일', { locale: ko }) : ''}
                       {m.file_type && ` · ${m.file_type.toUpperCase()}`}
                     </p>
@@ -339,7 +339,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                       href={m.file_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-shrink-0 text-xs text-indigo-600 hover:underline px-2 py-1 rounded hover:bg-indigo-50"
+                      className="flex-shrink-0 text-xs text-[var(--sz-blue-soft)] hover:underline px-2 py-1 rounded hover:bg-[var(--sz-blue-pale)]"
                     >
                       열기
                     </a>

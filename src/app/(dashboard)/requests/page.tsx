@@ -48,15 +48,15 @@ export default function RequestsPage() {
   return (
     <div className="w-full max-w-2xl mx-auto p-4 sm:p-6">
       <div className="flex flex-wrap items-center gap-3 mb-5 sm:mb-6">
-        <h1 className="text-lg font-bold text-gray-900">수업 변경 요청</h1>
+        <h1 className="text-lg font-bold text-[var(--sz-text-deep)]">수업 변경 요청</h1>
         {pendingCount > 0 && (
-          <span className="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full font-medium">{pendingCount}건</span>
+          <span className="text-xs bg-[var(--sz-blue-soft)] text-white px-2 py-0.5 rounded-full font-medium">{pendingCount}건</span>
         )}
         <div className="ml-auto flex gap-2">
           {(['pending', 'all'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={"min-h-10 text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors " +
-                (filter === f ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-200 text-gray-500')}>
+                (filter === f ? 'bg-[var(--sz-blue-soft)] text-white border-indigo-600' : 'border-[rgba(175,196,216,0.2)] text-[var(--sz-text-muted)]')}>
               {f === 'pending' ? '검토 중' : '전체'}
             </button>
           ))}
@@ -68,7 +68,7 @@ export default function RequestsPage() {
           <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-[var(--sz-text-muted)] opacity-70">
           <p className="text-3xl mb-3">✅</p>
           <p className="text-sm">{filter === 'pending' ? '처리할 요청이 없어요' : '요청 내역이 없어요'}</p>
         </div>
@@ -86,21 +86,21 @@ export default function RequestsPage() {
                       {req.students?.name?.slice(0, 1)}
                     </div>
                     <div className="min-w-0">
-                      <span className="text-sm font-semibold text-gray-800">{req.students?.name}</span>
-                      <span className="text-xs text-gray-400 ml-2">{TYPE_LABELS[req.request_type]}</span>
+                      <span className="text-sm font-semibold text-[var(--sz-text-deep)]">{req.students?.name}</span>
+                      <span className="text-xs text-[var(--sz-text-muted)] opacity-70 ml-2">{TYPE_LABELS[req.request_type]}</span>
                     </div>
                   </div>
                   <span className={"text-xs font-medium px-2.5 py-1 rounded-full " + s.bg + " " + s.text}>{s.label}</span>
                 </div>
 
                 {req.classes && (
-                  <p className="text-xs text-gray-400 mt-2 ml-9">📅 수업: {req.classes.date} {req.classes.start_time.slice(0, 5)}</p>
+                  <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-2 ml-9">📅 수업: {req.classes.date} {req.classes.start_time.slice(0, 5)}</p>
                 )}
                 {req.preferred_dates && (
-                  <p className="text-xs text-gray-600 mt-1 ml-9">희망: {req.preferred_dates}</p>
+                  <p className="text-xs text-[var(--sz-text-muted)] mt-1 ml-9">희망: {req.preferred_dates}</p>
                 )}
                 {req.reason && (
-                  <p className="text-xs text-gray-500 mt-1 ml-9">{req.reason}</p>
+                  <p className="text-xs text-[var(--sz-text-muted)] mt-1 ml-9">{req.reason}</p>
                 )}
                 {req.teacher_note && (
                   <p className="text-xs text-indigo-500 mt-1 ml-9">답변: {req.teacher_note}</p>
@@ -113,23 +113,23 @@ export default function RequestsPage() {
                       <div className="space-y-2">
                         <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
                           placeholder="답변 메시지 (선택)"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                          className="w-full px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-xl text-xs resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]-400" />
                         <div className="flex gap-2">
                           <button onClick={() => respond('rejected', req)} disabled={handle.isPending}
                             className="flex-1 min-h-11 py-2 border border-red-200 text-red-600 text-xs rounded-xl hover:bg-red-50">
                             거절 → 대화하기
                           </button>
                           <button onClick={() => respond('approved', req)} disabled={handle.isPending}
-                            className="flex-1 min-h-11 py-2 bg-indigo-600 text-white text-xs rounded-xl">
+                            className="flex-1 min-h-11 py-2 bg-[var(--sz-blue-soft)] text-white text-xs rounded-xl">
                             {handle.isPending ? '처리 중...' : '승인 → 캘린더 반영'}
                           </button>
                           <button onClick={() => { setActiveId(null); setNote('') }}
-                            className="min-h-11 px-3 py-2 border border-gray-200 text-gray-400 text-xs rounded-xl">취소</button>
+                            className="min-h-11 px-3 py-2 border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] opacity-70 text-xs rounded-xl">취소</button>
                         </div>
                       </div>
                     ) : (
                       <button onClick={() => setActiveId(req.id)}
-                        className="min-h-10 text-xs text-indigo-600 font-medium hover:underline">
+                        className="min-h-10 text-xs text-[var(--sz-blue-soft)] font-medium hover:underline">
                         답변하기 →
                       </button>
                     )}

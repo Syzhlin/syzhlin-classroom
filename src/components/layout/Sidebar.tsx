@@ -35,37 +35,36 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-40 md:flex md:w-64 bg-white border-r border-gray-200 flex-col">
-      <div className="h-16 flex items-center px-6 border-b border-gray-200">
-        <span className="text-lg font-bold text-indigo-600">syzhlin classroom</span>
+    <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-40 md:flex md:w-64 flex-col" style={{backgroundColor: "var(--sz-card-pastel)", borderRight: "1px solid rgba(175,196,216,0.25)", boxShadow: "2px 0 20px rgba(46,53,69,0.04)"}}>
+      <div className="h-16 flex items-center px-6" style={{borderBottom: "1px solid rgba(175,196,216,0.2)"}}>
+        <span className="text-lg font-bold" style={{color: "var(--sz-text-deep)"}}>syzhlin classroom</span>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-              pathname === href
-                ? 'bg-indigo-50 text-indigo-700'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            )}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm font-medium transition-all"
+            style={{
+              backgroundColor: pathname === href ? 'var(--sz-blue-pale)' : 'transparent',
+              color: pathname === href ? 'var(--sz-blue-soft)' : 'var(--sz-text-muted)',
+            }}
           >
             <Icon className="w-5 h-5 shrink-0" />
             <span className="flex-1">{label}</span>
             {href === '/messages' && totalUnread > 0 && (
-              <span className="text-xs bg-indigo-600 text-white px-1.5 py-0.5 rounded-full">{totalUnread}</span>
+              <span className="text-xs text-white px-1.5 py-0.5 rounded-full font-semibold" style={{backgroundColor: "var(--sz-blue-soft)"}}>{totalUnread}</span>
             )}
             {href === '/requests' && pendingRequests > 0 && (
-              <span className="text-xs bg-amber-500 text-white px-1.5 py-0.5 rounded-full">{pendingRequests}</span>
+              <span className="text-xs text-white px-1.5 py-0.5 rounded-full font-semibold" style={{backgroundColor: "var(--sz-peach)"}}>{pendingRequests}</span>
             )}
           </Link>
         ))}
       </nav>
-      <div className="px-3 py-4 border-t border-gray-200">
+      <div className="px-3 py-4" style={{borderTop: "1px solid rgba(175,196,216,0.2)"}}>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl text-sm font-medium transition-all" style={{color: "var(--sz-text-muted)"}} onMouseEnter={e=>{e.currentTarget.style.backgroundColor="var(--sz-pink-pale)";e.currentTarget.style.color="var(--sz-pink-soft)"}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent";e.currentTarget.style.color="var(--sz-text-muted)"}}
         >
           <LogOut className="w-5 h-5 shrink-0" />
           로그아웃

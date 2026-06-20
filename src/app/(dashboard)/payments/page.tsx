@@ -17,7 +17,7 @@ function MonthPicker({ value, onChange }: { value: string; onChange: (v: string)
     <select
       value={value}
       onChange={e => onChange(e.target.value)}
-      className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      className="px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]"
     >
       {months.map(m => <option key={m.val} value={m.val}>{m.label}</option>)}
     </select>
@@ -26,12 +26,12 @@ function MonthPicker({ value, onChange }: { value: string; onChange: (v: string)
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    완납: 'bg-green-100 text-green-700',
-    미납: 'bg-red-100 text-red-700',
-    부분납: 'bg-yellow-100 text-yellow-700',
+    완납: 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
+    미납: 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]',
+    부분납: 'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]',
   }
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? 'bg-gray-100 text-gray-600'}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
       {status}
     </span>
   )
@@ -41,13 +41,13 @@ function ProgressBar({ completed, total }: { completed: number; total: number })
   const pct = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-[rgba(175,196,216,0.1)] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${pct}%`, backgroundColor: pct === 100 ? '#22c55e' : '#6366f1' }}
         />
       </div>
-      <span className="text-xs text-gray-500 tabular-nums whitespace-nowrap">
+      <span className="text-xs text-[var(--sz-text-muted)] tabular-nums whitespace-nowrap">
         {completed}/{total}회
       </span>
     </div>
@@ -70,7 +70,7 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-gray-900">{payment.student.name}</span>
+              <span className="font-semibold text-[var(--sz-text-deep)]">{payment.student.name}</span>
               {payment.bonus_sessions > 0 && (
                 <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full font-medium">
                   +{payment.bonus_sessions}보너스
@@ -83,7 +83,7 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
               )}
             </div>
             {payment.student.schedule_note && (
-              <p className="text-xs text-gray-400 mt-0.5">{payment.student.schedule_note}</p>
+              <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">{payment.student.schedule_note}</p>
             )}
           </div>
         </div>
@@ -92,26 +92,26 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
 
       {/* 보너스 조절 */}
       <div className="mt-3 flex items-center gap-2">
-        <span className="text-xs text-gray-400">보너스</span>
+        <span className="text-xs text-[var(--sz-text-muted)] opacity-70">보너스</span>
         <div className="flex items-center gap-1">
         <button
             onClick={() => onBonusChange(payment, -1)}
             disabled={payment.bonus_sessions <= 0}
-            className="min-h-10 min-w-10 rounded-md border border-gray-200 text-gray-500 text-sm font-bold hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="min-h-10 min-w-10 rounded-md border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] text-sm font-bold hover:bg-[rgba(175,196,216,0.1)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >−</button>
           <span className="text-sm font-semibold text-orange-600 w-5 text-center">{payment.bonus_sessions}</span>
           <button
             onClick={() => onBonusChange(payment, +1)}
-            className="min-h-10 min-w-10 rounded-md border border-indigo-200 text-indigo-600 text-sm font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center"
+            className="min-h-10 min-w-10 rounded-md border border-[rgba(175,196,216,0.4)] text-[var(--sz-blue-soft)] text-sm font-bold hover:bg-[var(--sz-blue-pale)] transition-colors flex items-center justify-center"
           >+</button>
         </div>
-        <span className="text-xs text-gray-400">회 추가</span>
+        <span className="text-xs text-[var(--sz-text-muted)] opacity-70">회 추가</span>
       </div>
 
       {/* 진행 현황 */}
       <div className="mt-4">
         <ProgressBar completed={payment.completed_sessions} total={payment.total_sessions} />
-        <div className="flex justify-between mt-1.5 text-xs text-gray-400">
+        <div className="flex justify-between mt-1.5 text-xs text-[var(--sz-text-muted)] opacity-70">
           <span>예정 {payment.planned_sessions}회 · 총 {payment.total_sessions}회</span>
           <span>{remaining > 0 ? `잔여 ${remaining}회` : '완료'}</span>
         </div>
@@ -120,8 +120,8 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
       {/* 결제 정보 */}
       <div className="mt-4 pt-4 border-t border-gray-50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-base font-bold text-gray-900">{payment.amount.toLocaleString()}원</p>
-          <p className="text-xs text-gray-400 mt-0.5">{payment.payment_period}</p>
+          <p className="text-base font-bold text-[var(--sz-text-deep)]">{payment.amount.toLocaleString()}원</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">{payment.payment_period}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {payment.payment_link ? (
@@ -129,12 +129,12 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
               href={payment.payment_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-10 text-xs px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors font-medium inline-flex items-center"
+              className="min-h-10 text-xs px-2.5 py-1.5 bg-[var(--sz-blue-pale)] text-[var(--sz-blue-soft)] rounded-lg hover:bg-indigo-100 transition-colors font-medium inline-flex items-center"
             >
               결제링크 →
             </a>
           ) : payment.payment_method === '계좌이체' ? (
-            <span className="min-h-10 text-xs px-2.5 py-1.5 bg-gray-100 text-gray-500 rounded-lg inline-flex items-center">계좌이체</span>
+            <span className="min-h-10 text-xs px-2.5 py-1.5 bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)] rounded-lg inline-flex items-center">계좌이체</span>
           ) : null}
           <button
             onClick={() => onRequestToggle(payment)}
@@ -148,7 +148,7 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
           </button>
           <button
             onClick={() => onEdit(payment)}
-            className="min-h-10 text-xs px-2.5 py-1.5 border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors"
+            className="min-h-10 text-xs px-2.5 py-1.5 border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] rounded-lg hover:bg-[var(--sz-bg-pastel)] transition-colors"
           >
             수정
           </button>
@@ -180,46 +180,46 @@ function EditModal({ payment, onClose }: { payment: PaymentWithStudent; onClose:
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl w-[calc(100vw-2rem)] max-w-sm p-4 sm:p-6">
+      <div className="relative sz-widget rounded-2xl shadow-xl w-[calc(100vw-2rem)] max-w-sm p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-900">{payment.student.name} 수정</h2>
-          <button onClick={onClose} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 text-xl">×</button>
+          <h2 className="font-semibold text-[var(--sz-text-deep)]">{payment.student.name} 수정</h2>
+          <button onClick={onClose} className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full text-[var(--sz-text-muted)] opacity-70 hover:bg-[rgba(175,196,216,0.1)] hover:text-[var(--sz-text-muted)] text-xl">×</button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">진행 회차</label>
+            <label className="block text-sm font-medium text-[var(--sz-text-deep)] mb-1">진행 회차</label>
             <input
               type="number"
               value={completed}
               onChange={e => setCompleted(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">보너스 회차</label>
+            <label className="block text-sm font-medium text-[var(--sz-text-deep)] mb-1">보너스 회차</label>
             <input
               type="number"
               value={bonus}
               onChange={e => setBonus(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">금액</label>
+            <label className="block text-sm font-medium text-[var(--sz-text-deep)] mb-1">금액</label>
             <input
               type="number"
               value={amount}
               onChange={e => setAmount(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">결제 상태</label>
+            <label className="block text-sm font-medium text-[var(--sz-text-deep)] mb-1">결제 상태</label>
             <select
               value={status}
               onChange={e => setStatus(e.target.value as '완납' | '미납' | '부분납')}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]"
             >
               <option value="완납">완납</option>
               <option value="미납">미납</option>
@@ -229,13 +229,13 @@ function EditModal({ payment, onClose }: { payment: PaymentWithStudent; onClose:
         </div>
 
         <div className="flex gap-2 mt-6">
-          <button onClick={onClose} className="flex-1 min-h-11 py-2.5 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50">
+          <button onClick={onClose} className="flex-1 min-h-11 py-2.5 border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] text-sm rounded-lg hover:bg-[var(--sz-bg-pastel)]">
             취소
           </button>
           <button
             onClick={handleSave}
             disabled={updatePayment.isPending}
-            className="flex-1 min-h-11 py-2.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60"
+            className="flex-1 min-h-11 py-2.5 bg-[var(--sz-blue-soft)] text-white text-sm rounded-lg hover:opacity-90 disabled:opacity-60"
           >
             {updatePayment.isPending ? '저장 중...' : '저장'}
           </button>
@@ -280,8 +280,8 @@ export default function PaymentsPage() {
       {/* 헤더 */}
       <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">결제 관리</h1>
-          <p className="mt-0.5 text-sm text-gray-500">{displayMonth}</p>
+          <h1 className="text-xl font-bold text-[var(--sz-text-deep)]">결제 관리</h1>
+          <p className="mt-0.5 text-sm text-[var(--sz-text-muted)]">{displayMonth}</p>
         </div>
         <MonthPicker value={yearMonth} onChange={setYearMonth} />
       </div>
@@ -290,20 +290,20 @@ export default function PaymentsPage() {
       {!isLoading && payments && payments.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-white border border-gray-100 rounded-xl p-4">
-            <p className="text-xs text-gray-400">총 수입</p>
-            <p className="mt-1 text-lg font-bold text-gray-900">{totalAmount.toLocaleString()}원</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70">총 수입</p>
+            <p className="mt-1 text-lg font-bold text-[var(--sz-text-deep)]">{totalAmount.toLocaleString()}원</p>
           </div>
           <div className="bg-white border border-gray-100 rounded-xl p-4">
-            <p className="text-xs text-gray-400">완납</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70">완납</p>
             <p className="mt-1 text-lg font-bold text-green-600">{paidCount}/{payments.length}명</p>
           </div>
           <div className="bg-white border border-gray-100 rounded-xl p-4">
-            <p className="text-xs text-gray-400">총 수업 수</p>
-            <p className="mt-1 text-lg font-bold text-gray-900">{totalSessions}회</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70">총 수업 수</p>
+            <p className="mt-1 text-lg font-bold text-[var(--sz-text-deep)]">{totalSessions}회</p>
           </div>
           <div className="bg-white border border-gray-100 rounded-xl p-4">
-            <p className="text-xs text-gray-400">진행 완료</p>
-            <p className="mt-1 text-lg font-bold text-indigo-600">{completedSessions}회</p>
+            <p className="text-xs text-[var(--sz-text-muted)] opacity-70">진행 완료</p>
+            <p className="mt-1 text-lg font-bold text-[var(--sz-blue-soft)]">{completedSessions}회</p>
           </div>
         </div>
       )}
@@ -312,7 +312,7 @@ export default function PaymentsPage() {
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-44 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-44 bg-[rgba(175,196,216,0.1)] rounded-xl animate-pulse" />
           ))}
         </div>
       )}
@@ -321,8 +321,8 @@ export default function PaymentsPage() {
       {!isLoading && (!payments || payments.length === 0) && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="text-5xl mb-4">💳</div>
-          <p className="font-medium text-gray-700">{displayMonth} 결제 데이터가 없어요</p>
-          <p className="mt-1 text-sm text-gray-400">다른 월을 선택하거나 결제 정보를 추가해주세요</p>
+          <p className="font-medium text-[var(--sz-text-deep)]">{displayMonth} 결제 데이터가 없어요</p>
+          <p className="mt-1 text-sm text-[var(--sz-text-muted)] opacity-70">다른 월을 선택하거나 결제 정보를 추가해주세요</p>
         </div>
       )}
 

@@ -13,9 +13,9 @@ function formatPeriod(period: string) {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  draft:     'bg-gray-100 text-gray-500',
+  draft:     'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]',
   saved:     'bg-blue-50 text-blue-600',
-  published: 'bg-green-100 text-green-700',
+  published: 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
 }
 const STATUS_LABEL: Record<string, string> = {
   draft:     '임시저장',
@@ -33,9 +33,9 @@ export default function ReportsPage() {
   return (
     <div className="flex h-full min-w-0 flex-col md:flex-row">
       {/* 왼쪽: 학생 목록 */}
-      <div className="border-b border-gray-100 bg-gray-50 flex shrink-0 flex-col md:w-56 md:border-b-0 md:border-r">
-        <div className="px-4 py-3 md:py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700">학생 선택</h2>
+      <div className="border-b border-[rgba(175,196,216,0.15)] bg-[var(--sz-bg-pastel)] flex shrink-0 flex-col md:w-56 md:border-b-0 md:border-r">
+        <div className="px-4 py-3 md:py-4 border-b border-[rgba(175,196,216,0.15)]">
+          <h2 className="text-sm font-semibold text-[var(--sz-text-deep)]">학생 선택</h2>
         </div>
         <div className="flex gap-2 overflow-x-auto px-3 py-2 md:flex-1 md:block md:overflow-y-auto md:px-0">
           {isLoading ? (
@@ -47,8 +47,8 @@ export default function ReportsPage() {
               onClick={() => setSelectedStudentId(student.id)}
               className={"flex min-h-11 shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-left transition-colors md:w-full md:rounded-none md:px-4 md:py-2.5 " +
                 (selectedStudentId === student.id
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 md:bg-transparent')}>
+                  ? 'bg-[var(--sz-blue-pale)] text-[var(--sz-blue-soft)]'
+                  : 'bg-white text-[var(--sz-text-muted)] hover:bg-[rgba(175,196,216,0.1)] md:bg-transparent')}>
               <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                 style={{ backgroundColor: student.color ?? '#6366f1' }}>
                 {student.name.charAt(0)}
@@ -62,7 +62,7 @@ export default function ReportsPage() {
       {/* 오른쪽: 리포트 목록 */}
       <div className="min-w-0 flex-1 overflow-y-auto">
         {!selectedStudentId ? (
-          <div className="flex min-h-64 flex-col items-center justify-center h-full text-center text-gray-400">
+          <div className="flex min-h-64 flex-col items-center justify-center h-full text-center text-[var(--sz-text-muted)] opacity-70">
             <div className="text-5xl mb-3">📊</div>
             <p className="text-sm font-medium">왼쪽에서 학생을 선택하세요</p>
           </div>
@@ -99,23 +99,23 @@ function ReportsList({ studentId, studentName, onNew }: {
     <div className="w-full max-w-2xl p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3 mb-5 sm:items-center sm:mb-6">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">{studentName} 성장리포트</h1>
-          <p className="text-xs text-gray-400 mt-0.5">{reports.length}개의 리포트</p>
+          <h1 className="text-lg font-bold text-[var(--sz-text-deep)]">{studentName} 성장리포트</h1>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">{reports.length}개의 리포트</p>
         </div>
         <button onClick={onNew}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
+          className="flex min-h-11 shrink-0 items-center gap-1.5 px-4 py-2 bg-[var(--sz-blue-soft)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-colors">
           <span className="text-base leading-none">+</span> 새 리포트
         </button>
       </div>
 
       {isLoading && (
         <div className="space-y-3">
-          {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />)}
+          {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-[rgba(175,196,216,0.1)] rounded-xl animate-pulse" />)}
         </div>
       )}
 
       {!isLoading && reports.length === 0 && (
-        <div className="text-center py-20 text-gray-400">
+        <div className="text-center py-20 text-[var(--sz-text-muted)] opacity-70">
           <div className="text-4xl mb-3">🌱</div>
           <p className="text-sm">아직 리포트가 없어요</p>
           <p className="text-xs mt-1">+ 새 리포트를 눌러 첫 번째 리포트를 만들어보세요</p>
@@ -156,27 +156,27 @@ function ReportRow({ report, onEdit }: { report: GrowthReport; onEdit: () => voi
   return (
     <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
       {/* 헤더 행 */}
-      <div className="flex items-center gap-3 px-4 py-4 cursor-pointer hover:bg-gray-50 transition-colors sm:gap-4 sm:px-5"
+      <div className="flex items-center gap-3 px-4 py-4 cursor-pointer hover:bg-[var(--sz-bg-pastel)] transition-colors sm:gap-4 sm:px-5"
         onClick={() => setExpanded(prev => !prev)}>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold text-gray-900 text-sm">{formatPeriod(report.period)}</p>
+            <p className="font-semibold text-[var(--sz-text-deep)] text-sm">{formatPeriod(report.period)}</p>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_BADGE[report.status]}`}>
               {STATUS_LABEL[report.status]}
             </span>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">수업 {report.lesson_count}회 · 평균 {avg}점</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">수업 {report.lesson_count}회 · 평균 {avg}점</p>
         </div>
         <button onClick={e => { e.stopPropagation(); onEdit() }}
-          className="min-h-10 shrink-0 text-xs px-3 py-1.5 border border-indigo-200 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors">
+          className="min-h-10 shrink-0 text-xs px-3 py-1.5 border border-[rgba(175,196,216,0.4)] text-[var(--sz-blue-soft)] rounded-lg hover:bg-[var(--sz-blue-pale)] transition-colors">
           수정
         </button>
-        <span className={"text-gray-400 transition-transform " + (expanded ? 'rotate-180' : '')}>▾</span>
+        <span className={"text-[var(--sz-text-muted)] opacity-70 transition-transform " + (expanded ? 'rotate-180' : '')}>▾</span>
       </div>
 
       {/* 상세 - 펼치기 */}
       {expanded && (
-        <div className="border-t border-gray-50 px-4 py-4 bg-gray-50/50 sm:px-5">
+        <div className="border-t border-gray-50 px-4 py-4 bg-[var(--sz-bg-pastel)]/50 sm:px-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
             {/* 오각형 차트 */}
             {scores.some(s => s > 0) && (
@@ -187,8 +187,8 @@ function ReportRow({ report, onEdit }: { report: GrowthReport; onEdit: () => voi
             {/* AI 리포트 미리보기 */}
             {report.generated_report && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-gray-500 mb-1">리포트 미리보기</p>
-                <p className="text-xs text-gray-600 leading-relaxed line-clamp-6 whitespace-pre-wrap">
+                <p className="text-xs font-medium text-[var(--sz-text-muted)] mb-1">리포트 미리보기</p>
+                <p className="text-xs text-[var(--sz-text-muted)] leading-relaxed line-clamp-6 whitespace-pre-wrap">
                   {report.generated_report}
                 </p>
               </div>
