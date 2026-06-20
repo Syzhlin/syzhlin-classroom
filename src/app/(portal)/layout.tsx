@@ -99,7 +99,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
     },
     {
       href: '/portal/inquiry',
-      label: '문의',
+      label: role === 'student' ? '선생님께' : '문의',
       icon: <ChatIcon />,
       roles: ['teacher', 'adult_learner', 'student', 'parent'],
     },

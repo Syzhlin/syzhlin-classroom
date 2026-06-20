@@ -5,18 +5,18 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { useMessages, useSendMessage, useMarkMessagesRead } from '@/lib/queries/useMessages'
 
-const QUICK_PROMPTS = [
-  '수업 일정 문의',
-  '숙제 문의',
-  '결제 문의',
-]
-
 export default function InquiryPage() {
   const { data: profile } = useProfile()
   const { selectedStudentId: studentId } = usePortalStudent()
   const role = (profile?.role ?? 'parent') as 'parent' | 'student'
 
-  const { data: messages = [], isLoading } = useMessages(studentId)
+  const channelType = role === 'student' ? 'student' : 'parent'
+  const QUICK_PROMPTS = role === 'student'
+    ? ['선생님 안녕하세요!', '질문 있어요', '숙제 확인해주세요']
+    : ['수업 일정 문의', '숙제 문의', '결제 문의']
+  const pageTitle = role === 'student' ? '선생님께 💌' : '문의하기 💬'
+
+  const { data: messages = [], isLoading } = useMessages(studentId, channelType)
   const send = useSendMessage()
   const markRead = useMarkMessagesRead()
 
@@ -29,7 +29,7 @@ export default function InquiryPage() {
   }, [])
 
   useEffect(() => {
-    if (studentId) markRead.mutate(studentId)
+    if (studentId) markRead.mutate({ studentId, channelType })
   }, [studentId, messages.length])
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function InquiryPage() {
     const msg = (body ?? text).trim()
     if (!msg || !studentId) return
     setText('')
-    await send.mutateAsync({ student_id: studentId, body: msg, sender_role: role })
+    await send.mutateAsync({ student_id: studentId, body: msg, sender_role: role, channel_type: channelType })
   }
 
   if (!studentId) {
@@ -74,7 +74,7 @@ export default function InquiryPage() {
           👩‍🏫
         </div>
         <div>
-          <p className="text-sm font-semibold" style={{ color: 'var(--sz-text-deep)' }}>선생님</p>
+          <p className="text-sm font-semibold" style={{ color: 'var(--sz-text-deep)' }}>{pageTitle}</p>
           <p className="text-[11px]" style={{ color: 'var(--sz-text-muted)' }}>문의사항을 남겨주세요</p>
         </div>
       </div>

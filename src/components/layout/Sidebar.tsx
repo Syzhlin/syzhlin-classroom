@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { CalendarDays, Users, CreditCard, LayoutDashboard, LogOut, BookOpen, MessageSquare, ClipboardList, TrendingUp, Mail } from 'lucide-react'
+import { CalendarDays, Users, CreditCard, LayoutDashboard, LogOut, BookOpen, MessageSquare, ClipboardList, TrendingUp, Mail, Pencil } from 'lucide-react'
 import { useAllStudentMessages } from '@/lib/queries/useMessages'
 import { useAllChangeRequests } from '@/lib/queries/useChangeRequests'
 import { cn } from '@/lib/utils'
@@ -16,6 +16,7 @@ const navItems = [
   { href: '/materials', label: '수업 자료',  icon: BookOpen },
   { href: '/reports',   label: '성장리포트', icon: TrendingUp },
   { href: '/feedback',  label: '수업 피드백', icon: Mail },
+  { href: '/homework',  label: '숙제 관리',  icon: Pencil },
   { href: '/messages',  label: '문의함',     icon: MessageSquare },
   { href: '/requests',  label: '변경요청',   icon: ClipboardList },
 ]

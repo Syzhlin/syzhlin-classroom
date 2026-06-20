@@ -75,3 +75,39 @@ export function useSubmitHomework() {
     },
   })
 }
+
+// 선생님용: 학생의 제출 내역 조회
+export function useStudentHomeworkSubmissions(studentId: string | null) {
+  const supabase = createClient()
+  return useQuery({
+    queryKey: ['homework-teacher', studentId],
+    enabled: !!studentId,
+    queryFn: async (): Promise<HomeworkSubmission[]> => {
+      const { data, error } = await supabase
+        .from('homework_submissions' as any)
+        .select('*' as any)
+        .eq('student_id', studentId!)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return ((data ?? []) as unknown) as HomeworkSubmission[]
+    },
+  })
+}
+
+// 선생님용: 제출에 코멘트 달기
+export function useReviewHomework() {
+  const supabase = createClient()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, comment, studentId }: { id: string; comment: string; studentId: string }) => {
+      const { error } = await supabase
+        .from('homework_submissions' as any)
+        .update({ status: 'reviewed', teacher_comment: comment } as any)
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['homework-teacher', vars.studentId] })
+    },
+  })
+}

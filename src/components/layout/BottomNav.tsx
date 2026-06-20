@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   CalendarDays, Users, CreditCard, LayoutDashboard,
   BookOpen, MessageSquare, ClipboardList, TrendingUp,
-  Mail, MoreHorizontal, X, LogOut, Activity
+  Mail, MoreHorizontal, X, LogOut, Activity, Pencil
 } from 'lucide-react'
 import { useAllStudentMessages } from '@/lib/queries/useMessages'
 import { useAllChangeRequests } from '@/lib/queries/useChangeRequests'
@@ -24,6 +24,7 @@ const moreNav = [
   { href: '/materials',      label: '수업 자료 관리', icon: BookOpen },
   { href: '/reports',        label: '성장 리포트', icon: TrendingUp },
   { href: '/feedback',       label: '수업 피드백', icon: Mail },
+  { href: '/homework',       label: '숙제 관리',  icon: Pencil },
   { href: '/messages',       label: '문의함',     icon: MessageSquare },
   { href: '/requests',       label: '일정 변경 요청', icon: ClipboardList },
   { href: '/activity-logs',  label: '활동 로그',  icon: Activity },

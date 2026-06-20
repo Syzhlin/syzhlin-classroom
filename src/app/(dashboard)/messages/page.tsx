@@ -78,15 +78,16 @@ function MessagesInner() {
 }
 
 function ChatPanel({ studentId, studentName }: { studentId: string; studentName: string }) {
-  const { data: messages = [] } = useMessages(studentId)
+  const [channel, setChannel] = useState<'parent' | 'student'>('parent')
+  const { data: messages = [] } = useMessages(studentId, channel)
   const send = useSendMessage()
   const markRead = useMarkMessagesRead()
   const [text, setText] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    markRead.mutate(studentId)
-  }, [studentId, messages.length])
+    markRead.mutate({ studentId, channelType: channel })
+  }, [studentId, messages.length, channel])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -96,7 +97,7 @@ function ChatPanel({ studentId, studentName }: { studentId: string; studentName:
     if (!text.trim()) return
     const body = text.trim()
     setText('')
-    await send.mutateAsync({ student_id: studentId, body, sender_role: 'teacher' })
+    await send.mutateAsync({ student_id: studentId, body, sender_role: 'teacher', channel_type: channel })
   }
 
   return (
@@ -106,6 +107,21 @@ function ChatPanel({ studentId, studentName }: { studentId: string; studentName:
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-[var(--sz-bg-pastel)] sm:px-5">
+        {/* 채널 탭 */}
+        <div style={{display:'flex', gap:'6px', padding:'4px', borderRadius:'12px', background:'rgba(175,196,216,0.15)', marginBottom:'12px'}}>
+          {(['parent','student'] as const).map(ch => (
+            <button key={ch} onClick={() => setChannel(ch)}
+              style={{flex:1, padding:'6px 0', borderRadius:'9px', fontSize:'12px', fontWeight:'600',
+                background: channel===ch ? 'white' : 'transparent',
+                color: channel===ch ? 'var(--sz-text-deep)' : 'var(--sz-text-muted)',
+                boxShadow: channel===ch ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                border:'none', cursor:'pointer', transition:'all 0.15s'
+              }}>
+              {ch === 'parent' ? '학부모 채널' : '아이 채널'}
+            </button>
+          ))}
+        </div>
+
         {messages.map(msg => {
           const isTeacher = msg.sender_role === 'teacher'
           return (

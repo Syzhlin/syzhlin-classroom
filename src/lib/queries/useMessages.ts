@@ -6,24 +6,27 @@ export type Message = {
   student_id: string
   sender_id: string
   sender_role: 'teacher' | 'parent' | 'student'
+  channel_type: string
   body: string
   read_at: string | null
   created_at: string
 }
 
 /** 학생별 메시지 스레드 (선생님/학부모 공통) */
-export function useMessages(studentId: string | null) {
+export function useMessages(studentId: string | null, channelType?: string) {
   const supabase = createClient()
   return useQuery({
-    queryKey: ['messages', studentId],
+    queryKey: ['messages', studentId, channelType],
     enabled: !!studentId,
     refetchInterval: 10000, // 10초마다 polling
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('messages')
         .select('*')
         .eq('student_id', studentId!)
         .order('created_at', { ascending: true })
+      if (channelType) query = (query as any).eq('channel_type', channelType)
+      const { data, error } = await query
       if (error) throw error
       return (data ?? []) as Message[]
     },
@@ -68,10 +71,10 @@ export function useSendMessage() {
   const supabase = createClient()
 
   return useMutation({
-    mutationFn: async (input: { student_id: string; body: string; sender_role: 'teacher' | 'parent' | 'student' }) => {
+    mutationFn: async (input: { student_id: string; body: string; sender_role: 'teacher' | 'parent' | 'student'; channel_type?: string }) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-      const { error } = await supabase.from('messages').insert({
+      const { error } = await (supabase.from('messages') as any).insert({
         ...input,
         sender_id: user.id,
       })
@@ -88,13 +91,15 @@ export function useSendMessage() {
 export function useMarkMessagesRead() {
   const supabase = createClient()
   return useMutation({
-    mutationFn: async (studentId: string) => {
-      await supabase
+    mutationFn: async ({ studentId, channelType }: { studentId: string; channelType?: string }) => {
+      let query = supabase
         .from('messages')
         .update({ read_at: new Date().toISOString() })
         .eq('student_id', studentId)
         .is('read_at', null)
         .neq('sender_role', 'teacher')
+      if (channelType) query = (query as any).eq('channel_type', channelType)
+      await query
     },
   })
 }
