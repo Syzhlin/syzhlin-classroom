@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/lib/queries/useProfile'
 
@@ -12,6 +12,7 @@ type PortalStudentContextType = {
   siblings: Sibling[]
   hasSiblings: boolean
   linkedStudentName: string | null
+  isTransitioning: boolean
 }
 
 const PortalStudentContext = createContext<PortalStudentContextType>({
@@ -20,18 +21,20 @@ const PortalStudentContext = createContext<PortalStudentContextType>({
   siblings: [],
   hasSiblings: false,
   linkedStudentName: null,
+  isTransitioning: false,
 })
 
 export function PortalStudentProvider({ children }: { children: ReactNode }) {
   const { data: profile } = useProfile()
   const linkedId = profile?.linked_student_id ?? null
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null)
+  const [selectedStudentId, _setSelectedStudentId] = useState<string | null>(null)
   const [siblings, setSiblings] = useState<Sibling[]>([])
   const [linkedStudentName, setLinkedStudentName] = useState<string | null>(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
     if (linkedId && !selectedStudentId) {
-      setSelectedStudentId(linkedId)
+      _setSelectedStudentId(linkedId)
     }
   }, [linkedId])
 
@@ -67,6 +70,16 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
       })
   }, [linkedId])
 
+  const setSelectedStudentId = useCallback((id: string) => {
+    if (id === selectedStudentId) return
+    setIsTransitioning(true)
+    setTimeout(() => {
+      _setSelectedStudentId(id)
+      // 학생 변경 후 짧게 기다렸다가 fade in
+      setTimeout(() => setIsTransitioning(false), 50)
+    }, 200)
+  }, [selectedStudentId])
+
   return (
     <PortalStudentContext.Provider value={{
       selectedStudentId,
@@ -74,6 +87,7 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
       siblings,
       hasSiblings: siblings.length > 0,
       linkedStudentName,
+      isTransitioning,
     }}>
       {children}
     </PortalStudentContext.Provider>

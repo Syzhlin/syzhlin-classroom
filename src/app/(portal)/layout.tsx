@@ -21,6 +21,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient()
   const { data: profile } = useProfile()
 
+  const { isTransitioning } = usePortalStudent()
   const role = profile?.role
 
   const navItems = [
@@ -187,7 +188,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 pb-20">
+      <main className={`flex-1 pb-20 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
         {children}
       </main>
 
