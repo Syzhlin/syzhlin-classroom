@@ -194,11 +194,10 @@ export default function PronunciationPage() {
   useEffect(() => {
     if (!selectedStudentId) return
     const supabase = createClient()
-    supabase
-      .from('pronunciation_attempts')
+    ;(supabase as any).from('pronunciation_attempts')
       .select('id', { count: 'exact', head: true })
       .eq('student_id', selectedStudentId)
-      .then(({ count }) => {
+      .then(({ count }: { count: number | null }) => {
         setTotalAttempts(count ?? 0)
         setLoading(false)
       })
@@ -207,7 +206,7 @@ export default function PronunciationPage() {
   const handleAttemptComplete = useCallback(async (score: number, citySlug: string, sentenceEn: string, transcript: string) => {
     if (!selectedStudentId) return
     const supabase = createClient()
-    await supabase.from('pronunciation_attempts').insert({
+    await (supabase as any).from('pronunciation_attempts').insert({
       student_id: selectedStudentId,
       city_slug: citySlug,
       sentence_en: sentenceEn,
