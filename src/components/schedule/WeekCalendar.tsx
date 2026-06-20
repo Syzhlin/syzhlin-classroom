@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { addDays, format, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useScheduleStore } from '@/store/scheduleStore'
@@ -6,9 +7,9 @@ import { useWeekClasses, useAllSessionClasses, buildSessionNumberMap, ClassWithS
 import { ClassBlock } from './ClassBlock'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const HOUR_START = 15  // 15:00 (오후 3시)
-const HOUR_END = 22    // 22:00
-const HOUR_PX = 60     // 1시간 = 60px
+const HOUR_START = 15
+const HOUR_END = 22
+const HOUR_PX = 60
 const TOTAL_HOURS = HOUR_END - HOUR_START
 
 const DAYS = ['월', '화', '수', '목', '금', '토', '일']
@@ -32,12 +33,21 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
   const { selectedWeekStart } = useScheduleStore()
   const { data: classes, isLoading } = useWeekClasses(selectedWeekStart)
   const { data: allSessionClasses } = useAllSessionClasses()
-  const today = new Date()
+
+  // 클라이언트에서만 로컬 날짜 계산 (SSR UTC 불일치 방지)
+  const [today, setToday] = useState<Date | null>(null)
+  useEffect(() => {
+    setToday(new Date())
+    // 자정에 날짜 업데이트
+    const now = new Date()
+    const msUntilMidnight =
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime()
+    const timer = setTimeout(() => setToday(new Date()), msUntilMidnight)
+    return () => clearTimeout(timer)
+  }, [])
 
   const sessionNumberMap = allSessionClasses ? buildSessionNumberMap(allSessionClasses) : {}
-
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(selectedWeekStart, i))
-
   const getClassesForDay = (day: Date) =>
     (classes ?? []).filter((c) => c.date === format(day, 'yyyy-MM-dd'))
 
@@ -45,9 +55,9 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
     <div className="flex h-full min-w-[760px] flex-col md:min-w-0">
       {/* 헤더 — 요일 */}
       <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20">
-        <div className="w-14 shrink-0" /> {/* 시간 컬럼 여백 */}
+        <div className="w-14 shrink-0" />
         {weekDays.map((day, i) => {
-          const isToday = isSameDay(day, today)
+          const isToday = today ? isSameDay(day, today) : false
           return (
             <div key={i} className="flex-1 text-center py-2 border-l border-gray-100 first:border-l-0">
               <p className={`text-xs font-medium ${i >= 5 ? 'text-red-400' : 'text-gray-500'}`}>
@@ -64,7 +74,6 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
 
       {/* 그리드 본체 */}
       <div className="flex flex-1 overflow-auto">
-        {/* 시간축 */}
         <div className="w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_PX }}>
           {Array.from({ length: TOTAL_HOURS }, (_, i) => (
             <div
@@ -77,7 +86,6 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
           ))}
         </div>
 
-        {/* 날짜별 컬럼 */}
         {weekDays.map((day, di) => {
           const dayClasses = getClassesForDay(day)
           return (
@@ -86,25 +94,12 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
               className="flex-1 relative border-l border-gray-100 first:border-l-0"
               style={{ height: TOTAL_HOURS * HOUR_PX }}
             >
-              {/* 시간 구분선 */}
               {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div
-                  key={i}
-                  className="absolute left-0 right-0 border-t border-gray-100"
-                  style={{ top: i * HOUR_PX }}
-                />
+                <div key={i} className="absolute left-0 right-0 border-t border-gray-100" style={{ top: i * HOUR_PX }} />
               ))}
-
-              {/* 30분 구분선 */}
               {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div
-                  key={`half-${i}`}
-                  className="absolute left-0 right-0 border-t border-gray-50"
-                  style={{ top: i * HOUR_PX + HOUR_PX / 2 }}
-                />
+                <div key={`half-${i}`} className="absolute left-0 right-0 border-t border-gray-50" style={{ top: i * HOUR_PX + HOUR_PX / 2 }} />
               ))}
-
-              {/* 클릭 가능 영역 */}
               {Array.from({ length: TOTAL_HOURS * 2 }, (_, i) => (
                 <div
                   key={`slot-${i}`}
@@ -113,8 +108,6 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
                   onClick={() => onSlotClick(day, HOUR_START + i * 0.5)}
                 />
               ))}
-
-              {/* 수업 블록 */}
               {isLoading
                 ? di === 0 && [1, 2].map((k) => (
                     <Skeleton key={k} className="absolute mx-1 rounded-md" style={{ top: k * 100, height: 50, left: 4, right: 4 }} />
@@ -124,7 +117,6 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
                     const endMin = timeToMinutes(cls.end_time)
                     const topPx = minutesToPx(startMin)
                     const heightPx = ((endMin - startMin) / 60) * HOUR_PX
-
                     return (
                       <ClassBlock
                         key={cls.id}
