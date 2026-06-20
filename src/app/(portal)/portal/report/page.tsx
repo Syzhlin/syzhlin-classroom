@@ -38,7 +38,7 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
     : null
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="rounded-2xl border shadow-sm overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
       {/* 헤더 (항상 표시) */}
       <button
         onClick={() => setOpen(v => !v)}
@@ -46,7 +46,7 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
       >
         <div className="flex items-center gap-3">
           {/* 월 라벨 */}
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor: "var(--sz-navy)"}}>
             <span className="text-white text-xs font-bold leading-tight text-center">
               {report.period.split('-')[1]}월
             </span>
@@ -79,11 +79,11 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
                       <span className="text-xs text-gray-500 w-20 shrink-0">{label}</span>
                       <div className="flex-1 bg-gray-100 rounded-full h-1.5">
                         <div
-                          className="bg-indigo-500 h-1.5 rounded-full transition-all"
+                          className="bg-[var(--sz-navy)] h-1.5 rounded-full transition-all"
                           style={{ width: `${(score / 5) * 100}%` }}
                         />
                       </div>
-                      <span className="text-xs font-bold text-indigo-600 w-4 text-right">{score}</span>
+                      <span className="text-xs font-bold text-[var(--sz-navy)] w-4 text-right">{score}</span>
                     </div>
                   )
                 })}
@@ -100,11 +100,11 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
                 const score = report[scoreKey] as number | null
                 if (!note) return null
                 return (
-                  <div key={label} className="bg-gray-50 rounded-xl px-4 py-3">
+                  <div key={label} className="bg-[var(--sz-cream)] rounded-xl px-4 py-3">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-semibold text-gray-700">{label}</span>
                       {score && (
-                        <span className="text-xs text-indigo-500 font-bold">{score}/5</span>
+                        <span className="text-xs text-[var(--sz-navy)] font-bold">{score}/5</span>
                       )}
                     </div>
                     <p className="text-xs text-gray-600 leading-relaxed">{note}</p>
@@ -116,8 +116,8 @@ function MonthReportCard({ report, defaultOpen }: { report: GrowthReport; defaul
 
           {/* 선생님 종합 코멘트 */}
           {report.generated_report && (
-            <div className="bg-indigo-50 rounded-xl px-4 py-4">
-              <p className="text-xs font-semibold text-indigo-600 mb-2">📝 선생님의 코멘트</p>
+            <div className="bg-[var(--sz-gold-light)] rounded-xl px-4 py-4">
+              <p className="text-xs font-semibold text-[var(--sz-navy)] mb-2">📝 선생님의 코멘트</p>
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {report.generated_report}
               </p>
@@ -138,7 +138,7 @@ export default function PortalReportPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -165,7 +165,7 @@ export default function PortalReportPage() {
       <div className="relative">
         {/* 왼쪽 타임라인 선 */}
         {reports.length > 1 && (
-          <div className="absolute left-5 top-10 bottom-10 w-0.5 bg-indigo-100 z-0" />
+          <div className="absolute left-5 top-10 bottom-10 w-0.5 z-0" style={{backgroundColor: "var(--sz-beige)"}} />
         )}
 
         <div className="space-y-3 relative z-10">

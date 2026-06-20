@@ -86,7 +86,7 @@ function MonthlyCalendar({
   }, [classes])
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+    <div className="rounded-2xl border p-4 shadow-sm" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -141,9 +141,9 @@ function MonthlyCalendar({
               onClick={() => hasClass && onDayClick(ds)}
               className={[
                 'relative flex flex-col items-center justify-center h-10 w-full rounded-xl text-xs font-medium transition-colors',
-                hasClass ? 'cursor-pointer hover:bg-indigo-50' : 'cursor-default',
-                isSelected ? 'bg-indigo-600 text-white' : '',
-                !isSelected && isTodayDate ? 'ring-2 ring-indigo-400 ring-inset' : '',
+                hasClass ? 'cursor-pointer hover:bg-[var(--sz-gold-light)]' : 'cursor-default',
+                isSelected ? 'bg-[var(--sz-navy)] text-white' : '',
+                !isSelected && isTodayDate ? 'ring-2 ring-[var(--sz-gold)] ring-inset' : '',
                 !isSelected && !hasClass && dow === 0 ? 'text-red-400' : '',
                 !isSelected && !hasClass && dow === 6 ? 'text-blue-400' : '',
                 !isSelected && hasClass ? 'text-gray-800 font-semibold' : '',
@@ -196,7 +196,7 @@ function DateTimePicker({
     <div className="space-y-4">
       <div>
         <p className="text-xs text-gray-500 mb-2">희망 날짜 <span className="text-gray-400">(복수 선택 가능)</span></p>
-        <div className="bg-gray-50 rounded-xl p-3">
+        <div className="bg-[var(--sz-cream)] rounded-xl p-3">
           <div className="flex items-center justify-between mb-2">
             <button onClick={() => setViewMonth(m => subMonths(m, 1))} className="p-1 rounded-lg hover:bg-gray-200">
               <ChevronLeft className="w-4 h-4 text-gray-600" />
@@ -230,13 +230,13 @@ function DateTimePicker({
                   onClick={() => onToggleDate(ds)}
                   className={[
                     'h-8 w-full rounded-lg text-xs font-medium transition-colors',
-                    isPast ? 'opacity-30 cursor-not-allowed' : 'hover:bg-indigo-50',
-                    isSelected ? 'bg-indigo-600 text-white hover:bg-indigo-700' : '',
+                    isPast ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[var(--sz-gold-light)]',
+                    isSelected ? 'bg-[var(--sz-navy)] text-white hover:bg-[var(--sz-navy-light)]' : '',
                     !isSelected && !isPast && dow === 0 ? 'text-red-500' : '',
                     !isSelected && !isPast && dow === 6 ? 'text-blue-500' : '',
                     !isSelected && !isPast && dow !== 0 && dow !== 6 ? 'text-gray-700' : '',
                     !isInMonth ? 'opacity-40' : '',
-                    isToday(d) && !isSelected ? 'ring-1 ring-inset ring-indigo-300' : '',
+                    isToday(d) && !isSelected ? 'ring-1 ring-inset ring-[var(--sz-gold)]' : '',
                   ].filter(Boolean).join(' ')}
                 >
                   {d.getDate()}
@@ -248,7 +248,7 @@ function DateTimePicker({
         {selectedDates.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {selectedDates.map(ds => (
-              <span key={ds} className="flex items-center gap-1 text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-medium">
+              <span key={ds} className="flex items-center gap-1 text-xs bg-[var(--sz-gold-light)] text-[var(--sz-navy)] px-2.5 py-1 rounded-full font-medium">
                 {format(parseISO(ds), 'M/d(EEE)', { locale: ko })}
                 <button onClick={() => onToggleDate(ds)}><X className="w-3 h-3" /></button>
               </span>
@@ -267,8 +267,8 @@ function DateTimePicker({
                 onClick={() => onToggleTime(slot)}
                 className={`py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                   isSelected
-                    ? 'bg-indigo-600 text-white border-indigo-600'
-                    : 'border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+                    ? 'bg-[var(--sz-navy)] text-white border-[var(--sz-navy)]'
+                    : 'border-gray-200 text-gray-600 hover:border-[var(--sz-beige)] hover:text-[var(--sz-navy)]'
                 }`}
               >
                 {formatTimeSlot(slot)}
@@ -323,7 +323,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-end" onClick={onClose}>
       <div
-        className="relative bg-white rounded-t-2xl w-full max-h-[90vh] overflow-y-auto pb-8"
+        className="relative rounded-t-2xl w-full max-h-[90vh] overflow-y-auto pb-8" style={{backgroundColor: "var(--sz-paper)"}}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-center pt-3 pb-1">
@@ -336,9 +336,9 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="bg-indigo-50 rounded-xl px-4 py-3">
-            <p className="text-sm font-semibold text-indigo-800">{formatClassDate(cls.date)}</p>
-            <p className="text-xs text-indigo-600 mt-0.5">{cls.start_time.slice(0, 5)} – {cls.end_time.slice(0, 5)}</p>
+          <div className="bg-[var(--sz-gold-light)] rounded-xl px-4 py-3">
+            <p className="text-sm font-semibold text-[var(--sz-navy)]">{formatClassDate(cls.date)}</p>
+            <p className="text-xs text-[var(--sz-navy)] mt-0.5">{cls.start_time.slice(0, 5)} – {cls.end_time.slice(0, 5)}</p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-2">요청 유형</p>
@@ -346,7 +346,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               {(['reschedule', 'cancel', 'makeup'] as const).map(t => (
                 <button key={t} onClick={() => setType(t)}
                   className={`flex-1 py-2 text-xs font-medium rounded-xl border transition-colors ${
-                    type === t ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-200 text-gray-600'
+                    type === t ? 'bg-[var(--sz-navy)] text-white border-[var(--sz-navy)]' : 'border-gray-200 text-gray-600'
                   }`}>
                   {TYPE_LABELS[t]}
                 </button>
@@ -368,7 +368,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               onChange={e => setReason(e.target.value)}
               rows={2}
               placeholder="변경이 필요한 이유를 알려주세요"
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)]"
             />
           </div>
           <div className="flex gap-2 pt-1">
@@ -379,7 +379,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
               onClick={() => setShowConfirm(true)}
               disabled={submit.isPending || done}
               className={`flex-1 py-2.5 text-sm font-medium rounded-xl transition-colors ${
-                done ? 'bg-green-500 text-white' : 'bg-indigo-600 text-white disabled:opacity-60'
+                done ? 'bg-green-500 text-white' : 'bg-[var(--sz-navy)] text-white disabled:opacity-60'
               }`}
             >
               {done
@@ -396,7 +396,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
                 <p className="text-2xl">📋</p>
                 <p className="text-base font-bold text-gray-900">변경을 요청하시겠습니까?</p>
                 <p className="text-xs text-gray-500">
-                  <span className="font-medium text-indigo-600">{TYPE_LABELS[type]}</span> 요청이 선생님께 전달됩니다
+                  <span className="font-medium text-[var(--sz-navy)]">{TYPE_LABELS[type]}</span> 요청이 선생님께 전달됩니다
                 </p>
                 {buildPreferredDates() && (
                   <p className="text-xs text-gray-400 bg-gray-50 rounded-lg px-3 py-2 mt-2 text-left">
@@ -414,7 +414,7 @@ function ChangeRequestSheet({ cls, studentId, onClose }: {
                 <button
                   onClick={async () => { setShowConfirm(false); await handleSubmit() }}
                   disabled={submit.isPending}
-                  className="flex-1 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[var(--sz-navy)] text-white text-sm font-medium rounded-xl disabled:opacity-60"
                 >
                   {submit.isPending ? '제출 중...' : '네, 요청할게요'}
                 </button>
@@ -443,7 +443,7 @@ export default function PortalSchedulePage() {
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -463,7 +463,7 @@ export default function PortalSchedulePage() {
   if (classesLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -504,7 +504,7 @@ export default function PortalSchedulePage() {
           {showRequest && cls.status === 'scheduled' && (
             <button
               onClick={() => setRequestTarget(cls)}
-              className="text-xs text-indigo-500 border border-indigo-200 px-2.5 py-0.5 rounded-full hover:bg-indigo-50 transition-colors"
+              className="text-xs border px-2.5 py-0.5 rounded-full hover:bg-[var(--sz-gold-light)] transition-colors" style={{color: "var(--sz-navy)", borderColor: "var(--sz-beige)"}}
             >
               변경요청
             </button>
@@ -530,10 +530,10 @@ export default function PortalSchedulePage() {
 
         {/* 선택된 날짜 수업 디테일 */}
         {selectedCalDate && selectedDayClasses.length > 0 && (
-          <div className="bg-white rounded-2xl border border-indigo-100 overflow-hidden shadow-sm">
-            <div className="px-4 py-2.5 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
-              <span className="text-xs font-semibold text-indigo-700">{formatClassDate(selectedCalDate)}</span>
-              <button onClick={() => setSelectedCalDate(null)} className="text-indigo-400 hover:text-indigo-600">
+          <div className="bg-white rounded-2xl border border-[var(--sz-beige)] overflow-hidden shadow-sm">
+            <div className="px-4 py-2.5 bg-[var(--sz-gold-light)] border-b border-[var(--sz-beige)] flex items-center justify-between">
+              <span className="text-xs font-semibold text-[var(--sz-navy)]">{formatClassDate(selectedCalDate)}</span>
+              <button onClick={() => setSelectedCalDate(null)} className="text-[var(--sz-warm-gray)] hover:text-[var(--sz-navy)]">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -549,14 +549,14 @@ export default function PortalSchedulePage() {
         <section>
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">다가오는 수업</h2>
           {upcomingGroups.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-400">
+            <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
               예정된 수업이 없습니다
             </div>
           ) : (
             <div className="space-y-3">
               {upcomingGroups.map(([date, items]) => (
-                <div key={date} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                  <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                <div key={date} className="rounded-xl border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+                  <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
                     <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                   </div>
                   <div className="divide-y divide-gray-50">
@@ -582,12 +582,12 @@ export default function PortalSchedulePage() {
           </button>
           {showPast && (
             pastGroups.length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-400">지난 수업이 없습니다</div>
+              <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>지난 수업이 없습니다</div>
             ) : (
               <div className="space-y-3">
                 {pastGroups.map(([date, items]) => (
-                  <div key={date} className="bg-white rounded-xl border border-gray-100 overflow-hidden opacity-70">
-                    <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                  <div key={date} className="rounded-xl border overflow-hidden opacity-70" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+                    <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
                       <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                     </div>
                     <div className="divide-y divide-gray-50">
@@ -613,14 +613,14 @@ export default function PortalSchedulePage() {
       <section>
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">다가오는 수업</h2>
         {groupByDate(upcoming).length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-400">
+          <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
             예정된 수업이 없습니다
           </div>
         ) : (
           <div className="space-y-3">
             {groupByDate(upcoming).map(([date, items]) => (
-              <div key={date} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+              <div key={date} className="rounded-xl border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+                <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
                   <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                 </div>
                 <div className="divide-y divide-gray-50">
@@ -645,12 +645,12 @@ export default function PortalSchedulePage() {
         </button>
         {showPast && (
           groupByDate(past).length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-400">지난 수업이 없습니다</div>
+            <div className="rounded-xl border p-6 text-center text-sm text-gray-400" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>지난 수업이 없습니다</div>
           ) : (
             <div className="space-y-3">
               {groupByDate(past).map(([date, items]) => (
-                <div key={date} className="bg-white rounded-xl border border-gray-100 overflow-hidden opacity-70">
-                  <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                <div key={date} className="rounded-xl border overflow-hidden opacity-70" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
+                  <div className="px-4 py-2.5 bg-[var(--sz-cream)] border-b border-[var(--sz-beige)]">
                     <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                   </div>
                   <div className="divide-y divide-gray-50">

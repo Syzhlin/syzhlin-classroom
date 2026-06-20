@@ -59,7 +59,7 @@ function FlipCardGame({ onDone }: { onDone: (score: number, total: number) => vo
         </div>
         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-indigo-500 rounded-full transition-all"
+            className="h-full bg-[var(--sz-navy)] rounded-full transition-all"
             style={{ width: `${((idx) / cards.length) * 100}%` }}
           />
         </div>
@@ -87,7 +87,7 @@ function FlipCardGame({ onDone }: { onDone: (score: number, total: number) => vo
             <p className="text-6xl mb-4">{current.emoji}</p>
             <p className="text-3xl font-bold">{current.en}</p>
             {!flipped && (
-              <p className="text-xs text-indigo-200 mt-4">탭해서 뜻 확인 →</p>
+              <p className="text-xs text-blue-100 mt-4">탭해서 뜻 확인 →</p>
             )}
           </div>
 
@@ -114,7 +114,7 @@ function FlipCardGame({ onDone }: { onDone: (score: number, total: number) => vo
           </button>
           <button
             onClick={() => handleKnow(true)}
-            className="flex-1 py-3.5 bg-indigo-600 text-white rounded-2xl text-sm font-semibold"
+            className="flex-1 py-3.5 bg-[var(--sz-navy)] text-white rounded-2xl text-sm font-semibold"
           >
             ✅ 알았어요!
           </button>
@@ -181,7 +181,7 @@ function OXQuizGame({ onDone }: { onDone: (score: number, total: number) => void
         <p className="text-5xl">{current.word.emoji}</p>
         <p className="text-3xl font-bold text-gray-900">{current.word.en}</p>
         <div className="w-8 h-0.5 bg-gray-200" />
-        <p className="text-2xl font-bold text-indigo-600">{current.displayed}</p>
+        <p className="text-2xl font-bold text-[var(--sz-navy)]">{current.displayed}</p>
         <p className="text-xs text-gray-400">이 뜻이 맞나요?</p>
         {feedback && (
           <p className={`text-2xl font-bold ${feedback === 'correct' ? 'text-green-600' : 'text-red-500'}`}>
@@ -223,11 +223,11 @@ function ResultScreen({ score, total, onRetry }: { score: number; total: number;
       <div className="relative w-28 h-28">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="10" />
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" strokeWidth="10"
+          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--sz-navy)" strokeWidth="10"
             strokeDasharray={`${pct * 2.51} 251`} strokeLinecap="round" />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-indigo-600">{pct}%</span>
+          <span className="text-2xl font-bold text-[var(--sz-navy)]">{pct}%</span>
         </div>
       </div>
 
@@ -239,7 +239,7 @@ function ResultScreen({ score, total, onRetry }: { score: number; total: number;
       </div>
 
       <button onClick={onRetry}
-        className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-semibold">
+        className="flex items-center gap-2 px-6 py-3 bg-[var(--sz-navy)] text-white rounded-2xl font-semibold">
         <RotateCcw className="w-4 h-4" /> 다시 하기
       </button>
     </div>

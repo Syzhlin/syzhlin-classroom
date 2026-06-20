@@ -65,7 +65,7 @@ export default function HomeworkPage() {
       </div>
 
       {/* 제출 폼 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
+      <div className="rounded-2xl border shadow-sm p-5 space-y-4" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
 
         {/* 사진 영역 */}
         {previewUrl ? (
@@ -84,7 +84,7 @@ export default function HomeworkPage() {
             {/* 카메라 촬영 */}
             <button
               onClick={() => cameraRef.current?.click()}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50 text-indigo-500 hover:bg-indigo-100 transition-colors"
+              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl border-2 border-dashed border-[var(--sz-beige)] text-[var(--sz-navy)] hover:bg-[var(--sz-gold-light)] transition-colors" style={{backgroundColor: "var(--sz-gold-light)"}}
             >
               <Camera className="w-7 h-7" />
               <span className="text-xs font-medium">사진 찍기</span>
@@ -112,7 +112,7 @@ export default function HomeworkPage() {
           onChange={e => setNote(e.target.value)}
           rows={3}
           placeholder="선생님께 하고 싶은 말을 써도 돼요 😊"
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)]"
         />
 
         {/* 제출 버튼 */}
@@ -122,7 +122,7 @@ export default function HomeworkPage() {
           className={`w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${
             done
               ? 'bg-green-500 text-white'
-              : 'bg-indigo-600 text-white disabled:opacity-40'
+              : 'bg-[var(--sz-navy)] text-white disabled:opacity-40'
           }`}
         >
           {done ? (
@@ -138,7 +138,7 @@ export default function HomeworkPage() {
         <h2 className="text-sm font-semibold text-gray-500 mb-3">제출 내역</h2>
         {isLoading ? (
           <div className="flex justify-center py-6">
-            <div className="w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : submissions.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-6 text-center text-sm text-gray-400">
@@ -147,7 +147,7 @@ export default function HomeworkPage() {
         ) : (
           <div className="space-y-3">
             {submissions.map(s => (
-              <div key={s.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div key={s.id} className="rounded-2xl border shadow-sm overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
                 {/* 사진 */}
                 {s.photo_url && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -167,9 +167,9 @@ export default function HomeworkPage() {
                   {s.note && <p className="text-sm text-gray-700">{s.note}</p>}
                   {/* 선생님 코멘트 */}
                   {s.teacher_comment && (
-                    <div className="bg-indigo-50 rounded-xl px-3 py-2.5 flex gap-2">
-                      <MessageSquare className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-indigo-700 leading-relaxed">{s.teacher_comment}</p>
+                    <div className="bg-[var(--sz-gold-light)] rounded-xl px-3 py-2.5 flex gap-2">
+                      <MessageSquare className="w-4 h-4 text-[var(--sz-warm-gray)] flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-[var(--sz-navy)] leading-relaxed">{s.teacher_comment}</p>
                     </div>
                   )}
                 </div>

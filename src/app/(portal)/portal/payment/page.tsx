@@ -53,7 +53,7 @@ export default function PortalPaymentPage() {
   if (profileLoading || paymentLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -97,7 +97,7 @@ export default function PortalPaymentPage() {
       </h2>
 
       {/* Status card */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+      <div className="rounded-2xl border p-6 space-y-5" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
         {/* Big status badge */}
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-800">납부 상태</span>
@@ -124,8 +124,8 @@ export default function PortalPaymentPage() {
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2">
             <div
-              className="bg-indigo-500 h-2 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
+              className="h-2 rounded-full transition-all"
+              style={{backgroundColor: "var(--sz-navy)", width: `${progress}%`}}
             />
           </div>
           <div className="flex justify-between text-xs text-gray-400">
@@ -160,7 +160,7 @@ export default function PortalPaymentPage() {
               className={`block w-full text-center py-2.5 text-sm font-medium rounded-xl transition-colors ${
                 payment.status === '완납'
                   ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  : 'bg-[var(--sz-navy)] text-white hover:bg-[var(--sz-navy-light)]'
               }`}
             >
               {payment.status === '완납' ? '결제 링크 바로가기' : '결제하기'}

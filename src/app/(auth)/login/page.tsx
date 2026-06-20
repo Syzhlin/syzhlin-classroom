@@ -17,13 +17,13 @@ const ROLES = [
 type RoleValue = typeof ROLES[number]['value']
 
 const COLOR_ACTIVE: Record<string, string> = {
-  indigo:  'border-indigo-400 bg-indigo-50 text-indigo-700',
+  indigo:  'border-[var(--sz-navy)] bg-[var(--sz-gold-light)] text-[var(--sz-navy)]',
   emerald: 'border-emerald-400 bg-emerald-50 text-emerald-700',
   sky:     'border-sky-400 bg-sky-50 text-sky-700',
   amber:   'border-amber-400 bg-amber-50 text-amber-700',
 }
 const BTN_COLOR: Record<string, string> = {
-  indigo:  'bg-indigo-600 hover:bg-indigo-700',
+  indigo:  'bg-[var(--sz-navy)] hover:bg-[var(--sz-navy-light)]',
   emerald: 'bg-emerald-600 hover:bg-emerald-700',
   sky:     'bg-sky-500 hover:bg-sky-600',
   amber:   'bg-amber-500 hover:bg-amber-600',
@@ -170,10 +170,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="w-full max-w-md rounded-2xl shadow-sm border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
       {/* 로고 */}
       <div className="px-8 pt-8 pb-4 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 mb-4">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" style={{backgroundColor: "var(--sz-navy)"}}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
             <path d="M6 12v5c3 3 9 3 12 0v-5"/>
@@ -206,7 +206,7 @@ export default function LoginPage() {
       </div>
 
       {/* 구분선 */}
-      <div className="border-t border-gray-100 mx-8" />
+      <div className="border-t mx-8" style={{borderColor: "var(--sz-beige)"}} />
 
       {/* 로그인 폼 */}
       <div className="px-8 py-6">
@@ -228,7 +228,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   placeholder="example@email.com"
                   required
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent"
                 />
               </div>
               <div>
@@ -240,7 +240,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   required
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent"
                 />
               </div>
             </>
@@ -255,7 +255,7 @@ export default function LoginPage() {
                 autoComplete="off"
                 autoCapitalize="off"
                 required
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[var(--sz-navy)] focus:border-transparent"
               />
               <p className="mt-1.5 text-xs text-gray-400 text-center">선생님께 받은 코드를 입력하세요</p>
             </div>
@@ -267,7 +267,7 @@ export default function LoginPage() {
               type="checkbox"
               checked={rememberMe}
               onChange={e => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              className="w-4 h-4 rounded border-gray-300 text-[var(--sz-navy)] focus:ring-[var(--sz-navy)]"
             />
             <span className="text-sm text-gray-600">
               {isTeacher ? '이메일 저장' : '코드 저장'}

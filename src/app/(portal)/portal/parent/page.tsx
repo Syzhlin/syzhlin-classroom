@@ -11,7 +11,7 @@ const FILE_TYPE_CONFIG: Record<string, { icon: string; color: string; label: str
   image: { icon: '🖼️', color: 'bg-sky-50 text-sky-600',    label: '이미지' },
   video: { icon: '🎬', color: 'bg-purple-50 text-purple-600', label: '영상' },
   audio: { icon: '🎵', color: 'bg-green-50 text-green-600', label: '음성' },
-  link:  { icon: '🔗', color: 'bg-indigo-50 text-indigo-600', label: '링크' },
+  link:  { icon: '🔗', color: 'bg-[var(--sz-gold-light)] text-[var(--sz-navy)]', label: '링크' },
   file:  { icon: '📁', color: 'bg-gray-50 text-gray-600',   label: '파일' },
 }
 
@@ -28,7 +28,7 @@ export default function ParentPortalPage() {
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -53,11 +53,11 @@ export default function ParentPortalPage() {
       {materialsLoading ? (
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+            <div key={i} className="h-20 rounded-xl animate-pulse" style={{backgroundColor: "var(--sz-beige)"}} />
           ))}
         </div>
       ) : !materials || materials.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
+        <div className="rounded-2xl border p-10 text-center" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}>
           <div className="text-4xl mb-3">📚</div>
           <p className="text-sm text-gray-500">아직 등록된 수업 자료가 없어요</p>
         </div>
@@ -70,7 +70,7 @@ export default function ParentPortalPage() {
             return (
               <div
                 key={material.id}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
+                className="rounded-2xl border overflow-hidden" style={{backgroundColor: "var(--sz-paper)", borderColor: "var(--sz-beige)"}}
               >
                 <div className="px-4 py-3.5 flex items-start gap-3">
                   {/* 아이콘 */}
@@ -93,7 +93,7 @@ export default function ParentPortalPage() {
                     <a
                       href={material.file_url}
                       download={material.file_name ?? material.title}
-                      className="flex items-center justify-center gap-1 text-xs px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                      className="flex items-center justify-center gap-1 text-xs px-3 py-1.5 bg-[var(--sz-navy)] text-white rounded-lg hover:bg-[var(--sz-navy-light)] transition-colors font-medium"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
