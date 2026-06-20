@@ -151,7 +151,27 @@ export default function PortalHomePage() {
           </div>
         )}
 
-        {/* 3. 세계 여권 위젯 (col-span-2) */}
+        {/* 3. 숙제 제출 바로가기 — 학부모 전용 */}
+        {profile?.role === 'parent' && (
+          <Link href="/portal/parent" className="col-span-2">
+            <div className="sz-widget rounded-3xl p-4 flex items-center gap-4"
+              style={{ backgroundColor: 'var(--sz-card-pastel)' }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                style={{ backgroundColor: 'var(--sz-gold-light)' }}>
+                📌
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm" style={{ color: 'var(--sz-text-deep)' }}>숙제 제출하기</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--sz-text-muted)' }}>
+                  사진을 찍어 선생님께 바로 보내요
+                </p>
+              </div>
+              <span className="text-sm shrink-0" style={{ color: 'rgba(175,196,216,0.6)' }}>→</span>
+            </div>
+          </Link>
+        )}
+
+        {/* 4. 세계 여권 위젯 (col-span-2) */}
         <Link href="/portal/passport" className="col-span-2">
           <div
             className="sz-widget rounded-3xl p-4 text-white"

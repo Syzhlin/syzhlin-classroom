@@ -40,7 +40,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       '/portal/payment': '결제',
       '/portal/report': '리포트',
       '/portal/inquiry': '문의',
-      '/portal/parent': '자료',
+      '/portal/parent': '숙제 및 자료',
     }
     logActivity({
       userRole: profile.role ?? undefined,
@@ -104,7 +104,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
     },
     {
       href: '/portal/parent',
-      label: '자료',
+      label: '숙제 및 자료',
       icon: <FolderIcon />,
       roles: ['parent'],
     },
