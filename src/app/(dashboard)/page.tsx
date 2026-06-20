@@ -107,41 +107,41 @@ export default function DashboardPage() {
 
       {/* KPI 4개 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-indigo-600 rounded-xl p-4 text-white">
+        <Link href="/schedule" className="bg-indigo-600 rounded-xl p-4 text-white hover:bg-indigo-700 transition-colors">
           <p className="text-xs text-indigo-200 font-medium">오늘 수업</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1">
             {todayClasses.length}
             <span className="text-base font-normal text-indigo-200">회</span>
           </p>
           <p className="text-xs text-indigo-200 mt-1">완료 {completedToday} · 예정 {scheduledToday}</p>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+        <Link href="/students" className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all">
           <p className="text-xs text-gray-400 font-medium">활성 학생</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
             {students.length}
             <span className="text-base font-normal text-gray-400">명</span>
           </p>
           <p className="text-xs text-gray-400 mt-1">이번 달 {thisMonthCompleted}회 완료</p>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+        <Link href="/payments" className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all">
           <p className="text-xs text-gray-400 font-medium">미납 현황</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
             {paymentStats.unpaid + paymentStats.partial}
             <span className="text-base font-normal text-gray-400">건</span>
           </p>
           <p className="text-xs text-gray-400 mt-1">미납 {paymentStats.unpaid} · 부분납 {paymentStats.partial}</p>
-        </div>
+        </Link>
 
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+        <Link href="/messages" className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all">
           <p className="text-xs text-gray-400 font-medium">미확인 알림</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1 text-gray-900">
             {totalUnread + pendingRequests.length}
             <span className="text-base font-normal text-gray-400">건</span>
           </p>
           <p className="text-xs text-gray-400 mt-1">문의 {totalUnread} · 변경요청 {pendingRequests.length}</p>
-        </div>
+        </Link>
       </div>
 
       {/* 섹션 카드 2열 */}
@@ -190,7 +190,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {todayClasses.map(cls => (
-                <div key={cls.id} className="flex items-center gap-3">
+                <Link key={cls.id} href="/schedule" className="flex items-center gap-3 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div
                     className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                     style={{ backgroundColor: cls.studentColor }}
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[cls.status] ?? 'bg-gray-100 text-gray-500'}`}>
                     {STATUS_LABELS[cls.status] ?? cls.status}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -215,7 +215,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {students.slice(0, 5).map(s => (
-                <div key={s.id} className="flex items-center gap-2.5">
+                <Link key={s.id} href="/students" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div
                     className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white font-bold"
                     style={{ backgroundColor: s.color ?? '#6366f1' }}
@@ -228,7 +228,7 @@ export default function DashboardPage() {
                       <p className="text-xs text-gray-400 truncate">{s.subjects.join(' · ')}</p>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
               {students.length > 5 && (
                 <p className="text-xs text-gray-400 text-right">외 {students.length - 5}명</p>
@@ -244,14 +244,14 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {payments.filter(p => p.status !== '완납').slice(0, 4).map(p => (
-                <div key={p.id} className="flex items-center justify-between">
+                <Link key={p.id} href="/payments" className="flex items-center justify-between hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <p className="text-sm text-gray-700 truncate flex-1">{p.student?.name}</p>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ml-2 ${
                     p.status === '미납' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-700'
                   }`}>
                     {p.status}
                   </span>
-                </div>
+                </Link>
               ))}
               {paymentStats.unpaid + paymentStats.partial === 0 && (
                 <div className="flex items-center gap-1.5 text-green-600">
@@ -273,14 +273,14 @@ export default function DashboardPage() {
             {students.slice(0, 4).map(s => {
               const todayCls = todayClasses.find(c => c.student_id === s.id && c.status === 'completed')
               return (
-                <div key={s.id} className="flex items-center gap-2.5">
+                <Link key={s.id} href="/feedback" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color ?? '#6366f1' }} />
                   <p className="text-sm text-gray-700 flex-1 truncate">{s.name}</p>
                   {todayCls
                     ? <span className="text-xs text-indigo-500 font-medium">작성 필요</span>
                     : <span className="text-xs text-gray-300">—</span>
                   }
-                </div>
+                </Link>
               )
             })}
             {completedToday > 0 && (
@@ -299,11 +299,11 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {students.slice(0, 5).map(s => (
-                <div key={s.id} className="flex items-center gap-2.5">
+                <Link key={s.id} href="/reports" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color ?? '#6366f1' }} />
                   <p className="text-sm text-gray-700 flex-1 truncate">{s.name}</p>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -316,11 +316,11 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {students.slice(0, 5).map(s => (
-                <div key={s.id} className="flex items-center gap-2.5">
+                <Link key={s.id} href="/materials" className="flex items-center gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color ?? '#6366f1' }} />
                   <p className="text-sm text-gray-700 flex-1 truncate">{s.name}</p>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -330,7 +330,7 @@ export default function DashboardPage() {
         <SectionCard href="/messages" icon={History} title="최근 활동" badge={totalUnread + pendingRequests.length}>
           <div className="space-y-2">
             {messageThreads.slice(0, 2).map(t => (
-              <div key={`message-${t.student.id}`} className="flex items-start gap-2.5">
+              <Link key={`message-${t.student.id}`} href="/messages" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                 <div
                   className="mt-0.5 h-6 w-6 shrink-0 rounded-full flex items-center justify-center text-xs font-bold text-white"
                   style={{ backgroundColor: t.student.color ?? '#6366f1' }}
@@ -341,10 +341,10 @@ export default function DashboardPage() {
                   <p className="truncate text-sm font-medium text-gray-800">{t.student.name} 문의</p>
                   <p className="truncate text-xs text-gray-400">{t.lastMsg.body}</p>
                 </div>
-              </div>
+              </Link>
             ))}
             {pendingRequests.slice(0, 2).map(r => (
-              <div key={`request-${r.id}`} className="flex items-start gap-2.5">
+              <Link key={`request-${r.id}`} href="/requests" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                 <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-gray-800">{r.students?.name} 변경요청</p>
@@ -353,7 +353,7 @@ export default function DashboardPage() {
                       : r.request_type === 'cancel' ? '수업 취소' : '보강 요청'}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
             {messageThreads.length === 0 && pendingRequests.length === 0 && (
               <p className="text-sm text-gray-400">최근 확인할 활동이 없어요</p>
@@ -368,7 +368,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {messageThreads.slice(0, 4).map(t => (
-                <div key={t.student.id} className="flex items-start gap-2.5">
+                <Link key={t.student.id} href="/messages" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div
                     className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white font-bold mt-0.5"
                     style={{ backgroundColor: t.student.color ?? '#6366f1' }}
@@ -386,7 +386,7 @@ export default function DashboardPage() {
                     </div>
                     <p className="text-xs text-gray-400 truncate">{t.lastMsg.body}</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -399,7 +399,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {pendingRequests.slice(0, 3).map(r => (
-                <div key={r.id} className="flex items-start gap-2.5">
+                <Link key={r.id} href="/requests" className="flex items-start gap-2.5 hover:bg-gray-50 rounded-lg -mx-1 px-1 transition-colors">
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 bg-amber-400" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800 truncate">{r.students?.name}</p>
@@ -412,7 +412,7 @@ export default function DashboardPage() {
                   <span className="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
                     검토 중
                   </span>
-                </div>
+                </Link>
               ))}
               {pendingRequests.length === 0 && (
                 <div className="flex items-center gap-1.5 text-green-600">

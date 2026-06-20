@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useStudents, useDeleteStudent } from '@/lib/queries/useStudents'
 import StudentFormDialog from '@/components/students/StudentFormDialog'
 import { GrowthReportModal } from '@/components/growth/GrowthReportModal'
@@ -82,7 +83,7 @@ export default function StudentsPage() {
       {!isLoading && students && students.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {students.map(student => (
-            <div key={student.id} className="bg-white border border-gray-100 rounded-xl p-4 sm:p-5 hover:shadow-sm transition-shadow">
+            <Link key={student.id} href={`/students/${student.id}`} className="bg-white border border-gray-100 rounded-xl p-4 sm:p-5 hover:shadow-md hover:border-indigo-100 transition-all block">
               <div className="flex items-start gap-3">
                 {/* 색상 아바타 */}
                 <div
@@ -196,7 +197,7 @@ export default function StudentsPage() {
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

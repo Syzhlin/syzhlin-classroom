@@ -103,3 +103,22 @@ export function usePortalPayment(studentId: string | null, yearMonth: string) {
     },
   })
 }
+
+/** 학생별 전체 결제 이력 */
+export function useStudentPayments(studentId: string | null) {
+  const supabase = createClient()
+  return useQuery({
+    queryKey: ['payments-student', studentId],
+    enabled: !!studentId,
+    queryFn: async (): Promise<Payment[]> => {
+      if (!studentId) return []
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('student_id', studentId)
+        .order('year_month', { ascending: false })
+      if (error) throw error
+      return (data ?? []) as Payment[]
+    },
+  })
+}

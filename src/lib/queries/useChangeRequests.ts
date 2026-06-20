@@ -77,7 +77,7 @@ export function useSubmitChangeRequest() {
   })
 }
 
-/** 요청 처리 (선생님) */
+/** 요청 처리 (선생님) — 승인 시 캘린더(classes) 자동 반영 */
 export function useHandleChangeRequest() {
   const queryClient = useQueryClient()
   const supabase = createClient()
@@ -86,15 +86,43 @@ export function useHandleChangeRequest() {
       id: string
       status: 'approved' | 'rejected'
       teacher_note?: string
+      // 캘린더 반영용 (승인 시)
+      request_type?: 'reschedule' | 'cancel' | 'makeup'
+      class_id?: string | null
+      preferred_dates?: string | null
     }) => {
+      // 1. 변경 요청 상태 업데이트
       const { error } = await supabase
         .from('class_change_requests')
         .update({ status: input.status, teacher_note: input.teacher_note ?? null, updated_at: new Date().toISOString() })
         .eq('id', input.id)
       if (error) throw error
+
+      // 2. 승인 시 캘린더 자동 반영
+      if (input.status === 'approved' && input.class_id) {
+        if (input.request_type === 'reschedule' && input.preferred_dates) {
+          // YYYY-MM-DD 형식 추출
+          const dateMatch = input.preferred_dates.match(/\d{4}-\d{2}-\d{2}/)
+          if (dateMatch) {
+            const { error: classErr } = await supabase
+              .from('classes')
+              .update({ date: dateMatch[0] })
+              .eq('id', input.class_id)
+            if (classErr) throw classErr
+          }
+        } else if (input.request_type === 'cancel') {
+          const { error: classErr } = await supabase
+            .from('classes')
+            .update({ status: 'cancelled' })
+            .eq('id', input.class_id)
+          if (classErr) throw classErr
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['change-requests-all'] })
+      queryClient.invalidateQueries({ queryKey: ['classes'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 }

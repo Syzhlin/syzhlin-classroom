@@ -1,19 +1,32 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useAllStudentMessages, useMessages, useSendMessage, useMarkMessagesRead } from '@/lib/queries/useMessages'
 
 export default function MessagesPage() {
+  return (
+    <Suspense>
+      <MessagesInner />
+    </Suspense>
+  )
+}
+
+function MessagesInner() {
+  const searchParams = useSearchParams()
+  const studentParam = searchParams.get('student')
   const { data: threads = [] } = useAllStudentMessages()
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null)
 
   const selected = threads.find(t => t.student.id === selectedStudentId)
 
   useEffect(() => {
-    if (threads.length > 0 && !selectedStudentId) {
+    if (studentParam) {
+      setSelectedStudentId(studentParam)
+    } else if (threads.length > 0 && !selectedStudentId) {
       setSelectedStudentId(threads[0].student.id)
     }
-  }, [threads])
+  }, [threads, studentParam])
 
   return (
     <div className="flex h-[calc(100dvh-5rem)] min-w-0 flex-col md:h-[calc(100vh-64px)] md:flex-row">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAllChangeRequests, useHandleChangeRequest } from '@/lib/queries/useChangeRequests'
 
 const TYPE_LABELS = { reschedule: '일정 변경', cancel: '수업 취소', makeup: '보강 요청' }
@@ -11,6 +12,7 @@ const STATUS_STYLES = {
 }
 
 export default function RequestsPage() {
+  const router = useRouter()
   const { data: requests = [], isLoading } = useAllChangeRequests()
   const handle = useHandleChangeRequest()
 
@@ -21,10 +23,26 @@ export default function RequestsPage() {
   const filtered = filter === 'pending' ? requests.filter(r => r.status === 'pending') : requests
   const pendingCount = requests.filter(r => r.status === 'pending').length
 
-  async function respond(id: string, status: 'approved' | 'rejected') {
-    await handle.mutateAsync({ id, status, teacher_note: note || undefined })
+  async function respond(
+    status: 'approved' | 'rejected',
+    req: typeof requests[number],
+  ) {
+    await handle.mutateAsync({
+      id: req.id,
+      status,
+      teacher_note: note || undefined,
+      // 승인 시 캘린더 반영
+      request_type: req.request_type,
+      class_id: req.class_id,
+      preferred_dates: req.preferred_dates,
+    })
     setActiveId(null)
     setNote('')
+
+    // 거절 시 → 해당 학생 대화창으로 이동
+    if (status === 'rejected') {
+      router.push(`/messages?student=${req.student_id}`)
+    }
   }
 
   return (
@@ -97,13 +115,13 @@ export default function RequestsPage() {
                           placeholder="답변 메시지 (선택)"
                           className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs resize-none focus:outline-none focus:ring-2 focus:ring-indigo-400" />
                         <div className="flex gap-2">
-                          <button onClick={() => respond(req.id, 'rejected')} disabled={handle.isPending}
+                          <button onClick={() => respond('rejected', req)} disabled={handle.isPending}
                             className="flex-1 min-h-11 py-2 border border-red-200 text-red-600 text-xs rounded-xl hover:bg-red-50">
-                            거절
+                            거절 → 대화하기
                           </button>
-                          <button onClick={() => respond(req.id, 'approved')} disabled={handle.isPending}
+                          <button onClick={() => respond('approved', req)} disabled={handle.isPending}
                             className="flex-1 min-h-11 py-2 bg-indigo-600 text-white text-xs rounded-xl">
-                            {handle.isPending ? '처리 중...' : '승인'}
+                            {handle.isPending ? '처리 중...' : '승인 → 캘린더 반영'}
                           </button>
                           <button onClick={() => { setActiveId(null); setNote('') }}
                             className="min-h-11 px-3 py-2 border border-gray-200 text-gray-400 text-xs rounded-xl">취소</button>
