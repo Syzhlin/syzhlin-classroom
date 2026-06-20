@@ -23,12 +23,14 @@ export interface BriefingClass {
 
 export function useTodayBriefing() {
   const supabase = createClient()
-  const today = format(new Date(), 'yyyy-MM-dd')
-  const yearMonth = format(new Date(), 'yyyy-MM')
 
   return useQuery({
-    queryKey: ['today-briefing', today],
+    queryKey: ['today-briefing'],
     queryFn: async (): Promise<BriefingClass[]> => {
+      // 클라이언트 로컬 시간 기준 (SSR UTC 불일치 방지)
+      const today = format(new Date(), 'yyyy-MM-dd')
+      const yearMonth = format(new Date(), 'yyyy-MM')
+
       // 1. 오늘 수업 목록
       const { data: classes, error: classErr } = await supabase
         .from('classes')

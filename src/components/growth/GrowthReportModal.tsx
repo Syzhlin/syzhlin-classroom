@@ -5,6 +5,7 @@ import { PentagonChart } from '@/components/growth/PentagonChart'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useUpsertGrowthReport, useStudentReportByPeriod, type GrowthReport } from '@/lib/queries/useGrowthReports'
+import { format } from 'date-fns'
 
 const ITEMS = [
   { key: 'expression',       label: '표현력',      desc: '영어로 자기 생각을 말하는 힘' },
@@ -37,8 +38,8 @@ export function GrowthReportModal({ studentId, studentName, onClose }: Props) {
     enabled: !!studentId,
     queryFn: async () => {
       const now = new Date()
-      const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
+      const start = format(new Date(now.getFullYear(), now.getMonth(), 1), 'yyyy-MM-dd')
+      const end = format(new Date(now.getFullYear(), now.getMonth() + 1, 0), 'yyyy-MM-dd')
       const { count } = await supabase
         .from('classes')
         .select('*', { count: 'exact', head: true })

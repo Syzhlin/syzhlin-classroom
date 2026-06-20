@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { format } from 'date-fns'
 import { createClient } from '@/lib/supabase/client'
 
 export type FeedbackRow = {
@@ -93,8 +94,8 @@ export function usePortalHome(studentId: string | null) {
     queryKey: ['portal-home', studentId],
     enabled: !!studentId,
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0]
-      const yearMonth = today.slice(0, 7)
+      const today = format(new Date(), 'yyyy-MM-dd') // 로컬 시간 기준
+      const yearMonth = format(new Date(), 'yyyy-MM')
 
       type SimpleClass = { id: string; date: string; start_time: string; end_time: string; status: string }
       type ClassWithFeedback = SimpleClass & { class_feedback: FeedbackRow[] }

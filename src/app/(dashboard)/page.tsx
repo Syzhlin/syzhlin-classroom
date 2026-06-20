@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -69,7 +69,10 @@ function SectionCard({
 }
 
 export default function DashboardPage() {
-  const yearMonth = format(new Date(), 'yyyy-MM')
+  // 클라이언트 로컬 시간 기준 (SSR UTC 불일치 방지)
+  const [now, setNow] = useState<Date>(() => new Date())
+  useEffect(() => { setNow(new Date()) }, [])
+  const yearMonth = format(now, 'yyyy-MM')
 
   const { data: todayClasses = [], isLoading: loadingToday } = useTodayBriefing()
   const { data: students = [] } = useStudents()
@@ -97,7 +100,7 @@ export default function DashboardPage() {
       {/* 헤더 */}
       <div>
         <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
-          {format(new Date(), 'yyyy년 M월 d일 (EEE)', { locale: ko })}
+          {format(now, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
         </p>
         <h1 className="text-xl font-bold text-gray-900 mt-0.5">대시보드</h1>
       </div>

@@ -99,7 +99,7 @@ export function useDeleteFutureClasses() {
 
   return useMutation({
     mutationFn: async (studentId: string) => {
-      const today = new Date().toISOString().split('T')[0]
+      const today = format(new Date(), 'yyyy-MM-dd') // 로컬 시간 기준
       await supabase
         .from('classes')
         .delete()

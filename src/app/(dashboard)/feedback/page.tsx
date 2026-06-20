@@ -16,7 +16,7 @@ function useRecentClasses(studentId: string | null) {
     queryKey: ['completed-classes', studentId],
     enabled: !!studentId,
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0]
+      const today = format(new Date(), 'yyyy-MM-dd') // 로컬 시간 기준
       const { data } = await supabase
         .from('classes')
         .select('id, date, start_time')

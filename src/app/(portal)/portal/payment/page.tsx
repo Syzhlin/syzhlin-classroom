@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalPayment } from '@/lib/queries/usePayments'
@@ -45,7 +45,8 @@ function AccountCopyButton() {
 export default function PortalPaymentPage() {
   const { data: profile, isLoading: profileLoading } = useProfile()
   const linkedId = profile?.linked_student_id ?? null
-  const currentYearMonth = format(new Date(), 'yyyy-MM')
+  const [currentYearMonth, setCurrentYearMonth] = useState(format(new Date(), 'yyyy-MM'))
+  useEffect(() => { setCurrentYearMonth(format(new Date(), 'yyyy-MM')) }, [])
   const { data: payment, isLoading: paymentLoading } = usePortalPayment(linkedId, currentYearMonth)
 
   if (profileLoading || paymentLoading) {
