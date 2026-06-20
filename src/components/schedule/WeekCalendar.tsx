@@ -9,7 +9,7 @@ import { ClassBlock } from './ClassBlock'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const HOUR_START = 15
-const HOUR_END = 22
+const HOUR_END = 23
 const HOUR_PX = 60
 const TOTAL_HOURS = HOUR_END - HOUR_START
 
@@ -62,7 +62,7 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick, compact }
     (classes ?? []).filter((c) => c.date === format(day, 'yyyy-MM-dd'))
 
   return (
-    <div className={`flex h-full flex-col ${compact ? "" : "min-w-[760px] md:min-w-0"}`}>
+    <div className={`flex flex-col ${compact ? "" : "min-w-[760px] md:min-w-0 h-full"}`}>
       {/* 헤더 — 요일 */}
       <div className="flex sticky top-0 z-20" style={{borderBottom:"1px solid rgba(175,196,216,0.2)", backgroundColor:"var(--sz-card-pastel)"}}>
         <div className="w-14 shrink-0" />
@@ -83,7 +83,7 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick, compact }
       </div>
 
       {/* 그리드 본체 */}
-      <div className="flex flex-1 overflow-auto">
+      <div className="flex">
         <div className="w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_PX }}>
           {Array.from({ length: TOTAL_HOURS }, (_, i) => (
             <div

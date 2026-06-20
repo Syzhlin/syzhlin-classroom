@@ -323,7 +323,7 @@ export function MobileScheduleView({ onClassClick, onNameClick, onAddClick, onSl
       {/* ── 주간표 뷰 ── */}
       {viewMode === 'calendar' && (
         <div className="flex-1 overflow-auto"
-          style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}>
+          style={{ paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
           <WeekCalendar
             onClassClick={onClassClick}
             onNameClick={onNameClick}
