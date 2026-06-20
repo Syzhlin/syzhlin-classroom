@@ -349,7 +349,8 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
   const [result, setResult] = useState<PracticeResult | null>(null)
   const [sessionDone, setSessionDone] = useState(0)
   const [noSpeech, setNoSpeech] = useState(false)
-  const recognitionRef = useRef<any>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const phaseRef = useRef<Phase>('idle')
 
@@ -360,7 +361,7 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
-      recognitionRef.current?.abort?.()
+      mediaRecorderRef.current?.stop()
       speechSynthesis.cancel()
     }
   }, [])
@@ -389,47 +390,60 @@ function PracticeScreen({ city, onBack, onAttemptComplete, totalAttempts }: {
     timerRef.current = setTimeout(tick, 1000)
   }
 
-  function startListening() {
+  async function startListening() {
     setPhase('recording')
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) {
+    chunksRef.current = []
+
+    let stream: MediaStream
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    } catch {
       setNoSpeech(true)
-      timerRef.current = setTimeout(() => analyze(''), 2000)
+      analyze('')
       return
     }
 
-    const rec = new SR()
-    rec.lang = 'en-US'
-    rec.continuous = false
-    rec.interimResults = false
-    rec.maxAlternatives = 1
-    recognitionRef.current = rec
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+      : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : 'audio/ogg'
 
-    let done = false
-    const finish = (transcript: string) => {
-      if (done) return
-      done = true
-      if (timerRef.current) clearTimeout(timerRef.current)
-      analyze(transcript)
+    const recorder = new MediaRecorder(stream, { mimeType })
+    mediaRecorderRef.current = recorder
+
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+    recorder.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop())
+      const blob = new Blob(chunksRef.current, { type: mimeType })
+      if (blob.size < 1000) { analyze(''); return }
+
+      setPhase('analyzing')
+      try {
+        const ext = mimeType.includes('mp4') ? 'm4a' : mimeType.includes('ogg') ? 'ogg' : 'webm'
+        const file = new File([blob], `rec.${ext}`, { type: mimeType })
+        const fd = new FormData()
+        fd.append('audio', file)
+        const res = await fetch('/api/speech-to-text', { method: 'POST', body: fd })
+        const data = await res.json()
+        analyze(data.transcript ?? '')
+      } catch {
+        analyze('')
+      }
     }
 
-    timerRef.current = setTimeout(() => { rec.stop(); finish('') }, 8000)
-    rec.onresult = (e: any) => finish(e.results[0][0].transcript)
-    rec.onerror = () => finish('')
-    rec.onend = () => { if (!done) finish('') }
-    try { rec.start() } catch { finish('') }
+    recorder.start()
+    // Auto-stop after 8s
+    timerRef.current = setTimeout(() => recorder.state === 'recording' && recorder.stop(), 8000)
   }
 
   function stopEarly() {
-    recognitionRef.current?.stop?.()
     if (timerRef.current) clearTimeout(timerRef.current)
+    if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop()
   }
 
   function analyze(transcript: string) {
     const empty = !transcript.trim()
     if (empty) setNoSpeech(true)
-    setPhase('analyzing')
-    timerRef.current = setTimeout(() => {
+    else setPhase('analyzing')
+    setTimeout(() => {
       const { wordScores, total } = scorePhrase(sentence.en, transcript)
       setResult({ wordScores, total, transcript })
       setPhase('result')
