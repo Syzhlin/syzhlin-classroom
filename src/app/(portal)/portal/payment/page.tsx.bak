@@ -46,7 +46,7 @@ function AccountCopyButton() {
 
 export default function PortalPaymentPage() {
   const { data: profile, isLoading: profileLoading } = useProfile()
-  const { selectedStudentId: linkedId, linkedStudentName } = usePortalStudent()
+  const { selectedStudentId: linkedId } = usePortalStudent()
   const [currentYearMonth, setCurrentYearMonth] = useState(format(new Date(), 'yyyy-MM'))
   useEffect(() => { setCurrentYearMonth(format(new Date(), 'yyyy-MM')) }, [])
   const { data: payment, isLoading: paymentLoading } = usePortalPayment(linkedId, currentYearMonth)
@@ -77,7 +77,7 @@ export default function PortalPaymentPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-6">
         <h2 className="text-sm font-semibold text-[var(--sz-text-muted)] mb-4">
-          {linkedStudentName ? `${linkedStudentName} · ` : ""}{year}년 {month}월 결제 현황
+          {year}년 {month}월 결제 현황
         </h2>
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center text-sm text-gray-400">
           이번 달 결제 정보가 없습니다
@@ -94,7 +94,7 @@ export default function PortalPaymentPage() {
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
       <h2 className="text-sm font-semibold text-[var(--sz-text-muted)]">
-        {linkedStudentName ? `${linkedStudentName} · ` : ""}{year}년 {month}월 결제 현황
+        {year}년 {month}월 결제 현황
       </h2>
 
       {/* Status card */}
@@ -129,8 +129,9 @@ export default function PortalPaymentPage() {
               style={{backgroundColor: "var(--sz-navy)", width: `${progress}%`}}
             />
           </div>
-          <div className="text-xs mt-1" style={{ color: 'var(--sz-text-muted)' }}>
-            기본 {payment.planned_sessions}회{payment.bonus_sessions > 0 ? ` + 보강 ${payment.bonus_sessions}회` : ''} = 총 {payment.total_sessions}회
+          <div className="flex justify-between text-xs text-gray-400">
+            <span>예정 {payment.planned_sessions}회</span>
+            {payment.bonus_sessions > 0 && <span>보강 +{payment.bonus_sessions}회</span>}
           </div>
         </div>
 

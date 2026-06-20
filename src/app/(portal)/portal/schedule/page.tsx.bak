@@ -487,7 +487,7 @@ export default function PortalSchedulePage() {
     ? allClasses.filter(c => c.date === selectedCalDate)
     : []
 
-  function ClassRow({ cls, showRequest, studentName }: { cls: ClassItem; showRequest: boolean; studentName?: string }) {
+  function ClassRow({ cls, showRequest }: { cls: ClassItem; showRequest: boolean }) {
     const statusInfo = STATUS_LABELS[cls.status] ?? { label: cls.status, color: '' }
           const statusStyle = cls.status === 'scheduled'
             ? { backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)' }
@@ -501,9 +501,6 @@ export default function PortalSchedulePage() {
       <div className="px-4 py-3 flex items-center gap-3">
         <div className="w-1 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: studentColor }} />
         <div className="flex-1 min-w-0">
-          {studentName && (
-            <p className="text-[10px] font-semibold mb-0.5" style={{ color: 'var(--sz-blue-soft)' }}>{studentName}</p>
-          )}
           <p className="text-sm font-medium text-gray-800">{cls.start_time.slice(0, 5)} – {cls.end_time.slice(0, 5)}</p>
           {cls.notes && <p className="text-xs text-gray-400 mt-0.5 truncate">{cls.notes}</p>}
         </div>
@@ -514,10 +511,9 @@ export default function PortalSchedulePage() {
           {showRequest && cls.status === 'scheduled' && (
             <button
               onClick={() => setRequestTarget(cls)}
-              className="text-xs px-3 py-1 rounded-full font-semibold transition-all active:scale-95"
-              style={{ backgroundColor: 'var(--sz-blue-soft)', color: '#fff' }}
+              className="text-xs px-2.5 py-0.5 rounded-full transition-colors" style={{backgroundColor: "var(--sz-blue-pale)", color: "var(--sz-blue-soft)"}}
             >
-              변경 요청
+              변경요청
             </button>
           )}
         </div>
@@ -526,11 +522,9 @@ export default function PortalSchedulePage() {
   }
 
   // 학부모: 캘린더 메인 레이아웃
-  const { linkedStudentName } = usePortalStudent()
   if (isParent) {
     const upcomingGroups = groupByDate(upcoming).slice(0, 2) // 가장 가까운 2개 날짜
     const pastGroups = groupByDate(past)
-    const studentName = linkedStudentName ?? undefined
 
     return (
       <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
@@ -552,7 +546,7 @@ export default function PortalSchedulePage() {
             </div>
             <div className="divide-y divide-gray-50">
               {selectedDayClasses.map(cls => (
-                <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} studentName={studentName} />
+                <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} />
               ))}
             </div>
           </div>
@@ -573,7 +567,7 @@ export default function PortalSchedulePage() {
                     <span className="text-xs font-semibold text-gray-600">{formatClassDate(date)}</span>
                   </div>
                   <div className="divide-y divide-gray-50">
-                    {items.map(cls => <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} studentName={studentName} />)}
+                    {items.map(cls => <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} />)}
                   </div>
                 </div>
               ))}

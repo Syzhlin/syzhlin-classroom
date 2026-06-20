@@ -5,12 +5,6 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { useMessages, useSendMessage, useMarkMessagesRead } from '@/lib/queries/useMessages'
 
-const QUICK_PROMPTS = [
-  '수업 일정 문의',
-  '숙제 문의',
-  '결제 문의',
-]
-
 export default function InquiryPage() {
   const { data: profile } = useProfile()
   const { selectedStudentId: studentId } = usePortalStudent()
@@ -31,11 +25,11 @@ export default function InquiryPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  async function handleSend(body?: string) {
-    const msg = (body ?? text).trim()
-    if (!msg || !studentId) return
+  async function handleSend() {
+    if (!text.trim() || !studentId) return
+    const body = text.trim()
     setText('')
-    await send.mutateAsync({ student_id: studentId, body: msg, sender_role: role })
+    await send.mutateAsync({ student_id: studentId, body, sender_role: role })
   }
 
   if (!studentId) {
@@ -52,7 +46,10 @@ export default function InquiryPage() {
   return (
     <div
       className="flex flex-col"
-      style={{ flex: 1, minHeight: 0 }}
+      style={{
+        height: '100dvh',
+        maxHeight: '100dvh',
+      }}
     >
       {/* 채팅 헤더 */}
       <div
@@ -83,7 +80,6 @@ export default function InquiryPage() {
           flexDirection: 'column',
           gap: '14px',
           backgroundColor: 'var(--sz-bg-pastel)',
-          minHeight: 0,
         }}
       >
         {isLoading && (
@@ -95,36 +91,19 @@ export default function InquiryPage() {
           </div>
         )}
         {!isLoading && messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center flex-1 text-center py-8">
+          <div className="flex flex-col items-center justify-center flex-1 text-center py-12">
             <div
               className="w-16 h-16 rounded-3xl flex items-center justify-center text-2xl mb-4"
               style={{ backgroundColor: 'var(--sz-blue-pale)' }}
             >
               💌
             </div>
-            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--sz-text-deep)' }}>
-              첫 번째 메시지를 보내보세요
+            <p className="text-sm font-semibold" style={{ color: 'var(--sz-text-deep)' }}>
+              첫 번째 메시지를 보내보세요!
             </p>
-            <p className="text-xs mb-5" style={{ color: 'var(--sz-text-muted)' }}>
-              선생님께 편하게 문의할 수 있어요
+            <p className="text-xs mt-1" style={{ color: 'var(--sz-text-muted)' }}>
+              선생님과 편하게 대화할 수 있어요
             </p>
-            {/* 빠른 문의 버튼 */}
-            <div className="flex flex-wrap gap-2 justify-center">
-              {QUICK_PROMPTS.map(q => (
-                <button
-                  key={q}
-                  onClick={() => handleSend(q)}
-                  className="text-xs px-4 py-2 rounded-full font-medium border transition-all active:scale-95"
-                  style={{
-                    borderColor: 'rgba(175,196,216,0.4)',
-                    color: 'var(--sz-blue-soft)',
-                    backgroundColor: 'var(--sz-blue-pale)',
-                  }}
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
           </div>
         )}
 
@@ -136,6 +115,7 @@ export default function InquiryPage() {
               className="flex"
               style={{ justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: '8px' }}
             >
+              {/* 선생님 아바타 */}
               {!isMe && (
                 <div
                   className="w-7 h-7 rounded-2xl flex items-center justify-center text-xs flex-shrink-0 mb-1"
@@ -153,11 +133,13 @@ export default function InquiryPage() {
                   gap: '4px',
                 }}
               >
+                {/* 말풍선 */}
                 <div
                   className="text-sm leading-relaxed"
                   style={{
                     padding: '10px 14px',
                     borderRadius: isMe ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                    // ✅ 핵심: 학생 말풍선은 소프트 블루 배경 + 딥 네이비 텍스트
                     backgroundColor: isMe ? '#DCEAF7' : '#FFFFFF',
                     color: '#2E3545',
                     boxShadow: '0 1px 4px rgba(46,53,69,0.08)',
@@ -166,6 +148,8 @@ export default function InquiryPage() {
                 >
                   {msg.body}
                 </div>
+
+                {/* 시간 */}
                 <span
                   className="text-[10px] px-1"
                   style={{
@@ -217,19 +201,17 @@ export default function InquiryPage() {
             color: '#2E3545',
             maxHeight: '100px',
             lineHeight: '1.5',
-            fontSize: '16px',
           }}
         />
         <button
-          onClick={() => handleSend()}
+          onClick={handleSend}
           disabled={!text.trim() || send.isPending}
-          className="flex-shrink-0 flex items-center justify-center rounded-full transition-all active:scale-95"
+          className="flex-shrink-0 flex items-center justify-center rounded-full transition-all"
           style={{
             width: '40px',
             height: '40px',
             backgroundColor: text.trim() ? 'var(--sz-blue-soft)' : 'rgba(175,196,216,0.25)',
             color: text.trim() ? 'white' : 'var(--sz-text-muted)',
-            transform: text.trim() ? 'scale(1)' : 'scale(0.95)',
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">

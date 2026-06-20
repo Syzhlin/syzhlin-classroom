@@ -49,10 +49,7 @@ function HomeworkSection({ studentId }: { studentId: string }) {
 
   return (
     <div className="space-y-3 mb-6">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-bold" style={{ color: 'var(--sz-text-deep)' }}>숙제 제출</h2>
-        <span className="text-xs" style={{ color: 'var(--sz-text-muted)' }}>사진을 첨부하고 선생님께 바로 보내요</span>
-      </div>
+      <h2 className="text-sm font-bold" style={{ color: 'var(--sz-text-deep)' }}>📌 숙제 제출</h2>
 
       {/* 업로드 카드 */}
       <div className="sz-widget rounded-3xl p-4 space-y-3" style={{ backgroundColor: 'var(--sz-card-pastel)' }}>
@@ -74,11 +71,11 @@ function HomeworkSection({ studentId }: { studentId: string }) {
         ) : (
           <button
             onClick={() => inputRef.current?.click()}
-            className="w-full h-20 rounded-2xl flex flex-col items-center justify-center gap-2 border-2 border-dashed transition-colors"
+            className="w-full h-28 rounded-2xl flex flex-col items-center justify-center gap-2 border-2 border-dashed transition-colors"
             style={{ borderColor: 'rgba(175,196,216,0.4)', backgroundColor: 'rgba(175,196,216,0.06)' }}
           >
             <ImagePlus className="w-6 h-6" style={{ color: 'rgba(175,196,216,0.7)' }} />
-            <span className="text-xs font-medium" style={{ color: 'var(--sz-text-muted)' }}>여기를 눌러 사진 첨부</span>
+            <span className="text-xs font-medium" style={{ color: 'var(--sz-text-muted)' }}>사진 첨부</span>
           </button>
         )}
 
@@ -107,9 +104,9 @@ function HomeworkSection({ studentId }: { studentId: string }) {
         ) : (
           <button
             onClick={handleSubmit}
-            disabled={submit.isPending || !file}
-            className="w-full py-3 rounded-2xl text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all"
-            style={{ backgroundColor: file ? 'var(--sz-blue-soft)' : 'rgba(175,196,216,0.35)', color: file ? '#fff' : 'var(--sz-text-muted)' }}
+            disabled={submit.isPending || (!file && !note.trim())}
+            className="w-full py-3 rounded-2xl text-sm font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-40 transition-opacity"
+            style={{ backgroundColor: 'var(--sz-blue-soft)' }}
           >
             <Send className="w-4 h-4" />
             {submit.isPending ? '제출 중...' : '숙제 제출'}
@@ -184,7 +181,7 @@ export default function ParentPortalPage() {
       <HomeworkSection studentId={linkedId} />
 
       {/* ── 수업 자료 ── */}
-      <h2 className="text-sm font-bold mb-3" style={{color: 'var(--sz-text-deep)'}}>수업 자료</h2>
+      <h2 className="text-sm font-bold mb-3" style={{color: 'var(--sz-text-deep)'}}>📚 수업 자료</h2>
 
       {materialsLoading ? (
         <div className="space-y-3">
