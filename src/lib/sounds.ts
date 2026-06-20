@@ -3,11 +3,11 @@
 
 let _ctx: AudioContext | null = null
 
-function ctx(): AudioContext | null {
+async function ctx(): Promise<AudioContext | null> {
   if (typeof window === 'undefined') return null
   try {
     if (!_ctx) _ctx = new AudioContext()
-    if (_ctx.state === 'suspended') _ctx.resume()
+    if (_ctx.state === 'suspended') await _ctx.resume()
     return _ctx
   } catch {
     return null
@@ -15,7 +15,7 @@ function ctx(): AudioContext | null {
 }
 
 // 공통: 오실레이터 원샷 재생
-function playTone(
+async function playTone(
   freq: number,
   endFreq: number,
   duration: number,
@@ -23,7 +23,7 @@ function playTone(
   type: OscillatorType = 'sine',
   delay = 0
 ) {
-  const c = ctx()
+  const c = await ctx()
   if (!c) return
   try {
     const osc = c.createOscillator()
