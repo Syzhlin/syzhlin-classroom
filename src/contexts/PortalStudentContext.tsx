@@ -52,7 +52,11 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
         if (data) setLinkedStudentName(data.name)
       })
 
-    // 형제 목록
+    // 형제 목록 — 학부모만 조회 (학생끼리는 서로 데이터 접근 불가)
+    if (profile?.role !== 'parent') {
+      setSiblings([])
+      return
+    }
     supabase
       .from('student_siblings')
       .select('sibling_id, students!sibling_id(id, name, color)')
@@ -68,7 +72,7 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
           }))
         setSiblings(list)
       })
-  }, [linkedId])
+  }, [linkedId, profile?.role])
 
   const setSelectedStudentId = useCallback((id: string) => {
     if (id === selectedStudentId) return

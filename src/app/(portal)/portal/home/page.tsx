@@ -61,8 +61,8 @@ export default function PortalHomePage() {
         )}
       </div>
 
-      {/* 오늘의 수업 피드백 */}
-      {/* 선생님의 편지 - 항상 표시 */}
+      {/* 선생님의 편지 — 학부모 전용 */}
+      {profile?.role === 'parent' && (
       <div className="sz-card rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-base">💌</span>
@@ -117,6 +117,7 @@ export default function PortalHomePage() {
           </div>
         )}
       </div>
+      )}
 
       {/* 다음 일정 카드 */}
       {data?.nextClasses && data.nextClasses.length > 0 && (
