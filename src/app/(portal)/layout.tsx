@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import { PortalStudentProvider, usePortalStudent } from '@/contexts/PortalStudentContext'
 import { useEffect, useRef } from 'react'
 import { playClickSound, playPageTransitionSound, playBackSound, playSiblingSwapSound } from '@/lib/sounds'
+import { logActivity } from '@/lib/logActivity'
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -27,13 +28,27 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
   const role = profile?.role
   const prevPathname = useRef(pathname)
 
-  // 페이지 전환음
+  // 페이지 전환음 + 방문 로그
   useEffect(() => {
     if (prevPathname.current !== pathname) {
       playPageTransitionSound()
       prevPathname.current = pathname
     }
-  }, [pathname])
+    if (!profile) return
+    const pageLabel: Record<string, string> = {
+      '/portal/home': '홈',
+      '/portal/schedule': '일정',
+      '/portal/payment': '결제',
+      '/portal/report': '리포트',
+      '/portal/inquiry': '문의',
+      '/portal/parent': '자료',
+    }
+    logActivity({
+      userRole: profile.role ?? undefined,
+      action: 'page_view',
+      detail: pageLabel[pathname] ?? pathname,
+    })
+  }, [pathname, profile])
 
   // 전역 버튼 클릭음
   useEffect(() => {

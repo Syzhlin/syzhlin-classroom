@@ -1,5 +1,7 @@
 'use client'
 
+import { logActivity } from '@/lib/logActivity'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
@@ -152,6 +154,13 @@ export default function LoginPage() {
         }
       }
 
+      // 로그인 성공 로그
+      const loginRole = isTeacher ? 'teacher' : role
+      await logActivity({
+        userRole: loginRole,
+        action: 'login',
+        detail: `${loginRole} 로그인`,
+      })
       queryClient.clear()
       router.push('/')
       router.refresh()

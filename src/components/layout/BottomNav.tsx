@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   CalendarDays, Users, CreditCard, LayoutDashboard,
   BookOpen, MessageSquare, ClipboardList, TrendingUp,
-  Mail, MoreHorizontal, X, LogOut
+  Mail, MoreHorizontal, X, LogOut, Activity
 } from 'lucide-react'
 import { useAllStudentMessages } from '@/lib/queries/useMessages'
 import { useAllChangeRequests } from '@/lib/queries/useChangeRequests'
@@ -21,11 +21,12 @@ const primaryNav = [
 ]
 
 const moreNav = [
-  { href: '/materials', label: '수업 자료',  icon: BookOpen },
-  { href: '/reports',   label: '성장리포트', icon: TrendingUp },
-  { href: '/feedback',  label: '수업 피드백', icon: Mail },
-  { href: '/messages',  label: '문의함',     icon: MessageSquare },
-  { href: '/requests',  label: '변경요청',   icon: ClipboardList },
+  { href: '/materials',      label: '수업 자료',  icon: BookOpen },
+  { href: '/reports',        label: '성장리포트', icon: TrendingUp },
+  { href: '/feedback',       label: '수업 피드백', icon: Mail },
+  { href: '/messages',       label: '문의함',     icon: MessageSquare },
+  { href: '/requests',       label: '변경요청',   icon: ClipboardList },
+  { href: '/activity-logs',  label: '활동 로그',  icon: Activity },
 ]
 
 export function BottomNav() {
