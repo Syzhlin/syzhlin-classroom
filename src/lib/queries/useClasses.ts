@@ -74,33 +74,51 @@ export function useAllSessionClasses() {
   })
 }
 
-// 회차 맵 계산: { classId -> N회 } — 결제 주기(월)별 순번
-// 같은 학생의 같은 달(yyyy-MM) 수업을 날짜·시간 순으로 1, 2, 3... 부여
-// → 정산 페이지의 completed_sessions(월별 카운트)와 일치
-export function buildSessionNumberMap(allClasses: ClassWithStudent[]): Record<string, number> {
-  // { studentId -> { yearMonth -> ClassWithStudent[] } }
-  const byStudentMonth: Record<string, Record<string, ClassWithStudent[]>> = {}
+// 회차 맵 계산: { classId -> N회 }
+// paymentMap: "studentId:yearMonth" -> completed_sessions (정산 데이터 기준)
+// 정산의 completed_sessions를 완료 기준점으로 사용하고,
+// 예정 수업은 그 이후 번호로 자동 부여
+export function buildSessionNumberMap(
+  allClasses: ClassWithStudent[],
+  paymentMap?: Record<string, number>
+): Record<string, number> {
+  type Group = { completed: ClassWithStudent[]; scheduled: ClassWithStudent[] }
+  const byStudentMonth: Record<string, Group> = {}
 
   for (const cls of allClasses) {
-    const sid = cls.student_id
-    const ym = cls.date.slice(0, 7) // 'yyyy-MM'
-    if (!byStudentMonth[sid]) byStudentMonth[sid] = {}
-    if (!byStudentMonth[sid][ym]) byStudentMonth[sid][ym] = []
-    byStudentMonth[sid][ym].push(cls)
+    const key = `${cls.student_id}:${cls.date.slice(0, 7)}`
+    if (!byStudentMonth[key]) byStudentMonth[key] = { completed: [], scheduled: [] }
+    if (cls.status === 'completed') {
+      byStudentMonth[key].completed.push(cls)
+    } else {
+      byStudentMonth[key].scheduled.push(cls)
+    }
   }
 
+  const sort = (arr: ClassWithStudent[]) =>
+    arr.sort((a, b) =>
+      a.date === b.date
+        ? a.start_time.localeCompare(b.start_time)
+        : a.date.localeCompare(b.date)
+    )
+
   const map: Record<string, number> = {}
-  for (const months of Object.values(byStudentMonth)) {
-    for (const classes of Object.values(months)) {
-      classes.sort((a, b) =>
-        a.date === b.date
-          ? a.start_time.localeCompare(b.start_time)
-          : a.date.localeCompare(b.date)
-      )
-      classes.forEach((cls, i) => {
-        map[cls.id] = i + 1
-      })
-    }
+  for (const [key, { completed, scheduled }] of Object.entries(byStudentMonth)) {
+    sort(completed)
+    sort(scheduled)
+
+    // 정산의 completed_sessions가 있으면 그걸 기준으로 사용
+    const completedCount = paymentMap?.[key] ?? completed.length
+
+    // 완료 수업: completedCount 기준으로 역산 (e.g. 5완료면 1~5)
+    completed.forEach((cls, i) => {
+      map[cls.id] = Math.max(1, completedCount - completed.length + i + 1)
+    })
+
+    // 예정 수업: completedCount + 1, +2, ...
+    scheduled.forEach((cls, i) => {
+      map[cls.id] = completedCount + i + 1
+    })
   }
 
   return map
@@ -166,6 +184,47 @@ export function useUpdateClass() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['classes'] })
+      queryClient.invalidateQueries({ queryKey: ['today-briefing'] })
+    },
+  })
+}
+
+
+// 수업 완료 처리: class status → completed + 해당 월 정산 completed_sessions +1
+export function useCompleteClass() {
+  const queryClient = useQueryClient()
+  const supabase = createClient()
+
+  return useMutation({
+    mutationFn: async (cls: { id: string; student_id: string; date: string }) => {
+      // 1) 수업 상태 완료로 변경
+      const { error: classErr } = await supabase
+        .from('classes')
+        .update({ status: 'completed' })
+        .eq('id', cls.id)
+      if (classErr) throw classErr
+
+      // 2) 해당 월 정산 조회 후 completed_sessions +1
+      const yearMonth = cls.date.slice(0, 7)
+      const { data: payment } = await supabase
+        .from('payments')
+        .select('id, completed_sessions')
+        .eq('student_id', cls.student_id)
+        .eq('year_month', yearMonth)
+        .single()
+
+      if (payment) {
+        await supabase
+          .from('payments')
+          .update({ completed_sessions: payment.completed_sessions + 1 })
+          .eq('id', payment.id)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['classes'] })
+      queryClient.invalidateQueries({ queryKey: ['classes-all-sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['payments'] })
+      queryClient.invalidateQueries({ queryKey: ['payments-all'] })
       queryClient.invalidateQueries({ queryKey: ['today-briefing'] })
     },
   })

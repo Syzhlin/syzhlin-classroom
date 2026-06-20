@@ -1,9 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { addDays, format, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { useScheduleStore } from '@/store/scheduleStore'
 import { useWeekClasses, useAllSessionClasses, buildSessionNumberMap, ClassWithStudent } from '@/lib/queries/useClasses'
+import { useAllPayments } from '@/lib/queries/usePayments'
 import { ClassBlock } from './ClassBlock'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -46,7 +47,15 @@ export function WeekCalendar({ onClassClick, onNameClick, onSlotClick }: WeekCal
     return () => clearTimeout(timer)
   }, [])
 
-  const sessionNumberMap = allSessionClasses ? buildSessionNumberMap(allSessionClasses) : {}
+  const { data: allPayments } = useAllPayments()
+  const paymentMap = useMemo(() => {
+    const m: Record<string, number> = {}
+    if (allPayments) {
+      for (const p of allPayments) { m[`${p.student_id}:${p.year_month}`] = p.completed_sessions }
+    }
+    return m
+  }, [allPayments])
+  const sessionNumberMap = allSessionClasses ? buildSessionNumberMap(allSessionClasses, paymentMap) : {}
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(selectedWeekStart, i))
   const getClassesForDay = (day: Date) =>
     (classes ?? []).filter((c) => c.date === format(day, 'yyyy-MM-dd'))

@@ -5,7 +5,8 @@ import { format, addDays, isToday, isTomorrow, parseISO, startOfWeek } from 'dat
 import { ko } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Plus, BookOpen, ClipboardList } from 'lucide-react'
 import { useScheduleStore } from '@/store/scheduleStore'
-import { useWeekClasses, useAllSessionClasses, buildSessionNumberMap, useUpdateClass } from '@/lib/queries/useClasses'
+import { useWeekClasses, useAllSessionClasses, buildSessionNumberMap, useCompleteClass } from '@/lib/queries/useClasses'
+import { useAllPayments } from '@/lib/queries/usePayments'
 import type { ClassWithStudent } from '@/lib/queries/useClasses'
 import Link from 'next/link'
 
@@ -37,7 +38,7 @@ function ClassCard({ cls, sessionNumber, onNameClick, onClick }: {
   cls: ClassWithStudent; sessionNumber?: number
   onNameClick: () => void; onClick: () => void
 }) {
-  const updateClass = useUpdateClass()
+  const completeClass = useCompleteClass()
   const color = cls.students?.color ?? '#AFC4D8'
   const subject = cls.students?.subjects?.[0] ?? ''
   const statusStyle = STATUS_STYLE[cls.status] ?? STATUS_STYLE.scheduled
@@ -74,11 +75,16 @@ function ClassCard({ cls, sessionNumber, onNameClick, onClick }: {
         <div className="flex gap-2 mt-3">
           {cls.status === 'scheduled' && (
             <button
-              onClick={(e) => { e.stopPropagation(); updateClass.mutate({ id: cls.id, status: 'completed' }) }}
-              disabled={updateClass.isPending}
+              onClick={(e) => {
+                e.stopPropagation()
+                completeClass.mutate({ id: cls.id, student_id: cls.student_id, date: cls.date })
+              }}
+              disabled={completeClass.isPending}
               className="text-xs font-semibold px-3 py-1.5 rounded-xl transition-all"
               style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}
-            >완료</button>
+            >
+              {completeClass.isPending ? '처리중…' : `${cls.date.slice(5).replace('-','/')} 완료`}
+            </button>
           )}
           <Link href="/feedback" onClick={(e) => e.stopPropagation()}
             className="text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1"
@@ -139,9 +145,21 @@ export function MobileScheduleView({ onClassClick, onNameClick, onAddClick }: {
   const [today, setToday] = useState<Date | null>(null)
   useEffect(() => { setToday(new Date()) }, [])
 
+  const { data: allPayments } = useAllPayments()
+
+  const paymentMap = useMemo(() => {
+    const m: Record<string, number> = {}
+    if (allPayments) {
+      for (const p of allPayments) {
+        m[`${p.student_id}:${p.year_month}`] = p.completed_sessions
+      }
+    }
+    return m
+  }, [allPayments])
+
   const sessionMap = useMemo(() =>
-    allSessionClasses ? buildSessionNumberMap(allSessionClasses) : {},
-    [allSessionClasses]
+    allSessionClasses ? buildSessionNumberMap(allSessionClasses, paymentMap) : {},
+    [allSessionClasses, paymentMap]
   )
 
   const weekEnd = addDays(selectedWeekStart, 6)

@@ -122,3 +122,19 @@ export function useStudentPayments(studentId: string | null) {
     },
   })
 }
+
+/** 전체 결제 이력 (회차 계산용) — studentId:yearMonth -> completed_sessions */
+export function useAllPayments() {
+  const supabase = createClient()
+  return useQuery({
+    queryKey: ['payments-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('payments')
+        .select('student_id, year_month, completed_sessions')
+      if (error) throw error
+      return (data ?? []) as Array<{ student_id: string; year_month: string; completed_sessions: number }>
+    },
+    staleTime: 30_000,
+  })
+}
