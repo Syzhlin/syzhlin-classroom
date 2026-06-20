@@ -41,7 +41,9 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
       .eq('student_id', linkedId)
       .then(({ data }) => {
         if (!data) return
-        const list = data.map((r: any) => ({
+        const list = data
+          .filter((r: any) => r.students != null)
+          .map((r: any) => ({
           id: r.students.id,
           name: r.students.name,
           color: r.students.color,
