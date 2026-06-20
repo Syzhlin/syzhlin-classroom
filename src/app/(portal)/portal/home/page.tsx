@@ -6,7 +6,7 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePushNotification } from '@/hooks/usePushNotification'
 import { usePortalHome, useGrowthReport } from '@/lib/queries/useFeedback'
-import { getStampedCities, getNextCity } from '@/lib/cities'
+import { getStampedCities, getCurrentCity, classesInCurrentCity } from '@/lib/cities'
 import Link from 'next/link'
 
 const DAY_KO = ['일', '월', '화', '수', '목', '금', '토']
@@ -145,13 +145,14 @@ export default function PortalHomePage() {
       {(() => {
         const completedCount = growthData?.totalClasses ?? 0
         const stampedCities = getStampedCities(completedCount)
-        const nextCity = getNextCity(completedCount)
+        const currentCity = getCurrentCity(completedCount)
+        const progress = classesInCurrentCity(completedCount)
+        const isArrived = progress === 1
         const lastCity = stampedCities[stampedCities.length - 1] ?? null
-        if (completedCount === 0 && !nextCity) return null
         return (
           <Link href="/portal/passport">
             <div className="bg-gradient-to-r from-indigo-700 to-violet-700 rounded-2xl p-4 text-white cursor-pointer">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🌍</span>
                   <p className="text-sm font-semibold">세계 여권</p>
@@ -163,21 +164,23 @@ export default function PortalHomePage() {
                   <p className="text-3xl font-bold">{stampedCities.length}</p>
                   <p className="text-xs text-indigo-300">도시 스탬프</p>
                 </div>
+                {currentCity && (
+                  <div className={`flex items-center gap-2 rounded-xl px-3 py-2 ${isArrived ? 'bg-amber-400/20' : 'bg-white/10'}`}>
+                    <span className={`text-xl ${isArrived ? '' : 'opacity-60'}`}>{currentCity.landmark}</span>
+                    <div>
+                      <p className="text-xs font-semibold">{currentCity.name}</p>
+                      <p className={`text-[10px] ${isArrived ? 'text-amber-300' : 'text-indigo-400'}`}>
+                        {isArrived ? '도착 완료 · 1/2' : '다음 도시 · 0/2'}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 {lastCity && (
                   <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
                     <span className="text-xl">{lastCity.landmark}</span>
                     <div>
                       <p className="text-xs font-semibold">{lastCity.name}</p>
                       <p className="text-[10px] text-indigo-300">최근 스탬프</p>
-                    </div>
-                  </div>
-                )}
-                {nextCity && (
-                  <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
-                    <span className="text-xl opacity-60">{nextCity.landmark}</span>
-                    <div>
-                      <p className="text-xs font-semibold text-indigo-200">{nextCity.name}</p>
-                      <p className="text-[10px] text-indigo-400">다음 도시</p>
                     </div>
                   </div>
                 )}

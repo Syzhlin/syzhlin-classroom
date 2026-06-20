@@ -162,7 +162,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
           <circle cx="12" cy="9" r="2.5"/>
         </svg>
       ),
-      roles: ['student'],
+      roles: ['student', 'adult_learner'],
     },
     {
       href: '/portal/game',
