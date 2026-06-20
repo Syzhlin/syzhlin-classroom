@@ -66,6 +66,7 @@ export default function ActivityLogsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   useEffect(() => {
     fetchLogs()
@@ -81,6 +82,7 @@ export default function ActivityLogsPage() {
       .limit(300)
     setLogs(data ?? [])
     setLoading(false)
+    setLastUpdated(new Date())
   }
 
   const filtered = logs.filter(log => {
@@ -97,16 +99,26 @@ export default function ActivityLogsPage() {
       {/* 헤더: 제목 + 새로고침 */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-lg font-bold text-[var(--sz-text-deep)]">활동 로그</h1>
-        <button
-          onClick={fetchLogs}
-          className="flex items-center gap-1.5 text-sm px-3 py-1.5 bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)] rounded-lg hover:bg-gray-200 transition-colors font-medium"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-          </svg>
-          새로고침
-        </button>
+        <div className="flex flex-col items-end gap-1">
+          {lastUpdated && (
+            <p className="text-[10px]" style={{ color: 'var(--sz-text-muted)' }}>
+              마지막 업데이트: {lastUpdated.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          )}
+          <button
+            onClick={fetchLogs}
+            disabled={loading}
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl font-medium transition-all disabled:opacity-50"
+            style={{ backgroundColor: 'rgba(175,196,216,0.12)', color: 'var(--sz-text-muted)' }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+              className={loading ? 'animate-spin' : ''}>
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            새로고침
+          </button>
+        </div>
       </div>
 
       {/* 검색창 — 모바일 풀너비 */}
@@ -116,7 +128,7 @@ export default function ActivityLogsPage() {
         </svg>
         <input
           type="text"
-          placeholder="코드·이름·내용 검색..."
+          placeholder="학생 코드, 이름, 활동 내용 검색 (예: COLINP, 결제, 자료)"
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full pl-9 pr-4 text-sm border border-[rgba(175,196,216,0.3)] rounded-2xl outline-none focus:border-indigo-400 bg-white"
@@ -137,6 +149,10 @@ export default function ActivityLogsPage() {
             }`}
           >
             {label}
+            {' '}
+            <span className={filter === key ? 'opacity-70' : 'opacity-50'}>
+              {key === 'all' ? logs.length : logs.filter(l => l.action === key).length}
+            </span>
           </button>
         ))}
       </div>
