@@ -50,16 +50,14 @@ const ROLE_COLOR: Record<string, string> = {
 function formatTime(iso: string) {
   try {
     const d = new Date(iso)
-    const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000)
-    return format(kst, 'MM/dd (EEE) HH:mm:ss', { locale: ko })
+    return format(d, 'MM/dd (EEE) HH:mm:ss', { locale: ko })
   } catch { return iso }
 }
 
 function formatTimeShort(iso: string) {
   try {
     const d = new Date(iso)
-    const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000)
-    return format(kst, 'MM/dd (EEE) HH:mm', { locale: ko })
+    return format(d, 'MM/dd (EEE) HH:mm', { locale: ko })
   } catch { return iso }
 }
 
