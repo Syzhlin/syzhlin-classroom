@@ -5,7 +5,9 @@ import { ko } from 'date-fns/locale'
 import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePushNotification } from '@/hooks/usePushNotification'
-import { usePortalHome } from '@/lib/queries/useFeedback'
+import { usePortalHome, useGrowthReport } from '@/lib/queries/useFeedback'
+import { getStampedCities, getNextCity } from '@/lib/cities'
+import Link from 'next/link'
 
 const DAY_KO = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -24,6 +26,7 @@ export default function PortalHomePage() {
   const { data: profile } = useProfile()
   const { selectedStudentId: studentId } = usePortalStudent()
   const { data, isLoading } = usePortalHome(studentId)
+  const { data: growthData } = useGrowthReport(studentId)
 
   if (isLoading) {
     return (
@@ -137,6 +140,52 @@ export default function PortalHomePage() {
           </div>
         </div>
       )}
+
+      {/* 세계 여권 스탬프 */}
+      {(() => {
+        const completedCount = growthData?.totalClasses ?? 0
+        const stampedCities = getStampedCities(completedCount)
+        const nextCity = getNextCity(completedCount)
+        const lastCity = stampedCities[stampedCities.length - 1] ?? null
+        if (completedCount === 0 && !nextCity) return null
+        return (
+          <Link href="/portal/passport">
+            <div className="bg-gradient-to-r from-indigo-700 to-violet-700 rounded-2xl p-4 text-white cursor-pointer">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🌍</span>
+                  <p className="text-sm font-semibold">세계 여권</p>
+                </div>
+                <span className="text-xs text-indigo-300">여권 보기 →</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div>
+                  <p className="text-3xl font-bold">{stampedCities.length}</p>
+                  <p className="text-xs text-indigo-300">도시 스탬프</p>
+                </div>
+                {lastCity && (
+                  <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
+                    <span className="text-xl">{lastCity.landmark}</span>
+                    <div>
+                      <p className="text-xs font-semibold">{lastCity.name}</p>
+                      <p className="text-[10px] text-indigo-300">최근 스탬프</p>
+                    </div>
+                  </div>
+                )}
+                {nextCity && (
+                  <div className="flex items-center gap-2 bg-white/10 rounded-xl px-3 py-2">
+                    <span className="text-xl opacity-60">{nextCity.landmark}</span>
+                    <div>
+                      <p className="text-xs font-semibold text-indigo-200">{nextCity.name}</p>
+                      <p className="text-[10px] text-indigo-400">다음 도시</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Link>
+        )
+      })()}
 
       {/* 잔여 회차 */}
       {payment && (
