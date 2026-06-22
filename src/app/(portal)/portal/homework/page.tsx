@@ -115,7 +115,7 @@ function HomeworkViewTab({ studentId }: { studentId: string }) {
           <h2 className="text-sm font-semibold" style={{color: 'var(--sz-text-deep)'}}>수업 자료</h2>
           <div className="space-y-2">
             {materials.map(m => (
-              
+              <a
                 key={m.id}
                 href={m.file_url}
                 target="_blank"
