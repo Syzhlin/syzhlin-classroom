@@ -3,12 +3,13 @@
 import { useState, useRef } from 'react'
 import { format, parseISO } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { Camera, ImagePlus, X, Send, CheckCircle, MessageSquare } from 'lucide-react'
+import { Camera, ImagePlus, Paperclip, FileText, X, Send, CheckCircle, MessageSquare } from 'lucide-react'
 import { useProfile } from '@/lib/queries/useProfile'
 import { useMyHomework, useSubmitHomework } from '@/lib/queries/useHomework'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePortalHome } from '@/lib/queries/useFeedback'
 import { usePortalMaterials } from '@/lib/queries/useMaterials'
+import { HomeworkAttachments } from '@/components/HomeworkAttachments'
 
 function formatDate(str: string) {
   return format(parseISO(str), 'M월 d일 (EEE)', { locale: ko })
@@ -114,7 +115,7 @@ function HomeworkViewTab({ studentId }: { studentId: string }) {
           <h2 className="text-sm font-semibold" style={{color: 'var(--sz-text-deep)'}}>수업 자료</h2>
           <div className="space-y-2">
             {materials.map(m => (
-              <a
+              
                 key={m.id}
                 href={m.file_url}
                 target="_blank"
@@ -133,147 +134,62 @@ function HomeworkViewTab({ studentId }: { studentId: string }) {
   )
 }
 
+type Picked = { id: string; file: File; kind: 'image' | 'file'; previewUrl?: string }
+
+const MAX_ITEMS = 10
+const MAX_SIZE = 20 * 1024 * 1024 // 20MB
+
 function HomeworkUploadTab({ studentId }: { studentId: string }) {
   const { data: submissions = [], isLoading } = useMyHomework(studentId)
   const submit = useSubmitHomework()
 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [file, setFile] = useState<File | null>(null)
+  const [items, setItems] = useState<Picked[]>([])
   const [note, setNote] = useState('')
   const [done, setDone] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const cameraRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
-  function handleFile(f: File) {
-    setFile(f)
-    setPreviewUrl(URL.createObjectURL(f))
+  function addFiles(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return
+    setError(null)
     setDone(false)
+
+    const next: Picked[] = []
+    let tooBig = false
+    for (const f of Array.from(fileList)) {
+      if (f.size > MAX_SIZE) { tooBig = true; continue }
+      const kind = f.type.startsWith('image/') ? 'image' : 'file'
+      next.push({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        file: f,
+        kind,
+        previewUrl: kind === 'image' ? URL.createObjectURL(f) : undefined,
+      })
+    }
+
+    setItems(prev => {
+      const merged = [...prev, ...next]
+      if (merged.length > MAX_ITEMS) {
+        merged.slice(MAX_ITEMS).forEach(p => p.previewUrl && URL.revokeObjectURL(p.previewUrl))
+        setError(`첨부는 최대 ${MAX_ITEMS}개까지 올릴 수 있어요`)
+        return merged.slice(0, MAX_ITEMS)
+      }
+      return merged
+    })
+
+    if (tooBig) setError('20MB가 넘는 파일은 올릴 수 없어요')
   }
 
-  function clearPhoto() {
-    setFile(null)
-    setPreviewUrl(null)
+  function removeItem(id: string) {
+    setItems(prev => {
+      const target = prev.find(p => p.id === id)
+      if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl)
+      return prev.filter(p => p.id !== id)
+    })
   }
 
   async function handleSubmit() {
-    if (!studentId || (!file && !note.trim())) return
-    await submit.mutateAsync({ studentId, file, note })
-    setFile(null)
-    setPreviewUrl(null)
-    setNote('')
-    setDone(true)
-    setTimeout(() => setDone(false), 3000)
-  }
-
-  return (
-    <div className="space-y-5">
-      {/* 제출 폼 */}
-      <div className="sz-widget rounded-3xl p-5 space-y-4">
-        <h2 className="text-sm font-semibold" style={{color: 'var(--sz-text-deep)'}}>숙제 제출</h2>
-        <p className="text-xs" style={{color: 'var(--sz-text-muted)'}}>사진을 찍거나 골라서 선생님께 보내요</p>
-
-        {/* 사진 영역 */}
-        {previewUrl ? (
-          <div className="relative rounded-2xl overflow-hidden bg-gray-100 aspect-[4/3]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={previewUrl} alt="숙제 사진" className="w-full h-full object-cover" />
-            <button
-              onClick={clearPhoto}
-              className="absolute top-3 right-3 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="flex gap-3">
-            <button
-              onClick={() => cameraRef.current?.click()}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl transition-colors" style={{backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)', border: '2px dashed var(--sz-blue-soft)'}}
-            >
-              <Camera className="w-7 h-7" />
-              <span className="text-xs font-medium">사진 찍기</span>
-            </button>
-            <button
-              onClick={() => galleryRef.current?.click()}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-6 rounded-2xl transition-colors" style={{backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)', border: '2px dashed var(--sz-pink-soft)'}}
-            >
-              <ImagePlus className="w-7 h-7" />
-              <span className="text-xs font-medium">사진 고르기</span>
-            </button>
-          </div>
-        )}
-
-        <input ref={cameraRef} type="file" accept="image/*" capture="environment"
-          className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
-        <input ref={galleryRef} type="file" accept="image/*"
-          className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
-
-        <textarea
-          value={note}
-          onChange={e => setNote(e.target.value)}
-          rows={3}
-          placeholder="선생님께 하고 싶은 말을 써도 돼요 😊"
-          className="w-full px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]" style={{border: '1.5px solid rgba(175,196,216,0.3)', borderRadius: '16px', backgroundColor: 'rgba(175,196,216,0.08)'}}
-        />
-
-        <button
-          onClick={handleSubmit}
-          disabled={submit.isPending || (!file && !note.trim())}
-          className={`w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors text-white disabled:opacity-40`}
-          style={done ? {backgroundColor: 'var(--sz-sage)'} : {backgroundColor: 'var(--sz-blue-soft)'}}
-        >
-          {done ? (
-            <><CheckCircle className="w-4 h-4" /> 제출 완료!</>
-          ) : submit.isPending ? '제출 중...' : (
-            <><Send className="w-4 h-4" /> 선생님께 보내기</>
-          )}
-        </button>
-      </div>
-
-      {/* 제출 내역 */}
-      <div>
-        <h2 className="text-sm font-semibold mb-3" style={{color: 'var(--sz-text-muted)'}}>제출 내역</h2>
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <div className="w-5 h-5 rounded-full animate-spin" style={{border: '2px solid var(--sz-blue-soft)', borderTopColor: 'transparent'}} />
-          </div>
-        ) : submissions.length === 0 ? (
-          <div className="sz-widget rounded-3xl p-6 text-center text-sm" style={{color: 'var(--sz-text-muted)'}}>
-            아직 제출한 숙제가 없어요
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {submissions.map(s => (
-              <div key={s.id} className="sz-widget rounded-3xl overflow-hidden">
-                {s.photo_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.photo_url} alt="숙제" className="w-full aspect-[4/3] object-cover" />
-                )}
-                <div className="p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-400">{formatDate(s.created_at)}</p>
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full"
-                      style={s.status === 'reviewed'
-                        ? {backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)'}
-                        : {backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)'}
-                      }>
-                      {s.status === 'reviewed' ? '확인 완료' : '검토 중'}
-                    </span>
-                  </div>
-                  {s.note && <p className="text-sm text-gray-700">{s.note}</p>}
-                  {s.teacher_comment && (
-                    <div className="rounded-xl px-3 py-2.5 flex gap-2" style={{backgroundColor: 'var(--sz-peach-pale)'}}>
-                      <MessageSquare className="w-4 h-4 text-[var(--sz-warm-gray)] flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-[var(--sz-navy)] leading-relaxed">{s.teacher_comment}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
+    if (!studentId || (items.length === 0 && !note.trim()))
