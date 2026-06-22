@@ -282,7 +282,6 @@ export default function LoginPage() {
             <div
               className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-all"
               style={rememberMe ? { ...neuActive, backgroundColor: '#9BB5CE' } : neuRaised}
-              onClick={() => setRememberMe(v => !v)}
             >
               {rememberMe && (
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none"
