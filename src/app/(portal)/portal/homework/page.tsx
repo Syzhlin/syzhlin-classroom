@@ -192,4 +192,158 @@ function HomeworkUploadTab({ studentId }: { studentId: string }) {
   }
 
   async function handleSubmit() {
-    if (!studentId || (items.length === 0 && !note.trim()))
+    if (!studentId || (items.length === 0 && !note.trim())) return
+    await submit.mutateAsync({ studentId, files: items.map(i => i.file), note })
+    items.forEach(i => i.previewUrl && URL.revokeObjectURL(i.previewUrl))
+    setItems([])
+    setNote('')
+    setDone(true)
+    setTimeout(() => setDone(false), 3000)
+  }
+
+  const canSubmit = items.length > 0 || note.trim().length > 0
+
+  return (
+    <div className="space-y-5">
+      {/* 제출 폼 */}
+      <div className="sz-widget rounded-3xl p-5 space-y-4">
+        <h2 className="text-sm font-semibold" style={{color: 'var(--sz-text-deep)'}}>숙제 제출</h2>
+        <p className="text-xs" style={{color: 'var(--sz-text-muted)'}}>사진 여러 장이나 파일을 함께 올릴 수 있어요</p>
+
+        {/* 선택한 첨부 미리보기 */}
+        {items.length > 0 && (
+          <div className="space-y-2">
+            <div className="grid grid-cols-3 gap-2">
+              {items.map(item => (
+                <div key={item.id} className="relative rounded-2xl overflow-hidden aspect-square" style={{backgroundColor: 'rgba(175,196,216,0.12)'}}>
+                  {item.kind === 'image' ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.previewUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-1 px-1.5 text-center">
+                      <FileText className="w-6 h-6" style={{color: 'var(--sz-blue-soft)'}} />
+                      <span className="text-[10px] leading-tight line-clamp-2" style={{color: 'var(--sz-text-muted)'}}>{item.file.name}</span>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white"
+                    aria-label="첨부 삭제"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px]" style={{color: 'var(--sz-text-muted)'}}>{items.length}/{MAX_ITEMS}개 첨부됨</p>
+          </div>
+        )}
+
+        {/* 첨부 추가 버튼 */}
+        {items.length < MAX_ITEMS && (
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={() => cameraRef.current?.click()}
+              className="flex flex-col items-center justify-center gap-1.5 py-4 rounded-2xl transition-colors"
+              style={{backgroundColor: 'var(--sz-blue-pale)', color: 'var(--sz-blue-soft)', border: '2px dashed var(--sz-blue-soft)'}}
+            >
+              <Camera className="w-6 h-6" />
+              <span className="text-[11px] font-medium">카메라</span>
+            </button>
+            <button
+              onClick={() => galleryRef.current?.click()}
+              className="flex flex-col items-center justify-center gap-1.5 py-4 rounded-2xl transition-colors"
+              style={{backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)', border: '2px dashed var(--sz-pink-soft)'}}
+            >
+              <ImagePlus className="w-6 h-6" />
+              <span className="text-[11px] font-medium">사진</span>
+            </button>
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="flex flex-col items-center justify-center gap-1.5 py-4 rounded-2xl transition-colors"
+              style={{backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)', border: '2px dashed var(--sz-peach)'}}
+            >
+              <Paperclip className="w-6 h-6" />
+              <span className="text-[11px] font-medium">파일</span>
+            </button>
+          </div>
+        )}
+
+        {error && (
+          <p className="text-xs" style={{color: 'var(--sz-pink-soft)'}}>{error}</p>
+        )}
+
+        {/* 숨김 input */}
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment"
+          className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+        <input ref={galleryRef} type="file" accept="image/*" multiple
+          className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+        <input ref={fileRef} type="file"
+          accept=".pdf,.doc,.docx,.hwp,.hwpx,.txt,.ppt,.pptx,.xls,.xlsx,application/pdf" multiple
+          className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+
+        <textarea
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          rows={3}
+          placeholder="선생님께 하고 싶은 말을 써도 돼요 😊"
+          className="w-full px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]" style={{border: '1.5px solid rgba(175,196,216,0.3)', borderRadius: '16px', backgroundColor: 'rgba(175,196,216,0.08)'}}
+        />
+
+        <button
+          onClick={handleSubmit}
+          disabled={submit.isPending || !canSubmit}
+          className={`w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors text-white disabled:opacity-40`}
+          style={done ? {backgroundColor: 'var(--sz-sage)'} : {backgroundColor: 'var(--sz-blue-soft)'}}
+        >
+          {done ? (
+            <><CheckCircle className="w-4 h-4" /> 제출 완료!</>
+          ) : submit.isPending ? '제출 중...' : (
+            <><Send className="w-4 h-4" /> 선생님께 보내기</>
+          )}
+        </button>
+      </div>
+
+      {/* 제출 내역 */}
+      <div>
+        <h2 className="text-sm font-semibold mb-3" style={{color: 'var(--sz-text-muted)'}}>제출 내역</h2>
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <div className="w-5 h-5 rounded-full animate-spin" style={{border: '2px solid var(--sz-blue-soft)', borderTopColor: 'transparent'}} />
+          </div>
+        ) : submissions.length === 0 ? (
+          <div className="sz-widget rounded-3xl p-6 text-center text-sm" style={{color: 'var(--sz-text-muted)'}}>
+            아직 제출한 숙제가 없어요
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {submissions.map(s => (
+              <div key={s.id} className="sz-widget rounded-3xl overflow-hidden">
+                <HomeworkAttachments attachments={s.attachments} photoUrl={s.photo_url} />
+                <div className="p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-gray-400">{formatDate(s.created_at)}</p>
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={s.status === 'reviewed'
+                        ? {backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)'}
+                        : {backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)'}
+                      }>
+                      {s.status === 'reviewed' ? '확인 완료' : '검토 중'}
+                    </span>
+                  </div>
+                  {s.note && <p className="text-sm text-gray-700">{s.note}</p>}
+                  {s.teacher_comment && (
+                    <div className="rounded-xl px-3 py-2.5 flex gap-2" style={{backgroundColor: 'var(--sz-peach-pale)'}}>
+                      <MessageSquare className="w-4 h-4 text-[var(--sz-warm-gray)] flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-[var(--sz-navy)] leading-relaxed">{s.teacher_comment}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
