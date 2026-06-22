@@ -50,7 +50,7 @@ export function HomeworkAttachments({
       {files.length > 0 && (
         <div className="space-y-1.5 px-4 pt-3">
           {files.map((f, i) => (
-            
+            <a
               key={i}
               href={f.url}
               target="_blank"
