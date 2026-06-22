@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useStudents } from '@/lib/queries/useStudents'
 import { useClassFeedback, useUpsertFeedback } from '@/lib/queries/useFeedback'
 import { useStudentHomeworkSubmissions, useReviewHomework, HomeworkSubmission } from '@/lib/queries/useHomework'
+import { HomeworkAttachments } from '@/components/HomeworkAttachments'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { format, parseISO } from 'date-fns'
@@ -195,10 +196,7 @@ function HomeworkPanel({ studentId, studentName }: { studentId: string; studentN
           <div className="space-y-3">
             {submissions.map(s => (
               <div key={s.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
-                {s.photo_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.photo_url} alt="숙제" className="w-full aspect-[4/3] object-cover" />
-                )}
+                <HomeworkAttachments attachments={s.attachments} photoUrl={s.photo_url} />
                 <div className="p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-400">{formatDate(s.created_at)}</p>
