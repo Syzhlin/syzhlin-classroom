@@ -1,10 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
+export type Attachment = {
+  url: string
+  type: 'image' | 'file'
+  name: string
+  size?: number
+}
+
 export type HomeworkSubmission = {
   id: string
   student_id: string
   photo_url: string | null
+  attachments: Attachment[] | null
   note: string | null
   status: 'submitted' | 'reviewed'
   teacher_comment: string | null
@@ -35,36 +43,49 @@ export function useSubmitHomework() {
   return useMutation({
     mutationFn: async ({
       studentId,
+      files,
       file,
       note,
     }: {
       studentId: string
-      file: File | null
+      // 새 방식: 여러 개 첨부. 기존 방식(file: 단일)도 그대로 지원.
+      files?: File[]
+      file?: File | null
       note: string
     }) => {
-      let photoUrl: string | null = null
+      const fileList = files ?? (file ? [file] : [])
+      const attachments: Attachment[] = []
 
-      // 사진 업로드
-      if (file) {
-        const ext = file.name.split('.').pop()
-        const fileName = `${studentId}/${Date.now()}.${ext}`
+      for (const f of fileList) {
+        const ext = f.name.includes('.') ? f.name.split('.').pop() : 'dat'
+        const path = `${studentId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
         const { error: upErr } = await supabase.storage
           .from('homework-photos')
-          .upload(fileName, file, { upsert: false })
+          .upload(path, f, { upsert: false })
         if (upErr) throw upErr
 
         const { data: urlData } = supabase.storage
           .from('homework-photos')
-          .getPublicUrl(fileName)
-        photoUrl = urlData.publicUrl
+          .getPublicUrl(path)
+
+        attachments.push({
+          url: urlData.publicUrl,
+          type: f.type.startsWith('image/') ? 'image' : 'file',
+          name: f.name,
+          size: f.size,
+        })
       }
+
+      // 하위 호환: 기존 photo_url 컬럼에는 첫 번째 이미지를 채워둠
+      const firstImage = attachments.find(a => a.type === 'image')
 
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
       const { error } = await supabase.from('homework_submissions' as any).insert({
         student_id: studentId,
-        photo_url: photoUrl,
+        photo_url: firstImage?.url ?? null,
+        attachments,
         note: note || null,
         status: 'submitted',
       })
