@@ -89,8 +89,14 @@ export default function DashboardPage() {
 
   const totalUnread = messageThreads.reduce((s, t) => s + t.unread, 0)
   const pendingRequests = changeRequests.filter(r => r.status === 'pending')
-  const completedToday = todayClasses.filter(c => c.status === 'completed').length
-  const scheduledToday = todayClasses.filter(c => c.status === 'scheduled').length
+  // 오늘 "실제로 진행되는" 수업만 카운트 — 연기(postponed)·취소(cancelled)는 제외
+  const activeTodayClasses = todayClasses.filter(
+    c => c.status !== 'postponed' && c.status !== 'cancelled'
+  )
+  const todayCount = activeTodayClasses.length
+  const completedToday = activeTodayClasses.filter(c => c.status === 'completed').length
+  const scheduledToday = activeTodayClasses.filter(c => c.status === 'scheduled').length
+  const makeupToday = activeTodayClasses.filter(c => c.status === 'makeup').length
   const thisMonthCompleted = allClasses.filter(
     c => c.status === 'completed' && c.date.startsWith(yearMonth)
   ).length
@@ -110,10 +116,12 @@ export default function DashboardPage() {
         <Link href="/schedule" className="bg-[var(--sz-blue-soft)] rounded-xl p-4 text-white hover:opacity-90 transition-colors">
           <p className="text-xs text-indigo-200 font-medium">오늘 수업</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1">
-            {todayClasses.length}
+            {todayCount}
             <span className="text-base font-normal text-indigo-200">회</span>
           </p>
-          <p className="text-xs text-indigo-200 mt-1">완료 {completedToday} · 예정 {scheduledToday}</p>
+          <p className="text-xs text-indigo-200 mt-1">
+            완료 {completedToday} · 예정 {scheduledToday}{makeupToday > 0 && ` · 보강 ${makeupToday}`}
+          </p>
         </Link>
 
         <Link href="/students" className="sz-widget rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-[rgba(175,196,216,0.4)] hover:shadow-md transition-all">
