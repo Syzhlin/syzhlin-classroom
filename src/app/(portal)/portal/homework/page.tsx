@@ -115,8 +115,7 @@ function HomeworkViewTab({ studentId }: { studentId: string }) {
           <h2 className="text-sm font-semibold" style={{color: 'var(--sz-text-deep)'}}>수업 자료</h2>
           <div className="space-y-2">
             {materials.map(m => (
-              <a
-                key={m.id}
+              <a key={m.id}
                 href={m.file_url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -293,8 +292,14 @@ function HomeworkUploadTab({ studentId }: { studentId: string }) {
         <button
           onClick={handleSubmit}
           disabled={submit.isPending || !canSubmit}
-          className={`w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors text-white disabled:opacity-40`}
-          style={done ? {backgroundColor: 'var(--sz-sage)'} : {backgroundColor: 'var(--sz-blue-soft)'}}
+          className="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+          style={
+            done
+              ? { backgroundColor: 'var(--sz-sage)', color: '#fff' }
+              : canSubmit
+                ? { backgroundColor: 'var(--sz-blue-soft)', color: '#fff', boxShadow: '0 6px 16px rgba(122,150,180,0.4)' }
+                : { backgroundColor: 'rgba(175,196,216,0.25)', color: 'var(--sz-text-muted)' }
+          }
         >
           {done ? (
             <><CheckCircle className="w-4 h-4" /> 제출 완료!</>
