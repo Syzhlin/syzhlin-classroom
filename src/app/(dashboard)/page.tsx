@@ -134,12 +134,12 @@ export default function DashboardPage() {
         </Link>
 
         <Link href="/payments" className="sz-widget rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-[rgba(175,196,216,0.4)] hover:shadow-md transition-all">
-          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 font-medium">미납 현황</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 font-medium">결제 필요 현황</p>
           <p className="text-2xl sm:text-3xl font-bold mt-1 text-[var(--sz-text-deep)]">
             {paymentStats.unpaid + paymentStats.partial}
             <span className="text-base font-normal text-[var(--sz-text-muted)] opacity-70">건</span>
           </p>
-          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-1">미납 {paymentStats.unpaid} · 부분납 {paymentStats.partial}</p>
+          <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-1">결제 필요 {paymentStats.unpaid} · 부분납 {paymentStats.partial}</p>
         </Link>
 
         <Link href="/messages" className="sz-widget rounded-2xl p-4 border border-gray-100 shadow-sm hover:border-[rgba(175,196,216,0.4)] hover:shadow-md transition-all">
@@ -269,7 +269,7 @@ export default function DashboardPage() {
               )}
               <div className="pt-1 border-t border-gray-50 flex justify-between text-xs text-[var(--sz-text-muted)] opacity-70">
                 <span>완납 {paymentStats.paid}명</span>
-                <span>미납/부분납 {paymentStats.unpaid + paymentStats.partial}명</span>
+                <span>결제 필요/부분납 {paymentStats.unpaid + paymentStats.partial}명</span>
               </div>
             </div>
           )}

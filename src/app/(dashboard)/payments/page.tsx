@@ -33,7 +33,7 @@ function StatusBadge({ status }: { status: string }) {
   }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
-      {status}
+      {status === '미납' ? '결제 필요' : status}
     </span>
   )
 }
@@ -143,7 +143,7 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange, onSetSta
               onClick={() => onSetStatus(payment, '미납')}
               className="min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center transition-colors"
               style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}
-              title="누르면 미납으로 되돌립니다"
+              title="누르면 '결제 필요'로 되돌립니다"
             >
               완납됨 ✓
             </button>
@@ -242,7 +242,7 @@ function EditModal({ payment, onClose }: { payment: PaymentWithStudent; onClose:
               className="w-full px-3 py-2 border border-[rgba(175,196,216,0.3)] rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--sz-blue-soft)]"
             >
               <option value="완납">완납</option>
-              <option value="미납">미납</option>
+              <option value="미납">결제 필요</option>
               <option value="부분납">부분납</option>
             </select>
           </div>

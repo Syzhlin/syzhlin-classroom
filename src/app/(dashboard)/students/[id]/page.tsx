@@ -238,7 +238,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                         : p.status === '미납' ? 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]'
                         : 'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]'
                     }`}>
-                      {p.status}
+                      {p.status === '미납' ? '결제 필요' : p.status}
                     </span>
                   </div>
                 </div>

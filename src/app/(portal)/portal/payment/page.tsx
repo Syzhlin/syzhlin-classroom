@@ -8,7 +8,7 @@ import { usePortalPayment } from '@/lib/queries/usePayments'
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string; style: React.CSSProperties }> = {
   '완납': { bg: '', text: '', label: '완납', style: {backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)'} },
-  '미납': { bg: '', text: '', label: '미납', style: {backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)'} },
+  '미납': { bg: '', text: '', label: '결제 필요', style: {backgroundColor: 'var(--sz-pink-pale)', color: 'var(--sz-pink-soft)'} },
   '부분납': { bg: '', text: '', label: '부분납', style: {backgroundColor: 'var(--sz-peach-pale)', color: 'var(--sz-peach)'} },
 }
 
