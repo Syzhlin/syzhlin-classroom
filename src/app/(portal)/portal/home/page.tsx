@@ -262,10 +262,12 @@ export default function PortalHomePage() {
           </div>
         )}
 
-        {/* ── 5. 이번 달 수업 흐름 ── */}
+        {/* ── 5. 이번 달 수업 흐름 (클릭 시 결제 페이지로 이동) ── */}
         {payment && profile?.role === 'parent' && (
-          <div
+          <Link
+            href="/portal/payment"
             style={{
+              display: 'block',
               borderRadius: '28px',
               backgroundColor: '#FFFDF8',
               boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)',
@@ -278,6 +280,7 @@ export default function PortalHomePage() {
                 <span style={{ fontSize: '16px' }}>🎯</span>
                 <h2 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--sz-text-deep)' }}>이번 달 수업 흐름</h2>
               </div>
+              <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--sz-blue-soft)' }}>결제 보기 →</span>
               {payment.bonus_sessions > 0 && (
                 <span
                   style={{
@@ -325,7 +328,7 @@ export default function PortalHomePage() {
                 이번 달 수업 모두 완료 🎉
               </p>
             )}
-          </div>
+          </Link>
         )}
 
       </div>

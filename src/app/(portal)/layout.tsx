@@ -246,7 +246,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Bottom navigation */}
       <nav
-          className="fixed bottom-0 left-0 right-0 flex z-10"
+          className="fixed bottom-0 left-0 right-0 z-10"
           style={{
             backgroundColor: 'rgba(255,253,246,0.95)',
             backdropFilter: 'blur(16px)',
@@ -255,6 +255,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
             paddingBottom: 'env(safe-area-inset-bottom)',
           }}
         >
+          <div className="flex w-full max-w-md mx-auto">
           {visibleNavItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -291,6 +292,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
               </Link>
             )
           })}
+          </div>
         </nav>
     </div>
   )

@@ -253,10 +253,10 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
             </div>
           )}
 
-          {cls.status === 'completed' && (
+          {cls.status !== 'cancelled' && (
             <Button className="w-full bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100" variant="outline"
               onClick={() => setFeedbackOpen(true)}>
-              💌 편지 작성
+              💌 학생 피드백(편지) 작성
             </Button>
           )}
 

@@ -17,14 +17,16 @@ function useRecentClasses(studentId: string | null) {
     enabled: !!studentId,
     queryFn: async () => {
       const today = format(new Date(), 'yyyy-MM-dd') // 로컬 시간 기준
+      // 완료 처리 여부와 무관하게 '지난 수업'(완료/예정/보강, 취소·연기 제외)을 모두 보여
+      // 최신 수업에도 바로 피드백을 쓸 수 있게 한다.
       const { data } = await supabase
         .from('classes')
         .select('id, date, start_time')
         .eq('student_id', studentId!)
-        .eq('status', 'completed')
+        .in('status', ['completed', 'scheduled', 'makeup'])
         .lte('date', today)
         .order('date', { ascending: false })
-        .limit(10)
+        .limit(20)
       return (data ?? []) as CompletedClass[]
     },
   })
@@ -100,7 +102,7 @@ function FeedbackList({ studentId, studentName }: { studentId: string; studentNa
     <div className="w-full max-w-xl space-y-2.5 p-4 sm:p-6">
       <div className="mb-5">
         <h1 className="text-lg font-bold text-[var(--sz-text-deep)]">{studentName} 수업 피드백</h1>
-        <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">최근 완료된 수업 {classes.length}개</p>
+        <p className="text-xs text-[var(--sz-text-muted)] opacity-70 mt-0.5">최근 수업 {classes.length}개</p>
       </div>
 
       {classes.map(cls => (

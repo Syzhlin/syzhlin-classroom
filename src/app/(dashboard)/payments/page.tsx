@@ -272,7 +272,7 @@ export default function PaymentsPage() {
       const [, mm] = yearMonth.split('-')
       const body = `[결제 안내] ${p.student.name} 학생 ${parseInt(mm)}월 수업료 ${p.amount.toLocaleString()}원 결제 안내드립니다. 앱 '결제' 탭에서 확인 부탁드려요. 🙏`
       try {
-        await sendMessage.mutateAsync({ student_id: p.student_id, body, sender_role: 'teacher' })
+        await sendMessage.mutateAsync({ student_id: p.student_id, body, sender_role: 'teacher', channel_type: 'parent' })
         setRequestMsg(`${p.student.name} 학부모님께 결제 안내 메시지를 보냈어요 ✓`)
       } catch {
         setRequestMsg(`${p.student.name} 결제 요청은 표시됐지만 메시지 전송에 실패했어요.`)
