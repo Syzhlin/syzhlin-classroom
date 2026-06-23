@@ -94,7 +94,7 @@ function FeedbackList({ studentId, studentName }: { studentId: string; studentNa
   if (classes.length === 0) return (
     <div className="flex flex-col items-center justify-center h-full text-center text-[var(--sz-text-muted)] opacity-70">
       <div className="text-4xl mb-3">📅</div>
-      <p className="text-sm">완료된 수업이 없어요</p>
+      <p className="text-sm">지난 수업이 없어요</p>
     </div>
   )
 

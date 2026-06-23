@@ -168,6 +168,35 @@ export default function PortalHomePage() {
           )}
         </div>
 
+        {/* ── 결제 안내 배너 (결제 요청 또는 회차 완료, 미완납 시) — 대시보드 최상단 ── */}
+        {payment && profile?.role === 'parent' && payment.status !== '완납' &&
+          (((payment.total_sessions ?? 0) > 0 && payment.completed_sessions >= payment.total_sessions) || payment.payment_requested) && (
+          <Link
+            href="/portal/payment"
+            style={{
+              display: 'block',
+              borderRadius: '20px',
+              padding: '16px 18px',
+              backgroundColor: 'var(--sz-pink-pale)',
+              border: '1px solid rgba(242,199,166,0.5)',
+            }}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p style={{ fontSize: '13px', fontWeight: '800', color: 'var(--sz-pink-soft)' }}>
+                  🔔 결제 안내가 도착했어요
+                </p>
+                <p style={{ fontSize: '11px', marginTop: '3px', color: 'var(--sz-text-muted)' }}>
+                  {(payment.total_sessions ?? 0) > 0 && payment.completed_sessions >= payment.total_sessions
+                    ? '이번 패키지 수업을 모두 완료했어요. 다음 결제를 진행해 주세요.'
+                    : '선생님이 결제를 요청했어요. 눌러서 확인하세요.'}
+                </p>
+              </div>
+              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--sz-pink-soft)', whiteSpace: 'nowrap' }}>결제하기 →</span>
+            </div>
+          </Link>
+        )}
+
         {/* ── 2. 선생님의 편지 ── */}
         {profile?.role === 'parent' && (
           <ParentLetterCard feedback={feedback} latestCompleted={latestCompleted} />

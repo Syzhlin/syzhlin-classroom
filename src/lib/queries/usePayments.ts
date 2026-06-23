@@ -44,18 +44,20 @@ export function useUpdatePayment() {
 
   return useMutation({
     mutationFn: async ({ id, ...update }: UpdatePaymentInput) => {
-      const { data, error } = await supabase
+      // .single() 을 쓰면 RLS로 반환행이 0일 때 406(PGRST116)로 크래시난다.
+      // 반환값은 쓰지 않으므로 select 없이 업데이트만 수행한다.
+      const { error } = await supabase
         .from('payments')
         .update(update)
         .eq('id', id)
-        .select()
-        .single()
 
       if (error) throw error
-      return data
+      return null
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] })
+      queryClient.invalidateQueries({ queryKey: ['portal-payment'] })
+      queryClient.invalidateQueries({ queryKey: ['payments-all'] })
     },
   })
 }

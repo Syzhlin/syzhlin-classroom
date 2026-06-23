@@ -143,7 +143,7 @@ export function usePortalHome(studentId: string | null) {
       // 이번 달 결제 (잔여 회차)
       const { data: payment } = await supabase
         .from('payments')
-        .select('planned_sessions, completed_sessions, bonus_sessions, total_sessions, status, amount')
+        .select('planned_sessions, completed_sessions, bonus_sessions, total_sessions, status, amount, payment_requested')
         .eq('student_id', studentId!)
         .eq('year_month', yearMonth)
         .maybeSingle()
