@@ -9,6 +9,7 @@ import { PortalStudentProvider, usePortalStudent } from '@/contexts/PortalStuden
 import { useEffect, useRef } from 'react'
 import { playClickSound, playPageTransitionSound, playBackSound, playSiblingSwapSound } from '@/lib/sounds'
 import { logActivity } from '@/lib/logActivity'
+import PortalNotificationBell from '@/components/portal/NotificationBell'
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -206,6 +207,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
             {profile?.display_name && (
               <span className="text-xs" style={{ color: 'var(--sz-text-muted)' }}>{profile.display_name}</span>
             )}
+            <PortalNotificationBell />
             <button
               onClick={handleLogout}
               className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-xl transition-all"
