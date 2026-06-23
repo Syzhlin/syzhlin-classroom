@@ -35,7 +35,7 @@ function loadDismissed(): string[] {
 export default function PortalNotificationBell() {
   const router = useRouter()
   const { data: profile } = useProfile()
-  const { selectedStudentId } = usePortalStudent()
+  const { selectedStudentId, linkedStudentName } = usePortalStudent()
   const role = profile?.role
   const [open, setOpen] = useState(false)
   const [dismissed, setDismissed] = useState<string[]>([])
@@ -66,15 +66,13 @@ export default function PortalNotificationBell() {
 
   // 2) 결제 안내 (회차 완료 또는 결제 요청, 미완납) — 상태가 바뀌면 id도 바뀌어 다시 뜸
   if ((role === 'parent' || role === 'adult_learner') && payment && payment.status !== '완납') {
-    const sessionsDone = payment.total_sessions > 0 && payment.completed_sessions >= payment.total_sessions
-    if (sessionsDone || payment.payment_requested) {
-      allItems.push({
-        id: `pay-${payment.payment_requested ? 'req' : ''}-${payment.completed_sessions}/${payment.total_sessions}`,
-        title: '결제 안내',
-        body: sessionsDone ? '이번 패키지 수업을 모두 완료했어요. 결제를 진행해 주세요.' : '선생님이 결제를 요청했어요.',
-        href: '/portal/payment',
-      })
-    }
+    const nm = (linkedStudentName && linkedStudentName.trim()) ? linkedStudentName.trim() : '자녀'
+    allItems.push({
+      id: `pay-${selectedStudentId ?? ''}-${payment.status}-${payment.completed_sessions}/${payment.total_sessions}`,
+      title: '결제 안내',
+      body: `${nm} 수업료 결제 요청이 왔어요. 결제 탭에서 확인해 주세요.`,
+      href: '/portal/payment',
+    })
   }
 
   // 삭제된 알림 제외

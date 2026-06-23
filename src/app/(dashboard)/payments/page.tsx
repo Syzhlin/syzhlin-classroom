@@ -55,7 +55,7 @@ function ProgressBar({ completed, total }: { completed: number; total: number })
   )
 }
 
-function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { payment: PaymentWithStudent; onEdit: (p: PaymentWithStudent) => void; onRequestToggle: (p: PaymentWithStudent) => void; onBonusChange: (p: PaymentWithStudent, delta: number) => void }) {
+function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange, onSetStatus }: { payment: PaymentWithStudent; onEdit: (p: PaymentWithStudent) => void; onRequestToggle: (p: PaymentWithStudent) => void; onBonusChange: (p: PaymentWithStudent, delta: number) => void; onSetStatus: (p: PaymentWithStudent, status: '완납' | '미납') => void }) {
   const remaining = payment.total_sessions - payment.completed_sessions
   const isOver = payment.completed_sessions > payment.planned_sessions
 
@@ -137,13 +137,25 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
           ) : payment.payment_method === '계좌이체' ? (
             <span className="min-h-10 text-xs px-2.5 py-1.5 bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)] rounded-lg inline-flex items-center">계좌이체</span>
           ) : null}
-          {payment.status === '완납' && (
-            <span className="min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center"
-              style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}>
+          {/* 완납 승인 — 완납은 이 버튼으로만. 기본은 미납. */}
+          {payment.status === '완납' ? (
+            <button
+              onClick={() => onSetStatus(payment, '미납')}
+              className="min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center transition-colors"
+              style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}
+              title="누르면 미납으로 되돌립니다"
+            >
               완납됨 ✓
-            </span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onSetStatus(payment, '완납')}
+              className="min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-bold transition-colors bg-emerald-500 text-white hover:bg-emerald-600"
+            >
+              완납 승인
+            </button>
           )}
-          {/* 결제 요청 버튼 — 완납이어도 다음 결제 요청을 보낼 수 있도록 항상 표시 */}
+          {/* 결제 요청 보내기 — 학부모에게 안내 메시지 발송 (항상 가능) */}
           <button
             onClick={() => onRequestToggle(payment)}
             className={`min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
@@ -281,6 +293,10 @@ export default function PaymentsPage() {
     }
   }
 
+  async function handleSetStatus(p: PaymentWithStudent, status: '완납' | '미납') {
+    await updatePayment.mutateAsync({ id: p.id, status })
+  }
+
   async function handleBonusChange(p: PaymentWithStudent, delta: number) {
     const newBonus = Math.max(0, p.bonus_sessions + delta)
     await updatePayment.mutateAsync({
@@ -359,7 +375,7 @@ export default function PaymentsPage() {
       {!isLoading && payments && payments.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {payments.map(p => (
-            <PaymentCard key={p.id} payment={p} onEdit={setEditTarget} onRequestToggle={handleRequestToggle} onBonusChange={handleBonusChange} />
+            <PaymentCard key={p.id} payment={p} onEdit={setEditTarget} onRequestToggle={handleRequestToggle} onBonusChange={handleBonusChange} onSetStatus={handleSetStatus} />
           ))}
         </div>
       )}

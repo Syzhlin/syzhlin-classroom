@@ -94,9 +94,8 @@ export default function PortalPaymentPage() {
   // 결제하기 자동 활성화 조건:
   //  - 아직 완납이 아니고
   //  - (이번 패키지 수업을 모두 완료했거나 || 선생님이 결제를 요청했을 때)
-  const sessionsDone = payment.total_sessions > 0 && payment.completed_sessions >= payment.total_sessions
-  const needsPayment = payment.status !== '완납'
-  const paymentActive = needsPayment && (sessionsDone || !!payment.payment_requested)
+  // 완납이 아니면(미납/부분납) 결제하기 활성화. 완납은 선생님 '완납 승인'으로만.
+  const paymentActive = payment.status !== '완납'
 
   return (
     <div className="max-w-lg mx-auto px-4 space-y-4" style={{ paddingTop: '20px' }}>
@@ -113,7 +112,7 @@ export default function PortalPaymentPage() {
             style={{ backgroundColor: 'var(--sz-pink-pale)', border: '1px solid rgba(242,199,166,0.45)' }}
           >
             <p className="text-sm font-bold" style={{ color: 'var(--sz-pink-soft)' }}>
-              {sessionsDone ? '🎉 이번 패키지 수업을 모두 완료했어요!' : '🔔 선생님이 결제를 요청했어요'}
+              🔔 수업료 결제가 필요해요
             </p>
             <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--sz-text-muted)' }}>
               다음 수업을 위해 아래 <strong>결제하기</strong>로 결제를 진행해 주세요.

@@ -208,15 +208,21 @@ export function useCompleteClass() {
       const yearMonth = cls.date.slice(0, 7)
       const { data: payment } = await supabase
         .from('payments')
-        .select('id, completed_sessions')
+        .select('id, completed_sessions, total_sessions, status')
         .eq('student_id', cls.student_id)
         .eq('year_month', yearMonth)
-        .single()
+        .maybeSingle()
 
       if (payment) {
+        const newCompleted = payment.completed_sessions + 1
+        const update: { completed_sessions: number; status?: '완납' | '미납' | '부분납' } = { completed_sessions: newCompleted }
+        // 회차가 다 차면 자동으로 '미납' 전환 (완납은 선생님 '완납 승인'으로만).
+        if (payment.total_sessions > 0 && newCompleted >= payment.total_sessions) {
+          update.status = '미납'
+        }
         await supabase
           .from('payments')
-          .update({ completed_sessions: payment.completed_sessions + 1 })
+          .update(update)
           .eq('id', payment.id)
       }
     },

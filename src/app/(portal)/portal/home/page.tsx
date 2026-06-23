@@ -169,12 +169,11 @@ export default function PortalHomePage() {
           )}
         </div>
 
-        {/* 결제 요청 팝업 (홈 진입 시) */}
-        <PaymentRequestModal payment={payment} role={profile?.role} />
+        {/* 결제 요청 팝업 (홈 진입 시) — 자녀별 이름으로 안내 */}
+        <PaymentRequestModal payment={payment} role={profile?.role} studentName={studentDisplayName} studentKey={studentId ?? undefined} />
 
         {/* ── 결제 안내 배너 (결제 요청 또는 회차 완료, 미완납 시) — 대시보드 최상단 ── */}
-        {payment && profile?.role === 'parent' && payment.status !== '완납' &&
-          (((payment.total_sessions ?? 0) > 0 && payment.completed_sessions >= payment.total_sessions) || payment.payment_requested) && (
+        {payment && profile?.role === 'parent' && payment.status !== '완납' && (
           <Link
             href="/portal/payment"
             style={{
