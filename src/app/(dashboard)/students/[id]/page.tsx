@@ -16,6 +16,7 @@ import { useStudentReports } from '@/lib/queries/useGrowthReports'
 import { useStudentMaterials } from '@/lib/queries/useMaterials'
 import { useStudentPayments } from '@/lib/queries/usePayments'
 import StudentFormDialog from '@/components/students/StudentFormDialog'
+import AccountLinkCard from '@/components/students/AccountLinkCard'
 import type { Database } from '@/types/database'
 
 type Student = Database['public']['Tables']['students']['Row']
@@ -172,6 +173,9 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
           <p className="mt-3 text-xs text-[var(--sz-text-muted)] text-right">한달 {student.hourly_rate.toLocaleString()}원</p>
         )}
       </div>
+
+      {/* 계정 연결 */}
+      <AccountLinkCard studentId={student.id} studentName={student.name} />
 
       {/* 탭 네비 */}
       <div className="flex gap-1 overflow-x-auto pb-0.5">

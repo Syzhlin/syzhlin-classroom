@@ -108,7 +108,7 @@ function PortalLayoutInner({ children }: { children: React.ReactNode }) {
       href: '/portal/parent',
       label: '자료',
       icon: <FolderIcon />,
-      roles: ['parent'],
+      roles: ['parent', 'adult_learner'],
     },
     {
       href: '/portal/passport',

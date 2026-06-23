@@ -1,7 +1,7 @@
 'use client'
 
 import { useTodayBriefing } from '@/lib/queries/useTodayBriefing'
-import { useUpdateClass } from '@/lib/queries/useClasses'
+import { useCompleteClass } from '@/lib/queries/useClasses'
 
 function formatTime(t: string) {
   return t.slice(0, 5)
@@ -9,7 +9,7 @@ function formatTime(t: string) {
 
 export function TodayBriefing() {
   const { data: classes, isLoading } = useTodayBriefing()
-  const updateClass = useUpdateClass()
+  const completeClass = useCompleteClass()
 
   if (isLoading) {
     return <div className="h-14 border-b border-gray-100 bg-gray-50 animate-pulse" />
@@ -23,8 +23,8 @@ export function TodayBriefing() {
     )
   }
 
-  async function handleComplete(id: string) {
-    await updateClass.mutateAsync({ id, status: 'completed' })
+  async function handleComplete(cls: { id: string; student_id: string; date: string }) {
+    await completeClass.mutateAsync({ id: cls.id, student_id: cls.student_id, date: cls.date })
   }
 
   return (
@@ -61,8 +61,8 @@ export function TodayBriefing() {
               {/* 완료 버튼 */}
               {cls.status !== 'completed' && cls.status !== 'cancelled' && cls.status !== 'postponed' ? (
                 <button
-                  onClick={() => handleComplete(cls.id)}
-                  disabled={updateClass.isPending}
+                  onClick={() => handleComplete(cls)}
+                  disabled={completeClass.isPending}
                   className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition-colors whitespace-nowrap disabled:opacity-50"
                 >
                   완료

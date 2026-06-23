@@ -5,7 +5,7 @@ import { ko } from 'date-fns/locale'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useUpdateClass, ClassWithStudent } from '@/lib/queries/useClasses'
+import { useUpdateClass, useCompleteClass, ClassWithStudent } from '@/lib/queries/useClasses'
 
 type QuickMode = 'main' | 'reschedule' | 'makeup'
 
@@ -22,6 +22,7 @@ export function QuickStatusSheet({ cls, open, onClose }: QuickStatusSheetProps) 
   const [newEnd, setNewEnd] = useState('')
 
   const updateClass = useUpdateClass()
+  const completeClass = useCompleteClass()
 
   if (!cls) return null
 
@@ -40,7 +41,11 @@ export function QuickStatusSheet({ cls, open, onClose }: QuickStatusSheetProps) 
   }
 
   const handleQuick = async (status: 'completed' | 'cancelled' | 'scheduled') => {
-    await updateClass.mutateAsync({ id: cls.id, status })
+    if (status === 'completed') {
+      await completeClass.mutateAsync({ id: cls.id, student_id: cls.student_id, date: cls.date })
+    } else {
+      await updateClass.mutateAsync({ id: cls.id, status })
+    }
     handleClose()
   }
 

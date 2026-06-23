@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
-import { useDeleteClass, useUpdateClass, usePostponeClass, ClassWithStudent } from '@/lib/queries/useClasses'
+import { useDeleteClass, useUpdateClass, useCompleteClass, usePostponeClass, ClassWithStudent } from '@/lib/queries/useClasses'
 import { useDeleteFutureClasses } from '@/lib/queries/useRecurringClasses'
 import { FeedbackModal } from './FeedbackModal'
 
@@ -39,6 +39,7 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
 
   const deleteClass = useDeleteClass()
   const updateClass = useUpdateClass()
+  const completeClass = useCompleteClass()
   const postponeClass = usePostponeClass()
   const deleteFuture = useDeleteFutureClasses()
   const [confirmDeleteFuture, setConfirmDeleteFuture] = useState(false)
@@ -90,7 +91,12 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
   }
 
   const handleQuickStatus = async (status: 'completed' | 'cancelled' | 'scheduled') => {
-    await updateClass.mutateAsync({ id: cls.id, status })
+    if (status === 'completed') {
+      // 완료는 정산 completed_sessions +1 및 포털 갱신까지 처리하는 전용 mutation 사용
+      await completeClass.mutateAsync({ id: cls.id, student_id: cls.student_id, date: cls.date })
+    } else {
+      await updateClass.mutateAsync({ id: cls.id, status })
+    }
     onClose()
   }
 
@@ -144,7 +150,7 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
             {cls.status !== 'completed' && (
               <Button size="sm" variant="outline"
                 className="flex-1 text-green-600 border-green-200 hover:bg-green-50"
-                onClick={() => handleQuickStatus('completed')} disabled={updateClass.isPending}>
+                onClick={() => handleQuickStatus('completed')} disabled={updateClass.isPending || completeClass.isPending}>
                 ✓ 완료
               </Button>
             )}
