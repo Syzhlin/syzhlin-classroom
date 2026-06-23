@@ -2,16 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import webpush from 'web-push'
 import { createClient } from '@/lib/supabase/server'
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT!,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+// 정적 수집 단계에서 실행되지 않도록 동적 라우트로 지정
+export const dynamic = 'force-dynamic'
+
+// VAPID 설정은 빌드 시점이 아니라 요청 처리 시점(런타임)에만 한다.
+// 모듈 최상단에서 setVapidDetails 를 호출하면 env 미설정 시 빌드가 실패한다.
+function configureWebPush(): boolean {
+  const subject = process.env.VAPID_SUBJECT
+  const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+  const privateKey = process.env.VAPID_PRIVATE_KEY
+  if (!subject || !publicKey || !privateKey) return false
+  webpush.setVapidDetails(subject, publicKey, privateKey)
+  return true
+}
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret')
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  if (!configureWebPush()) {
+    return NextResponse.json({ error: 'Push not configured (VAPID env 미설정)' }, { status: 503 })
   }
 
   const supabase = await createClient()
