@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useAllStudentMessages, useMessages, useSendMessage, useMarkMessagesRead } from '@/lib/queries/useMessages'
+import { useAllStudentMessages, useMessages, useSendMessage, useMarkMessagesRead, useDeleteMessage } from '@/lib/queries/useMessages'
 
 export default function MessagesPage() {
   return (
@@ -82,6 +82,12 @@ function ChatPanel({ studentId, studentName }: { studentId: string; studentName:
   const { data: messages = [] } = useMessages(studentId, channel)
   const send = useSendMessage()
   const markRead = useMarkMessagesRead()
+  const del = useDeleteMessage()
+
+  function handleDelete(id: string) {
+    if (!window.confirm('이 메시지를 삭제할까요?\n학부모·학생 화면에서도 사라집니다.')) return
+    del.mutate({ id, student_id: studentId })
+  }
   const [text, setText] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -137,9 +143,18 @@ function ChatPanel({ studentId, studentName }: { studentId: string; studentName:
                 }`}>
                   {msg.body}
                 </div>
-                <span className="text-[10px] text-[var(--sz-text-muted)] opacity-70 px-1">
-                  {new Date(msg.created_at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                </span>
+                <div className="flex items-center gap-2 px-1">
+                  <span className="text-[10px] text-[var(--sz-text-muted)] opacity-70">
+                    {new Date(msg.created_at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(msg.id)}
+                    className="text-[10px] text-rose-400 hover:text-rose-600"
+                  >
+                    삭제
+                  </button>
+                </div>
               </div>
             </div>
           )

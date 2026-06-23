@@ -87,6 +87,22 @@ export function useSendMessage() {
   })
 }
 
+/** 메시지 삭제 (선생님 전용 — DB에서 삭제되어 학부모·학생 화면에서도 사라짐) */
+export function useDeleteMessage() {
+  const queryClient = useQueryClient()
+  const supabase = createClient()
+  return useMutation({
+    mutationFn: async ({ id }: { id: string; student_id: string }) => {
+      const { error } = await supabase.from('messages').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['messages', vars.student_id] })
+      queryClient.invalidateQueries({ queryKey: ['messages-all'] })
+    },
+  })
+}
+
 /** 읽음 처리 */
 export function useMarkMessagesRead() {
   const supabase = createClient()
