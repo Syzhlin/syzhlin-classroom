@@ -233,6 +233,8 @@ export function useCompleteClass() {
       queryClient.invalidateQueries({ queryKey: ['payments-all'] })
       queryClient.invalidateQueries({ queryKey: ['portal-payment'] })
       queryClient.invalidateQueries({ queryKey: ['portal-home'] })
+      // 여권 스탬프(passportClasses)는 growth-report에서 계산됨 → 완료 즉시 반영되도록 무효화
+      queryClient.invalidateQueries({ queryKey: ['growth-report'] })
       queryClient.invalidateQueries({ queryKey: ['today-briefing'] })
     },
   })

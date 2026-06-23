@@ -4,6 +4,10 @@
 //   - completedCount % 2 === 1 : 현재 도시에 Arrived (1/2)
 //   - completedCount % 2 === 0 : 현재 도시 대기 or 이전 도시 Stamped (2/2)
 
+// 여권 스탬프 카운트 기준일. 이 날짜(포함) 이후 완료된 수업만 여권에 카운트한다.
+// 회차(결제)와 무관하게, 모든 학생이 이 날짜부터 새로 여권을 시작한다.
+export const PASSPORT_START_DATE = '2026-06-22'
+
 export type City = {
   index: number
   name: string

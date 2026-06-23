@@ -76,7 +76,9 @@ export default function PortalHomePage() {
   }
 
   // ── 학부모 홈 ──
-  const completedCount = growthData?.totalClasses ?? 0
+  // 여권/스탬프는 passportClasses(= 6/22 이후 완료 수업 수) 기준.
+  // 여권 페이지(useGrowthReport.passportClasses)와 동일한 값을 써야 화면 간 불일치가 없음.
+  const completedCount = growthData?.passportClasses ?? 0
   const stampedCities = getStampedCities(completedCount)
   const currentCity = getCurrentCity(completedCount)
   const progressInCity = classesInCurrentCity(completedCount)
@@ -501,10 +503,12 @@ function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growt
   const [expanded, setExpanded] = useState(false)
 
   const completedCount = growthData?.totalClasses ?? 0
-  const stampedCities = getStampedCities(completedCount)
-  const currentCity = getCurrentCity(completedCount)
-  const nextCityObj = getNextCity(completedCount)
-  const progressInCity = classesInCurrentCity(completedCount)
+  // 여권/스탬프는 passportClasses 기준 (여권 페이지와 동일). '총 수업' 표시는 completedCount 유지.
+  const passportCount = growthData?.passportClasses ?? 0
+  const stampedCities = getStampedCities(passportCount)
+  const currentCity = getCurrentCity(passportCount)
+  const nextCityObj = getNextCity(passportCount)
+  const progressInCity = classesInCurrentCity(passportCount)
   const isArrived = progressInCity === 1
 
   const daysUntil = nextClass
