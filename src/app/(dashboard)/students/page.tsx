@@ -173,6 +173,7 @@ export default function StudentsPage() {
   const deleteStudent = useDeleteStudent()
   const resetStamps = useResetAllPassportStamps()
   const [stampResetOpen, setStampResetOpen] = useState(false)
+  const [stampResetDate, setStampResetDate] = useState('2026-06-22')
   const [formOpen, setFormOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Student | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Student | null>(null)
@@ -234,9 +235,9 @@ export default function StudentsPage() {
               onClick={() => setStampResetOpen(true)}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2.5 rounded-xl"
               style={{ backgroundColor: 'rgba(175,196,216,0.15)', color: 'var(--sz-text-muted)' }}
-              title="여권 스탬프 전체 초기화"
+              title="여권 스탬프 기준일 설정"
             >
-              <Stamp className="w-3.5 h-3.5" />스탬프 초기화
+              <Stamp className="w-3.5 h-3.5" />스탬프 기준일
             </button>
             <button
               onClick={handleAdd}
@@ -339,11 +340,21 @@ export default function StudentsPage() {
             onClick={e => e.stopPropagation()}>
             <div className="text-2xl mb-3 text-center">🗺️</div>
             <p className="text-base font-bold mb-1 text-center" style={{ color: 'var(--sz-text-deep)' }}>
-              여권 스탬프 전체 초기화
+              여권 스탬프 기준일 설정
             </p>
-            <p className="text-sm mb-5 text-center" style={{ color: 'var(--sz-text-muted)' }}>
-              모든 학생의 스탬프가 0부터 다시 시작돼요. 수업 회차와 기록은 그대로 유지됩니다.
+            <p className="text-sm mb-4 text-center" style={{ color: 'var(--sz-text-muted)' }}>
+              선택한 날짜(포함) 이후 완료된 수업부터 여권에 스탬프가 찍혀요. 수업 회차와 기록은 그대로 유지됩니다.
             </p>
+            <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--sz-text-muted)' }}>
+              시작 날짜
+            </label>
+            <input
+              type="date"
+              value={stampResetDate}
+              onChange={e => setStampResetDate(e.target.value)}
+              className="w-full mb-5 px-3 py-2.5 rounded-xl text-sm"
+              style={{ backgroundColor: 'rgba(175,196,216,0.12)', color: 'var(--sz-text-deep)', border: '1px solid rgba(175,196,216,0.3)' }}
+            />
             <div className="flex gap-2">
               <button onClick={() => setStampResetOpen(false)}
                 className="flex-1 py-3 rounded-2xl text-sm font-semibold"
@@ -352,13 +363,14 @@ export default function StudentsPage() {
               </button>
               <button
                 onClick={async () => {
-                  await resetStamps.mutateAsync()
+                  if (!stampResetDate) return
+                  await resetStamps.mutateAsync(stampResetDate)
                   setStampResetOpen(false)
                 }}
-                disabled={resetStamps.isPending}
+                disabled={resetStamps.isPending || !stampResetDate}
                 className="flex-1 py-3 rounded-2xl text-sm font-semibold text-white disabled:opacity-50"
                 style={{ backgroundColor: 'var(--sz-blue-soft)' }}>
-                {resetStamps.isPending ? '초기화 중...' : '초기화'}
+                {resetStamps.isPending ? '적용 중...' : '적용'}
               </button>
             </div>
           </div>

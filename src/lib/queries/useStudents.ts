@@ -114,33 +114,19 @@ export function useResetAllPassportStamps() {
   const queryClient = useQueryClient()
   const supabase = createClient()
 
+  // startDate: 'yyyy-MM-dd'. 이 날짜(포함) 이후 완료된 수업만 여권에 카운트됨.
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (startDate: string) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('로그인이 필요합니다')
 
-      // 1. 선생님의 모든 활성 학생 조회
-      const { data: students, error: sErr } = await supabase
+      // 선생님의 모든 활성 학생의 여권 시작일을 선택한 날짜로 설정
+      const { error } = await supabase
         .from('students')
-        .select('id')
+        .update({ passport_start_date: startDate })
         .eq('teacher_id', user.id)
         .eq('is_active', true)
-      if (sErr) throw sErr
-
-      // 2. 각 학생의 완료 수업 수 조회 후 passport_base_classes 업데이트
-      await Promise.all(
-        (students ?? []).map(async (s) => {
-          const { count } = await supabase
-            .from('classes')
-            .select('id', { count: 'exact', head: true })
-            .eq('student_id', s.id)
-            .eq('status', 'completed')
-          await supabase
-            .from('students')
-            .update({ passport_base_classes: count ?? 0 })
-            .eq('id', s.id)
-        })
-      )
+      if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] })

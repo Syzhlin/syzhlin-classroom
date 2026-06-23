@@ -165,13 +165,20 @@ export function useGrowthReport(studentId: string | null) {
     queryKey: ['growth-report', studentId],
     enabled: !!studentId,
     queryFn: async () => {
-      // 완료된 수업 전체
-      const { data: completedClasses } = await supabase
-        .from('classes')
-        .select('id, date, start_time, end_time')
-        .eq('student_id', studentId!)
-        .eq('status', 'completed')
-        .order('date', { ascending: true })
+      // 완료된 수업 전체 + 학생 여권 시작일
+      const [{ data: completedClasses }, { data: studentRow }] = await Promise.all([
+        supabase
+          .from('classes')
+          .select('id, date, start_time, end_time')
+          .eq('student_id', studentId!)
+          .eq('status', 'completed')
+          .order('date', { ascending: true }),
+        supabase
+          .from('students')
+          .select('passport_start_date')
+          .eq('id', studentId!)
+          .single(),
+      ])
 
       const classes = (completedClasses ?? []) as Array<{ id: string; date: string; start_time: string; end_time: string }>
 
@@ -206,9 +213,11 @@ export function useGrowthReport(studentId: string | null) {
       // 숙제 있는 수업
       const homeworkCount = fbList.filter(f => f.has_homework).length
 
-      // 여권 스탬프: PASSPORT_START_DATE(6/22, 포함) 이후 완료된 수업만 카운트.
+      // 여권 스탬프: 학생별 passport_start_date(포함) 이후 완료된 수업만 카운트.
+      // 값이 없으면 앱 기본값 PASSPORT_START_DATE(6/22) 폴백.
       // date는 'yyyy-MM-dd' 문자열이라 사전식 비교로 안전하게 날짜 비교됨.
-      const passportClasses = classes.filter(c => c.date >= PASSPORT_START_DATE).length
+      const passportStart = (studentRow as { passport_start_date: string | null } | null)?.passport_start_date ?? PASSPORT_START_DATE
+      const passportClasses = classes.filter(c => c.date >= passportStart).length
       return {
         totalClasses: classes.length,
         passportClasses,
