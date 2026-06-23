@@ -257,7 +257,7 @@ export default function DashboardPage() {
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ml-2 ${
                     p.status === '미납' ? 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]' : 'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]'
                   }`}>
-                    {p.status}
+                    {p.status === '미납' ? '결제 필요' : p.status}
                   </span>
                 </Link>
               ))}

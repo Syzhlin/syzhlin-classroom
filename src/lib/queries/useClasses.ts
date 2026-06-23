@@ -231,6 +231,8 @@ export function useCompleteClass() {
       queryClient.invalidateQueries({ queryKey: ['classes-all-sessions'] })
       queryClient.invalidateQueries({ queryKey: ['payments'] })
       queryClient.invalidateQueries({ queryKey: ['payments-all'] })
+      queryClient.invalidateQueries({ queryKey: ['portal-payment'] })
+      queryClient.invalidateQueries({ queryKey: ['portal-home'] })
       queryClient.invalidateQueries({ queryKey: ['today-briefing'] })
     },
   })
