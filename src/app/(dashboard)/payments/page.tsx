@@ -137,23 +137,23 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange }: { paym
           ) : payment.payment_method === '계좌이체' ? (
             <span className="min-h-10 text-xs px-2.5 py-1.5 bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)] rounded-lg inline-flex items-center">계좌이체</span>
           ) : null}
-          {payment.status === '완납' ? (
+          {payment.status === '완납' && (
             <span className="min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium inline-flex items-center"
               style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}>
               완납됨 ✓
             </span>
-          ) : (
-            <button
-              onClick={() => onRequestToggle(payment)}
-              className={`min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
-                payment.payment_requested
-                  ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                  : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
-              }`}
-            >
-              {payment.payment_requested ? '요청 보냄 ✓' : '결제 요청 보내기'}
-            </button>
           )}
+          {/* 결제 요청 버튼 — 완납이어도 다음 결제 요청을 보낼 수 있도록 항상 표시 */}
+          <button
+            onClick={() => onRequestToggle(payment)}
+            className={`min-h-10 text-xs px-2.5 py-1.5 rounded-lg font-medium transition-colors ${
+              payment.payment_requested
+                ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+            }`}
+          >
+            {payment.payment_requested ? '요청 보냄 ✓' : '결제 요청 보내기'}
+          </button>
           <button
             onClick={() => onEdit(payment)}
             className="min-h-10 text-xs px-2.5 py-1.5 border border-[rgba(175,196,216,0.3)] text-[var(--sz-text-muted)] rounded-lg hover:bg-[var(--sz-bg-pastel)] transition-colors"
