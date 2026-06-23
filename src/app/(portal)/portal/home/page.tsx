@@ -25,7 +25,7 @@ function formatTime(t: string) {
 
 export default function PortalHomePage() {
   const { data: profile } = useProfile()
-  const { selectedStudentId: studentId, linkedStudentName } = usePortalStudent()
+  const { selectedStudentId: studentId, linkedStudentName, selectedStudentName } = usePortalStudent()
   const { data, isLoading } = usePortalHome(studentId)
   const { data: growthData } = useGrowthReport(studentId)
 
@@ -80,7 +80,7 @@ export default function PortalHomePage() {
   const isArrived = progressInCity === 1
 
   const daysUntil = nextClass ? differenceInCalendarDays(parseISO(nextClass.date), new Date()) : null
-  const studentDisplayName = linkedStudentName ?? profile?.display_name ?? ''
+  const studentDisplayName = selectedStudentName ?? linkedStudentName ?? profile?.display_name ?? ''
 
   return (
     <div className="relative max-w-lg mx-auto px-4" style={{ paddingTop: '20px' }}>
@@ -173,7 +173,7 @@ export default function PortalHomePage() {
         <PaymentRequestModal payment={payment} role={profile?.role} studentName={studentDisplayName} studentKey={studentId ?? undefined} />
 
         {/* ── 결제 안내 배너 (결제 요청 또는 회차 완료, 미완납 시) — 대시보드 최상단 ── */}
-        {payment && profile?.role === 'parent' && payment.status !== '완납' && (
+        {payment && profile?.role === 'parent' && payment.status !== '완납' && payment.payment_requested && (
           <Link
             href="/portal/payment"
             style={{

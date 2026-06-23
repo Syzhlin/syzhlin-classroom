@@ -12,6 +12,8 @@ type PortalStudentContextType = {
   siblings: Sibling[]
   hasSiblings: boolean
   linkedStudentName: string | null
+  /** 현재 선택된 자녀의 이름 (자녀 전환 시 따라감) */
+  selectedStudentName: string | null
   isTransitioning: boolean
 }
 
@@ -21,6 +23,7 @@ const PortalStudentContext = createContext<PortalStudentContextType>({
   siblings: [],
   hasSiblings: false,
   linkedStudentName: null,
+  selectedStudentName: null,
   isTransitioning: false,
 })
 
@@ -84,6 +87,14 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
     }, 200)
   }, [selectedStudentId])
 
+  // 선택된 자녀의 이름 (기본 자녀 또는 형제 목록에서 찾음)
+  const selectedStudentName =
+    selectedStudentId
+      ? (selectedStudentId === linkedId
+          ? linkedStudentName
+          : (siblings.find(s => s.id === selectedStudentId)?.name ?? linkedStudentName))
+      : linkedStudentName
+
   return (
     <PortalStudentContext.Provider value={{
       selectedStudentId,
@@ -91,6 +102,7 @@ export function PortalStudentProvider({ children }: { children: ReactNode }) {
       siblings,
       hasSiblings: siblings.length > 0,
       linkedStudentName,
+      selectedStudentName,
       isTransitioning,
     }}>
       {children}

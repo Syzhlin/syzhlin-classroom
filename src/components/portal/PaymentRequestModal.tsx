@@ -23,9 +23,10 @@ export default function PaymentRequestModal({ payment, role, studentName, studen
   const [show, setShow] = useState(false)
 
   const isParentSide = role === 'parent' || role === 'adult_learner'
-  const active = isParentSide && !!payment && payment.status !== '완납'
-  // 자녀+상태별 키 → 자녀가 바뀌거나 상태가 바뀌면 다시 뜬다.
-  const stateKey = payment ? `${studentKey ?? ''}-${payment.status}-${payment.completed_sessions}/${payment.total_sessions}` : ''
+  // 팝업은 선생님이 '결제 요청'을 눌렀을 때(payment_requested)만 뜬다. 완납이면 안 뜸.
+  const active = isParentSide && !!payment && payment.status !== '완납' && !!payment.payment_requested
+  // 자녀+요청상태별 키 → 자녀가 바뀌거나 요청/상태가 바뀌면 다시 뜬다.
+  const stateKey = payment ? `${studentKey ?? ''}-${payment.status}-req${payment.payment_requested ? 1 : 0}` : ''
 
   useEffect(() => {
     if (!active) { setShow(false); return }
