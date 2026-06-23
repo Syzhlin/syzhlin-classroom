@@ -9,6 +9,7 @@ import { getStampedCities, getCurrentCity, classesInCurrentCity, getNextCity } f
 import Link from 'next/link'
 import { useState } from 'react'
 import PaymentRequestModal from '@/components/portal/PaymentRequestModal'
+import { LessonSummaryCard } from '@/components/portal/LessonSummaryCard'
 
 const DAY_KO = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -56,6 +57,7 @@ export default function PortalHomePage() {
       growthData={growthData}
       data={data}
       linkedStudentName={linkedStudentName}
+      studentId={studentId}
     />
   }
 
@@ -69,6 +71,7 @@ export default function PortalHomePage() {
       data={data}
       payment={payment}
       remaining={remaining}
+      studentId={studentId}
     />
   }
 
@@ -203,6 +206,11 @@ export default function PortalHomePage() {
         {/* ── 2. 선생님의 편지 ── */}
         {profile?.role === 'parent' && (
           <ParentLetterCard feedback={feedback} latestCompleted={latestCompleted} />
+        )}
+
+        {/* ── 오늘의 수업정리 (읽기 전용) ── */}
+        {profile?.role === 'parent' && (
+          <LessonSummaryCard studentId={studentId} />
         )}
 
         {/* ── 3+4. 숙제 제출 & 세계 여권 (2열) ── */}
@@ -479,7 +487,7 @@ function ParentLetterCard({ feedback, latestCompleted }: { feedback: any; latest
 /* ═══════════════════════════════════════════
    성인학습자 전용 홈
 ═══════════════════════════════════════════ */
-function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growthData, data, payment, remaining }: {
+function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growthData, data, payment, remaining, studentId }: {
   profile: any
   nextClass: any
   feedback: any
@@ -488,6 +496,7 @@ function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growt
   data: any
   payment: any
   remaining: number | null
+  studentId: string | null
 }) {
   const [expanded, setExpanded] = useState(false)
 
@@ -693,6 +702,9 @@ function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growt
           )}
         </div>
 
+        {/* ── 오늘의 수업정리 (읽기 전용) ── */}
+        <LessonSummaryCard studentId={studentId} />
+
         {/* ── 3. 2열: 영어 여권 미니 + 수업 진행 ── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
 
@@ -844,7 +856,7 @@ function AdultLearnerHome({ profile, nextClass, feedback, latestCompleted, growt
 /* ═══════════════════════════════════════════
    학생 전용 위젯 홈 (Pastel Soft Neumorphism)
 ═══════════════════════════════════════════ */
-function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData, data, linkedStudentName }: {
+function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData, data, linkedStudentName, studentId }: {
   profile: any
   nextClass: any
   feedback: any
@@ -852,6 +864,7 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
   growthData: any
   data: any
   linkedStudentName: string | null
+  studentId: string | null
 }) {
   const completedCount = growthData?.passportClasses ?? 0
   const stampedCities = getStampedCities(completedCount)
@@ -1209,6 +1222,9 @@ function StudentHome({ profile, nextClass, feedback, latestCompleted, growthData
             </p>
           )}
         </div>
+
+        {/* ── 오늘의 수업정리 (읽기 전용) ── */}
+        <LessonSummaryCard studentId={studentId} />
 
         {/* ── 6. 오늘의 문장 ── */}
         <div style={{ ...lightCard, padding: '20px' }}>

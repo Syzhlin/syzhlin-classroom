@@ -329,6 +329,42 @@ export interface Database {
         }
         Relationships: []
       }
+      daily_lesson_summaries: {
+        Row: {
+          id: string
+          student_id: string
+          author_id: string
+          date: string
+          content: string | null
+          next_prep: string | null
+          created_at: string
+          updated_at: string
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          author_id: string
+          date: string
+          content?: string | null
+          next_prep?: string | null
+          created_at?: string
+          updated_at?: string
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          author_id?: string
+          date?: string
+          content?: string | null
+          next_prep?: string | null
+          created_at?: string
+          updated_at?: string
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
       class_materials: {
         Row: {
           id: string

@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { useDeleteClass, useUpdateClass, useCompleteClass, usePostponeClass, ClassWithStudent } from '@/lib/queries/useClasses'
 import { useDeleteFutureClasses } from '@/lib/queries/useRecurringClasses'
 import { FeedbackModal } from './FeedbackModal'
+import { LessonSummarySection } from './LessonSummarySection'
 
 const STATUS_CONFIG = {
   scheduled: { label: '예정', variant: 'default' as const },
@@ -257,6 +258,10 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
                 </Button>
               </div>
             </div>
+          )}
+
+          {cls.status !== 'cancelled' && (
+            <LessonSummarySection studentId={cls.student_id} date={cls.date} />
           )}
 
           {cls.status !== 'cancelled' && (
