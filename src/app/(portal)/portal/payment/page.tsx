@@ -91,6 +91,13 @@ export default function PortalPaymentPage() {
     ? Math.round((payment.completed_sessions / payment.total_sessions) * 100)
     : 0
 
+  // 결제하기 자동 활성화 조건:
+  //  - 아직 완납이 아니고
+  //  - (이번 패키지 수업을 모두 완료했거나 || 선생님이 결제를 요청했을 때)
+  const sessionsDone = payment.total_sessions > 0 && payment.completed_sessions >= payment.total_sessions
+  const needsPayment = payment.status !== '완납'
+  const paymentActive = needsPayment && (sessionsDone || !!payment.payment_requested)
+
   return (
     <div className="max-w-lg mx-auto px-4 space-y-4" style={{ paddingTop: '20px' }}>
       <h2 className="text-xs font-bold" style={{ color: 'var(--sz-text-muted)' }}>
@@ -99,6 +106,21 @@ export default function PortalPaymentPage() {
 
       {/* Status card */}
       <div className="space-y-5" style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '28px', padding: '24px' }}>
+        {/* 결제 활성화 안내 배너 — 수업 완료 또는 선생님 결제 요청 시 */}
+        {paymentActive && (
+          <div
+            className="rounded-2xl px-4 py-3"
+            style={{ backgroundColor: 'var(--sz-pink-pale)', border: '1px solid rgba(242,199,166,0.45)' }}
+          >
+            <p className="text-sm font-bold" style={{ color: 'var(--sz-pink-soft)' }}>
+              {sessionsDone ? '🎉 이번 패키지 수업을 모두 완료했어요!' : '🔔 선생님이 결제를 요청했어요'}
+            </p>
+            <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--sz-text-muted)' }}>
+              다음 수업을 위해 아래 <strong>결제하기</strong>로 결제를 진행해 주세요.
+            </p>
+          </div>
+        )}
+
         {/* Big status badge */}
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-800">납부 상태</span>
@@ -149,27 +171,27 @@ export default function PortalPaymentPage() {
           </div>
         )}
 
-        {/* Payment link */}
-        {payment.payment_link && (
+        {/* Payment link / 결제하기 — 링크가 있으면 링크로, 없으면 계좌 안내로 */}
+        {(payment.payment_link || paymentActive) && (
           <div className="border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
             <a
-              href={payment.payment_link}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={payment.payment_link || '#account-info'}
+              {...(payment.payment_link ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               className={`block w-full text-center py-2.5 text-sm font-medium rounded-xl transition-colors ${
                 payment.status === '완납'
                   ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   : 'bg-[var(--sz-navy)] text-white hover:bg-[var(--sz-navy-light)]'
-              }`}
+              } ${paymentActive ? 'animate-pulse' : ''}`}
+              style={paymentActive ? { boxShadow: '0 0 0 2px var(--sz-peach), 0 4px 12px rgba(242,199,166,0.4)' } : undefined}
             >
-              {payment.status === '완납' ? '결제 링크 바로가기' : '결제하기'}
+              {payment.status === '완납' ? '결제 링크 바로가기' : payment.payment_link ? '결제하기' : '결제하기 (계좌 안내)'}
             </a>
           </div>
         )}
 
 
         {/* 계좌 정보 */}
-        <div className="border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
+        <div id="account-info" className="border-t pt-4" style={{borderColor: 'rgba(175,196,216,0.15)'}}>
           <p className="text-xs text-gray-400 mb-2">입금 계좌</p>
           <AccountCopyButton />
         </div>

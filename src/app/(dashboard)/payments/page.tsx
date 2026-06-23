@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useMonthPayments, useUpdatePayment } from '@/lib/queries/usePayments'
 import type { PaymentWithStudent } from '@/lib/queries/usePayments'
+import { useSendMessage } from '@/lib/queries/useMessages'
 
 function MonthPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const months = []
@@ -260,9 +261,24 @@ export default function PaymentsPage() {
 
   const { data: payments, isLoading } = useMonthPayments(yearMonth)
   const updatePayment = useUpdatePayment()
+  const sendMessage = useSendMessage()
+  const [requestMsg, setRequestMsg] = useState('')
 
   async function handleRequestToggle(p: PaymentWithStudent) {
-    await updatePayment.mutateAsync({ id: p.id, payment_requested: !p.payment_requested })
+    const turningOn = !p.payment_requested
+    await updatePayment.mutateAsync({ id: p.id, payment_requested: turningOn })
+    // 결제 요청을 "보낼 때"만 학부모에게 자동 메시지 발송
+    if (turningOn) {
+      const [, mm] = yearMonth.split('-')
+      const body = `[결제 안내] ${p.student.name} 학생 ${parseInt(mm)}월 수업료 ${p.amount.toLocaleString()}원 결제 안내드립니다. 앱 '결제' 탭에서 확인 부탁드려요. 🙏`
+      try {
+        await sendMessage.mutateAsync({ student_id: p.student_id, body, sender_role: 'teacher' })
+        setRequestMsg(`${p.student.name} 학부모님께 결제 안내 메시지를 보냈어요 ✓`)
+      } catch {
+        setRequestMsg(`${p.student.name} 결제 요청은 표시됐지만 메시지 전송에 실패했어요.`)
+      }
+      setTimeout(() => setRequestMsg(''), 4000)
+    }
   }
 
   async function handleBonusChange(p: PaymentWithStudent, delta: number) {
@@ -292,6 +308,12 @@ export default function PaymentsPage() {
         </div>
         <MonthPicker value={yearMonth} onChange={setYearMonth} />
       </div>
+
+      {requestMsg && (
+        <div className="mb-4 rounded-xl px-4 py-2.5 text-sm font-medium" style={{ backgroundColor: 'var(--sz-sage-pale)', color: 'var(--sz-sage)' }}>
+          {requestMsg}
+        </div>
+      )}
 
       {/* 요약 카드 */}
       {!isLoading && payments && payments.length > 0 && (
