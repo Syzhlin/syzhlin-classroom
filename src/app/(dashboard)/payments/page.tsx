@@ -25,15 +25,20 @@ function MonthPicker({ value, onChange }: { value: string; onChange: (v: string)
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, remaining }: { status: string; remaining?: number }) {
+  // '미납'은 회차가 다 찼을 때(잔여 0 이하)만 '결제 필요'로 표시한다.
+  // 보너스 등으로 아직 수업이 남아 있으면(잔여 > 0) '진행 중'으로 둔다.
+  const inProgressUnpaid = status === '미납' && remaining !== undefined && remaining > 0
+  const effective = inProgressUnpaid ? '진행 중' : status
   const styles: Record<string, string> = {
     완납: 'bg-[var(--sz-sage-pale)] text-[var(--sz-sage)]',
     미납: 'bg-[var(--sz-pink-pale)] text-[var(--sz-pink-soft)]',
     부분납: 'bg-[var(--sz-peach-pale)] text-[var(--sz-peach)]',
+    '진행 중': 'bg-[rgba(175,196,216,0.15)] text-[var(--sz-text-muted)]',
   }
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
-      {status === '미납' ? '결제 필요' : status}
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[effective] ?? 'bg-[rgba(175,196,216,0.1)] text-[var(--sz-text-muted)]'}`}>
+      {effective === '미납' ? '결제 필요' : effective}
     </span>
   )
 }
@@ -88,7 +93,7 @@ function PaymentCard({ payment, onEdit, onRequestToggle, onBonusChange, onSetSta
             )}
           </div>
         </div>
-        <StatusBadge status={payment.status} />
+        <StatusBadge status={payment.status} remaining={remaining} />
       </div>
 
       {/* 보너스 조절 */}

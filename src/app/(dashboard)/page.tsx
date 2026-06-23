@@ -81,8 +81,13 @@ export default function DashboardPage() {
   const { data: changeRequests = [] } = useAllChangeRequests()
   const { data: allClasses = [] } = useAllSessionClasses()
 
+  // '결제 필요'는 미납이면서 회차가 다 찼을 때(잔여 0 이하)만 집계한다.
+  // 보너스 등으로 아직 수업이 남아 있으면 결제 필요로 보지 않는다.
+  const isPaymentDue = (p: { status: string; completed_sessions: number; total_sessions: number }) =>
+    p.status === '미납' && p.total_sessions > 0 && p.completed_sessions >= p.total_sessions
+
   const paymentStats = useMemo(() => ({
-    unpaid:  payments.filter(p => p.status === '미납').length,
+    unpaid:  payments.filter(isPaymentDue).length,
     partial: payments.filter(p => p.status === '부분납').length,
     paid:    payments.filter(p => p.status === '완납').length,
   }), [payments])
@@ -251,7 +256,7 @@ export default function DashboardPage() {
             <p className="text-sm text-[var(--sz-text-muted)] opacity-70">{yearMonth.replace('-', '년 ')}월 결제 정보 없음</p>
           ) : (
             <div className="space-y-2">
-              {payments.filter(p => p.status !== '완납').slice(0, 4).map(p => (
+              {payments.filter(p => isPaymentDue(p) || p.status === '부분납').slice(0, 4).map(p => (
                 <Link key={p.id} href="/payments" className="flex items-center justify-between hover:bg-[var(--sz-bg-pastel)] rounded-lg -mx-1 px-1 transition-colors">
                   <p className="text-sm text-[var(--sz-text-deep)] truncate flex-1">{p.student?.name}</p>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ml-2 ${
