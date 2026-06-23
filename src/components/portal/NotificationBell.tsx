@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { useProfile } from '@/lib/queries/useProfile'
@@ -14,14 +14,23 @@ type NotiItem = {
   body: string
   time?: string
   href: string
-  unread: boolean
+}
+
+const DISMISS_KEY = 'sz_dismissed_notifications'
+
+function loadDismissed(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem(DISMISS_KEY) || '[]')
+  } catch {
+    return []
+  }
 }
 
 /**
  * 학부모/학생 포털 알림 벨.
  * 별도 notifications 테이블 없이 기존 데이터(선생님 메시지 + 결제 상태)를 모아 알림으로 보여준다.
- *  - 선생님이 보낸 안 읽은 메시지(결제 안내 등) → 문의함으로 이동
- *  - 결제가 필요한 상태(회차 완료/결제 요청) → 결제 페이지로 이동
+ * 알림을 누르면(이동) 또는 ✕로 종에서 삭제(localStorage에 기억)할 수 있다.
  */
 export default function PortalNotificationBell() {
   const router = useRouter()
@@ -29,57 +38,66 @@ export default function PortalNotificationBell() {
   const { selectedStudentId } = usePortalStudent()
   const role = profile?.role
   const [open, setOpen] = useState(false)
+  const [dismissed, setDismissed] = useState<string[]>([])
+
+  useEffect(() => { setDismissed(loadDismissed()) }, [])
 
   const channelType = role === 'student' ? 'student' : 'parent'
   const { data: messages = [] } = useMessages(selectedStudentId, channelType)
   const yearMonth = format(new Date(), 'yyyy-MM')
   const { data: payment } = usePortalPayment(selectedStudentId, yearMonth)
 
-  // 알림 표시 대상 역할 (선생님 본인 화면 제외)
   if (!role || role === 'teacher') return null
 
-  const items: NotiItem[] = []
+  const allItems: NotiItem[] = []
 
   // 1) 선생님이 보낸 안 읽은 메시지
   for (const m of messages) {
     if (m.sender_role === 'teacher' && !m.read_at) {
-      items.push({
+      allItems.push({
         id: `msg-${m.id}`,
         title: '선생님 메시지',
         body: m.body,
         time: m.created_at,
         href: '/portal/inquiry',
-        unread: true,
       })
     }
   }
 
-  // 2) 결제 안내 (회차 완료 또는 결제 요청, 미완납)
+  // 2) 결제 안내 (회차 완료 또는 결제 요청, 미완납) — 상태가 바뀌면 id도 바뀌어 다시 뜸
   if ((role === 'parent' || role === 'adult_learner') && payment && payment.status !== '완납') {
     const sessionsDone = payment.total_sessions > 0 && payment.completed_sessions >= payment.total_sessions
     if (sessionsDone || payment.payment_requested) {
-      items.push({
-        id: 'pay',
+      allItems.push({
+        id: `pay-${payment.payment_requested ? 'req' : ''}-${payment.completed_sessions}/${payment.total_sessions}`,
         title: '결제 안내',
         body: sessionsDone ? '이번 패키지 수업을 모두 완료했어요. 결제를 진행해 주세요.' : '선생님이 결제를 요청했어요.',
         href: '/portal/payment',
-        unread: true,
       })
     }
   }
 
-  // 최신순 정렬
+  // 삭제된 알림 제외
+  const items = allItems.filter(it => !dismissed.includes(it.id))
   items.sort((a, b) => (b.time ?? '').localeCompare(a.time ?? ''))
   const unreadCount = items.length
 
-  function go(href: string) {
+  function dismiss(id: string) {
+    setDismissed(prev => {
+      const next = Array.from(new Set([...prev, id])).slice(-200)
+      try { localStorage.setItem(DISMISS_KEY, JSON.stringify(next)) } catch {}
+      return next
+    })
+  }
+
+  function go(it: NotiItem) {
+    dismiss(it.id)
     setOpen(false)
-    router.push(href)
+    router.push(it.href)
   }
 
   return (
     <>
-      {/* 배경 클릭 닫기 */}
       {open && <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />}
 
       <div className="relative z-50">
@@ -115,28 +133,51 @@ export default function PortalNotificationBell() {
                 <p className="text-center text-xs py-8" style={{ color: 'var(--sz-text-muted)' }}>새 알림이 없어요</p>
               ) : (
                 items.map(it => (
-                  <button
+                  <div
                     key={it.id}
-                    type="button"
-                    onClick={() => go(it.href)}
-                    className="w-full text-left px-4 py-3 border-b transition-colors hover:bg-[var(--sz-bg-pastel)]"
+                    className="flex items-start gap-2 px-3 py-3 border-b"
                     style={{ borderColor: 'rgba(175,196,216,0.12)' }}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-[12px] font-bold" style={{ color: 'var(--sz-text-deep)' }}>{it.title}</p>
-                      {it.time && (
-                        <span className="text-[10px]" style={{ color: 'var(--sz-text-muted)' }}>
-                          {new Date(it.time).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] mt-0.5 leading-relaxed line-clamp-2" style={{ color: 'var(--sz-text-muted)' }}>
-                      {it.body}
-                    </p>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => go(it)}
+                      className="flex-1 text-left min-w-0"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[12px] font-bold" style={{ color: 'var(--sz-text-deep)' }}>{it.title}</p>
+                        {it.time && (
+                          <span className="text-[10px]" style={{ color: 'var(--sz-text-muted)' }}>
+                            {new Date(it.time).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] mt-0.5 leading-relaxed line-clamp-2" style={{ color: 'var(--sz-text-muted)' }}>
+                        {it.body}
+                      </p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => dismiss(it.id)}
+                      aria-label="알림 삭제"
+                      className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--sz-bg-pastel)]"
+                      style={{ color: 'var(--sz-text-muted)' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))
               )}
             </div>
+            {items.length > 0 && (
+              <button
+                type="button"
+                onClick={() => items.forEach(it => dismiss(it.id))}
+                className="w-full py-2.5 text-[11px] font-bold border-t"
+                style={{ color: 'var(--sz-blue-soft)', borderColor: 'rgba(175,196,216,0.2)' }}
+              >
+                모두 지우기
+              </button>
+            )}
           </div>
         )}
       </div>
