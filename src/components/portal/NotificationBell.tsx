@@ -7,6 +7,8 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { useMessages } from '@/lib/queries/useMessages'
 import { usePortalPayment } from '@/lib/queries/usePayments'
+import { useStudentFeedbacks } from '@/lib/queries/useFeedback'
+import { useDailyLessonSummary } from '@/lib/queries/useDailyLessonSummary'
 
 type NotiItem = {
   id: string
@@ -46,6 +48,9 @@ export default function PortalNotificationBell() {
   const { data: messages = [] } = useMessages(selectedStudentId, channelType)
   const yearMonth = format(new Date(), 'yyyy-MM')
   const { data: payment } = usePortalPayment(selectedStudentId, yearMonth)
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const { data: summary } = useDailyLessonSummary(selectedStudentId, today)
+  const { data: feedbacks = [] } = useStudentFeedbacks(selectedStudentId)
 
   if (!role || role === 'teacher') return null
 
@@ -73,6 +78,45 @@ export default function PortalNotificationBell() {
       body: `${nm} 수업료 결제 요청이 왔어요. 결제 탭에서 확인해 주세요.`,
       href: '/portal/payment',
     })
+  }
+
+  // 3) 오늘의 수업정리 등록 알림
+  if (summary?.content) {
+    allItems.push({
+      id: `dls-content-${summary.updated_at || summary.created_at || summary.id}`,
+      title: '오늘의 수업정리',
+      body: '선생님이 오늘 수업 정리를 올렸어요! 확인해 보세요.',
+      time: summary.updated_at || summary.created_at,
+      href: '/portal/home',
+    })
+  }
+
+  // 4) 다음 수업 준비 사항 알림
+  if (summary?.next_prep) {
+    allItems.push({
+      id: `dls-prep-${summary.updated_at || summary.created_at || summary.id}`,
+      title: '다음 수업 준비',
+      body: '다음 수업 내용을 미리 확인해요!',
+      time: summary.updated_at || summary.created_at,
+      href: '/portal/home',
+    })
+  }
+
+  // 5) 숙제 발송 알림 (선생님이 수업 피드백에 숙제를 담아 보낸 경우, 최근 14일)
+  const HW_WINDOW_MS = 1000 * 60 * 60 * 24 * 14
+  for (const f of feedbacks as Array<{ id: string; has_homework?: boolean; homework_text?: string | null; created_at?: string }>) {
+    if (f.has_homework && f.homework_text) {
+      const t = f.created_at ? new Date(f.created_at).getTime() : 0
+      if (t && Date.now() - t <= HW_WINDOW_MS) {
+        allItems.push({
+          id: `hw-${f.id}`,
+          title: '숙제 안내',
+          body: '선생님이 숙제를 보냈어요! 숙제 탭에서 확인해 주세요.',
+          time: f.created_at,
+          href: '/portal/homework',
+        })
+      }
+    }
   }
 
   // 삭제된 알림 제외
