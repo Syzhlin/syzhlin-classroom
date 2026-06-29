@@ -102,10 +102,11 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
   }
 
   return (
-    <Sheet open={open} onOpenChange={(v) => {
-      if (!v) { setConfirmDelete(false); setShowReschedule(false); onClose() }
-    }}>
-      <SheetContent>
+    <>
+      <Sheet open={open} onOpenChange={(v) => {
+        if (!v) { setConfirmDelete(false); setShowReschedule(false); onClose() }
+      }}>
+        <SheetContent>
         <SheetHeader>
           <div className="flex items-center gap-3">
             <div className="w-3 h-10 rounded-full" style={{ backgroundColor: color }} />
@@ -319,7 +320,18 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
             </Button>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
+
+      {feedbackOpen && (
+        <FeedbackModal
+          classId={cls.id}
+          studentId={cls.student_id}
+          studentName={cls.students?.name ?? '학생'}
+          classDate={format(parseISO(cls.date), 'yyyy년 M월 d일', { locale: ko })}
+          onClose={() => setFeedbackOpen(false)}
+        />
+      )}
+    </>
   )
 }
