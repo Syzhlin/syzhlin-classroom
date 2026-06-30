@@ -13,7 +13,7 @@ interface ClassBlockProps {
 
 const STATUS_STYLES = {
   scheduled: '',
-  completed: '',
+  completed: 'ring-2 ring-green-400 ring-inset',
   cancelled: 'opacity-50 line-through',
   makeup: 'ring-2 ring-orange-400 ring-inset',
   postponed: 'opacity-40 ring-2 ring-dashed ring-gray-400 ring-inset',
@@ -30,6 +30,11 @@ const STATUS_LABELS: Record<string, string> = {
 export function ClassBlock({ cls, topPx, heightPx, sessionNumber, onClick, onNameClick }: ClassBlockProps) {
   const color = cls.students?.color ?? '#6366f1'
   const subject = cls.students?.subjects?.[0] ?? ''
+  const isCompleted = cls.status === 'completed'
+  const isPostponed = cls.status === 'postponed'
+  const blockColor = isCompleted ? '#16a34a' : isPostponed ? '#9ca3af' : color
+  const blockBg = isCompleted ? '#dcfce7' : isPostponed ? '#f3f4f6' : color + '22'
+  const nameColor = isCompleted ? '#166534' : isPostponed ? '#6b7280' : color
 
   return (
     <div
@@ -47,9 +52,9 @@ export function ClassBlock({ cls, topPx, heightPx, sessionNumber, onClick, onNam
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundColor: (cls.status as string) === 'postponed' ? '#f3f4f6' : color + '22',
-          borderLeft: `3px solid ${(cls.status as string) === 'postponed' ? '#9ca3af' : color}`,
-          borderColor: (cls.status as string) === 'postponed' ? '#9ca3af' : color,
+          backgroundColor: blockBg,
+          borderLeft: `3px solid ${blockColor}`,
+          borderColor: blockColor,
         }}
         className={cn(
           'rounded-md px-2 py-1 text-left overflow-hidden hover:brightness-95 transition-all w-full h-full',
@@ -57,7 +62,7 @@ export function ClassBlock({ cls, topPx, heightPx, sessionNumber, onClick, onNam
         )}
       >
         {/* 이름 — 클릭 시 상태 변경 시트 */}
-        <p className="text-xs font-semibold truncate" style={{ color: (cls.status as string) === 'postponed' ? '#6b7280' : color }}>
+        <p className="text-xs font-semibold truncate" style={{ color: nameColor }}>
           <span
             role="button"
             className="hover:underline cursor-pointer"
@@ -79,7 +84,9 @@ export function ClassBlock({ cls, topPx, heightPx, sessionNumber, onClick, onNam
           </p>
         )}
         {cls.status !== 'scheduled' && heightPx >= 40 && (
-          <span className="text-[10px] text-gray-400">{STATUS_LABELS[cls.status]}</span>
+          <span className={cn('text-[10px]', isCompleted ? 'font-semibold text-green-700' : 'text-gray-400')}>
+            {STATUS_LABELS[cls.status]}
+          </span>
         )}
       </button>
     </div>
