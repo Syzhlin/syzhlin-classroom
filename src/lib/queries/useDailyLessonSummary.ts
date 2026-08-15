@@ -8,6 +8,13 @@ export type DailyLessonSummaryRow = {
   date: string
   content: string | null
   next_prep: string | null
+  topic: string | null
+  achievement: string | null
+  next_focus: string | null
+  listening_score: number | null
+  speaking_score: number | null
+  reading_score: number | null
+  writing_score: number | null
   created_at: string
   updated_at: string
   deleted_at: string | null
@@ -44,6 +51,13 @@ export function useUpsertDailyLessonSummary() {
       date: string
       content?: string
       next_prep?: string
+      topic?: string
+      achievement?: string
+      next_focus?: string
+      listening_score?: number
+      speaking_score?: number
+      reading_score?: number
+      writing_score?: number
     }) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
@@ -56,6 +70,13 @@ export function useUpsertDailyLessonSummary() {
             date: input.date,
             content: input.content ?? null,
             next_prep: input.next_prep ?? null,
+            topic: input.topic ?? null,
+            achievement: input.achievement ?? null,
+            next_focus: input.next_focus ?? null,
+            listening_score: input.listening_score ?? null,
+            speaking_score: input.speaking_score ?? null,
+            reading_score: input.reading_score ?? null,
+            writing_score: input.writing_score ?? null,
             author_id: user.id,
             updated_at: new Date().toISOString(),
             deleted_at: null,

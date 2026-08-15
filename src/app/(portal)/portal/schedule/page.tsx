@@ -12,6 +12,7 @@ import { useProfile } from '@/lib/queries/useProfile'
 import { usePortalStudent } from '@/contexts/PortalStudentContext'
 import { usePortalClasses } from '@/lib/queries/useClasses'
 import { useSubmitChangeRequest } from '@/lib/queries/useChangeRequests'
+import { DailyLessonSummaryRow, useDailyLessonSummary } from '@/lib/queries/useDailyLessonSummary'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   scheduled: { label: '예정', color: '' },
@@ -42,6 +43,102 @@ function formatTimeSlot(slot: string) {
 function formatClassDate(dateStr: string) {
   const d = parseISO(dateStr)
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${DAY_LABELS[d.getDay()]})`
+}
+
+function LearningDetailPanel({
+  date,
+  classes,
+  summary,
+  loading,
+}: {
+  date: string | null
+  classes: ClassItem[]
+  summary: DailyLessonSummaryRow | null | undefined
+  loading: boolean
+}) {
+  if (!date) {
+    return (
+      <div className="min-h-[420px] flex flex-col items-center justify-center text-center px-8" style={{ backgroundColor: '#FFFDF8', border: '1px solid rgba(175,196,216,0.25)', borderRadius: '24px' }}>
+        <span className="text-4xl">📚</span>
+        <p className="mt-4 text-base font-bold text-[var(--sz-navy)]">수업한 날짜를 선택해 주세요</p>
+        <p className="mt-1 text-xs leading-relaxed text-[var(--sz-text-muted)]">캘린더의 점이 표시된 날짜를 누르면<br />그날 배운 내용을 한눈에 볼 수 있어요.</p>
+      </div>
+    )
+  }
+
+  const completed = classes.some(cls => cls.status === 'completed')
+  const skillRows = [
+    ['listening_score', '듣기', '👂'],
+    ['speaking_score', '말하기', '💬'],
+    ['reading_score', '읽기', '📖'],
+    ['writing_score', '쓰기', '✏️'],
+  ] as const
+
+  return (
+    <div className="overflow-hidden min-h-[420px]" style={{ backgroundColor: '#FFFDF8', boxShadow: '7px 7px 20px rgba(100,88,65,0.09), -4px -4px 12px rgba(255,255,255,0.88)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '24px' }}>
+      <div className="px-5 py-4 border-b" style={{ backgroundColor: 'rgba(175,196,216,0.12)', borderColor: 'rgba(175,196,216,0.22)' }}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold text-[var(--sz-blue-soft)]">{formatClassDate(date)}</p>
+            <h2 className="mt-1 text-lg font-bold text-[var(--sz-navy)]">{summary?.topic || (completed ? '오늘의 배움 기록' : '수업 일정')}</h2>
+          </div>
+          <span className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ backgroundColor: completed ? 'var(--sz-sage-pale)' : 'var(--sz-blue-pale)', color: completed ? 'var(--sz-sage)' : 'var(--sz-blue-soft)' }}>
+            {completed ? '수업 완료' : '수업 예정'}
+          </span>
+        </div>
+        <p className="mt-2 text-xs text-[var(--sz-text-muted)]">{classes.map(cls => `${cls.start_time.slice(0, 5)}–${cls.end_time.slice(0, 5)}`).join(' · ')}</p>
+      </div>
+
+      {loading ? (
+        <div className="flex min-h-[290px] items-center justify-center"><div className="w-5 h-5 border-2 border-[var(--sz-navy)] border-t-transparent rounded-full animate-spin" /></div>
+      ) : summary ? (
+        <div className="p-5 space-y-5">
+          <section>
+            <p className="text-[11px] font-bold tracking-wide text-[var(--sz-text-muted)]">오늘 배운 내용</p>
+            <p className="mt-2 text-sm leading-7 text-gray-700 whitespace-pre-wrap">{summary.content || '선생님이 수업 내용을 정리하고 있어요.'}</p>
+          </section>
+
+          <section className="rounded-2xl p-4" style={{ backgroundColor: 'rgba(175,196,216,0.10)' }}>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold text-[var(--sz-navy)]">4영역 배움 척도</p>
+              <span className="text-[10px] text-[var(--sz-text-muted)]">수업 중 관찰 · 5점 기준</span>
+            </div>
+            <div className="space-y-3">
+              {skillRows.map(([key, label, emoji]) => {
+                const score = summary[key] ?? 3
+                return (
+                  <div key={key} className="grid grid-cols-[66px_1fr_22px] gap-2 items-center">
+                    <span className="text-xs font-semibold text-gray-600">{emoji} {label}</span>
+                    <div className="h-2.5 rounded-full overflow-hidden bg-white">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${score * 20}%`, background: 'linear-gradient(90deg, var(--sz-blue-soft), var(--sz-sage))' }} />
+                    </div>
+                    <strong className="text-xs text-[var(--sz-blue-soft)] text-right">{score}</strong>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <section className="rounded-2xl p-4" style={{ backgroundColor: 'var(--sz-sage-pale)' }}>
+              <p className="text-xs font-bold" style={{ color: 'var(--sz-sage)' }}>🌱 오늘 잘한 점</p>
+              <p className="mt-2 text-xs leading-6 text-gray-700 whitespace-pre-wrap">{summary.achievement || '선생님이 관찰한 강점을 곧 기록해 드릴게요.'}</p>
+            </section>
+            <section className="rounded-2xl p-4" style={{ backgroundColor: 'var(--sz-gold-light)' }}>
+              <p className="text-xs font-bold text-[var(--sz-navy)]">🧭 다음에 이어갈 점</p>
+              <p className="mt-2 text-xs leading-6 text-gray-700 whitespace-pre-wrap">{summary.next_focus || summary.next_prep || '다음 수업의 학습 방향을 준비하고 있어요.'}</p>
+            </section>
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-[290px] flex flex-col items-center justify-center text-center px-8">
+          <span className="text-3xl">📝</span>
+          <p className="mt-3 text-sm font-semibold text-gray-700">{completed ? '수업 상세 기록을 준비하고 있어요' : '예정된 수업입니다'}</p>
+          <p className="mt-1 text-xs text-gray-400">{completed ? '선생님이 기록하면 이곳에 바로 표시됩니다.' : '수업을 마친 뒤 배움 기록을 확인할 수 있어요.'}</p>
+        </div>
+      )}
+    </div>
+  )
 }
 
 type ClassItem = {
@@ -435,6 +532,7 @@ export default function PortalSchedulePage() {
   const [showPast, setShowPast] = useState(false)
   const [requestTarget, setRequestTarget] = useState<ClassItem | null>(null)
   const [selectedCalDate, setSelectedCalDate] = useState<string | null>(null)
+  const { data: selectedSummary, isLoading: selectedSummaryLoading } = useDailyLessonSummary(linkedId, selectedCalDate)
 
   const role = profile?.role
   const isParent = role === 'parent'
@@ -533,30 +631,26 @@ export default function PortalSchedulePage() {
     const studentName = linkedStudentName ?? undefined
 
     return (
-      <div className="max-w-lg mx-auto px-4 space-y-4" style={{ paddingTop: '20px' }}>
-        {/* 월간 캘린더 */}
-        <MonthlyCalendar
-          classes={allClasses as ClassItem[]}
-          onDayClick={ds => setSelectedCalDate(prev => prev === ds ? null : ds)}
-          selectedDate={selectedCalDate}
-        />
+      <div className="max-w-5xl mx-auto px-4 space-y-5" style={{ paddingTop: '20px' }}>
+        <div>
+          <p className="text-[11px] font-semibold tracking-[0.12em] text-[var(--sz-blue-soft)]">LEARNING CALENDAR</p>
+          <h1 className="mt-1 text-xl font-bold text-[var(--sz-navy)]">수업 일정과 배움 기록</h1>
+          <p className="mt-1 text-xs text-[var(--sz-text-muted)]">수업한 날짜를 선택하면 그날의 학습 내용을 확인할 수 있어요.</p>
+        </div>
 
-        {/* 선택된 날짜 수업 디테일 */}
-        {selectedCalDate && selectedDayClasses.length > 0 && (
-          <div className="overflow-hidden" style={{ backgroundColor: '#FFFDF8', boxShadow: '5px 5px 16px rgba(100,88,65,0.08), -3px -3px 10px rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.75)', borderRadius: '16px' }}>
-            <div className="px-4 py-2.5 border-b flex items-center justify-between" style={{ backgroundColor: 'rgba(175,196,216,0.1)', borderColor: 'rgba(175,196,216,0.2)' }}>
-              <span className="text-xs font-semibold text-[var(--sz-navy)]">{formatClassDate(selectedCalDate)}</span>
-              <button onClick={() => setSelectedCalDate(null)} className="text-[var(--sz-warm-gray)] hover:text-[var(--sz-navy)]">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div className="divide-y divide-gray-50">
-              {selectedDayClasses.map(cls => (
-                <ClassRow key={cls.id} cls={cls as ClassItem} showRequest={canRequest} studentName={studentName} />
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-[320px_minmax(0,1fr)] gap-4 items-start">
+          <MonthlyCalendar
+            classes={allClasses as ClassItem[]}
+            onDayClick={ds => setSelectedCalDate(ds)}
+            selectedDate={selectedCalDate}
+          />
+          <LearningDetailPanel
+            date={selectedCalDate}
+            classes={selectedDayClasses as ClassItem[]}
+            summary={selectedSummary}
+            loading={selectedSummaryLoading}
+          />
+        </div>
 
         {/* 다가오는 수업 (2개 날짜) */}
         <section>
