@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { startOfWeek } from 'date-fns'
+import { parseISO, startOfWeek } from 'date-fns'
 import { Plus } from 'lucide-react'
 import { WeekNavigator } from '@/components/schedule/WeekNavigator'
 import { WeekCalendar } from '@/components/schedule/WeekCalendar'
@@ -10,6 +10,8 @@ import { QuickStatusSheet } from '@/components/schedule/QuickStatusSheet'
 import { MobileScheduleView } from '@/components/schedule/MobileScheduleView'
 import type { ClassWithStudent } from '@/lib/queries/useClasses'
 import { useGenerateRecurringClasses } from '@/lib/queries/useRecurringClasses'
+import { useAllClassesForNavigation } from '@/lib/queries/useClasses'
+import { useScheduleStore } from '@/store/scheduleStore'
 
 export default function SchedulePage() {
   const [formOpen, setFormOpen] = useState(false)
@@ -23,10 +25,33 @@ export default function SchedulePage() {
   const [isMobile, setIsMobile] = useState(false)
 
   const generateRecurring = useGenerateRecurringClasses()
+  const { data: allClasses, isLoading: allClassesLoading } = useAllClassesForNavigation()
+  const { selectedWeekStart, setWeekStart } = useScheduleStore()
+  const [didRestoreExistingWeek, setDidRestoreExistingWeek] = useState(false)
 
   useEffect(() => {
     generateRecurring.mutate()
   }, [])
+
+  // 현재 주가 비어 있어도 기존 스케줄이 사라진 것처럼 보이지 않게
+  // 가장 가까운 기존 수업이 있는 주를 한 번 자동으로 연다.
+  useEffect(() => {
+    if (didRestoreExistingWeek || allClassesLoading || !allClasses?.length) return
+    const weekEnd = new Date(selectedWeekStart)
+    weekEnd.setDate(weekEnd.getDate() + 6)
+    const hasCurrentWeekClass = allClasses.some(cls => {
+      const date = parseISO(cls.date)
+      return date >= selectedWeekStart && date <= weekEnd
+    })
+    if (!hasCurrentWeekClass) {
+      const now = Date.now()
+      const nearest = allClasses.slice().sort((a, b) =>
+        Math.abs(parseISO(a.date).getTime() - now) - Math.abs(parseISO(b.date).getTime() - now)
+      )[0]
+      setWeekStart(startOfWeek(parseISO(nearest.date), { weekStartsOn: 1 }))
+    }
+    setDidRestoreExistingWeek(true)
+  }, [allClasses, allClassesLoading, didRestoreExistingWeek, selectedWeekStart, setWeekStart])
 
   useEffect(() => {
     const check = () => {

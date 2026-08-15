@@ -74,6 +74,24 @@ export function useAllSessionClasses() {
   })
 }
 
+// 일정 화면이 비어 있을 때 기존 일정이 있는 가장 가까운 주를 찾는 용도.
+// 완료·취소·미룸을 포함해 DB에 남아 있는 일정을 그대로 조회한다.
+export function useAllClassesForNavigation() {
+  const supabase = createClient()
+  return useQuery({
+    queryKey: ['classes', 'navigation'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('classes')
+        .select('id, date, status')
+        .order('date')
+      if (error) throw error
+      return data ?? []
+    },
+    staleTime: 60_000,
+  })
+}
+
 // 회차 맵 계산: { classId -> N회 }
 // paymentMap: "studentId:yearMonth" -> completed_sessions (정산 데이터 기준)
 // 정산의 completed_sessions를 완료 기준점으로 사용하고,

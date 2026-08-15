@@ -262,7 +262,7 @@ export function ClassDetailSheet({ cls, open, onClose, onEdit }: ClassDetailShee
           )}
 
           {cls.status !== 'cancelled' && (
-            <LessonSummarySection studentId={cls.student_id} date={cls.date} />
+            <LessonSummarySection studentId={cls.student_id} date={cls.date} studentName={cls.students?.name} />
           )}
 
           {cls.status !== 'cancelled' && (

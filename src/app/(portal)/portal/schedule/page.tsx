@@ -119,16 +119,6 @@ function LearningDetailPanel({
             </div>
           </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <section className="rounded-2xl p-4" style={{ backgroundColor: 'var(--sz-sage-pale)' }}>
-              <p className="text-xs font-bold" style={{ color: 'var(--sz-sage)' }}>🌱 오늘 잘한 점</p>
-              <p className="mt-2 text-xs leading-6 text-gray-700 whitespace-pre-wrap">{summary.achievement || '선생님이 관찰한 강점을 곧 기록해 드릴게요.'}</p>
-            </section>
-            <section className="rounded-2xl p-4" style={{ backgroundColor: 'var(--sz-gold-light)' }}>
-              <p className="text-xs font-bold text-[var(--sz-navy)]">🧭 다음에 이어갈 점</p>
-              <p className="mt-2 text-xs leading-6 text-gray-700 whitespace-pre-wrap">{summary.next_focus || summary.next_prep || '다음 수업의 학습 방향을 준비하고 있어요.'}</p>
-            </section>
-          </div>
         </div>
       ) : (
         <div className="min-h-[290px] flex flex-col items-center justify-center text-center px-8">
