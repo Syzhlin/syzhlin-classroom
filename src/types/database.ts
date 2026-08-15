@@ -340,13 +340,6 @@ export interface Database {
           date: string
           content: string | null
           next_prep: string | null
-          topic: string | null
-          achievement: string | null
-          next_focus: string | null
-          listening_score: number | null
-          speaking_score: number | null
-          reading_score: number | null
-          writing_score: number | null
           created_at: string
           updated_at: string
           deleted_at: string | null
@@ -358,13 +351,6 @@ export interface Database {
           date: string
           content?: string | null
           next_prep?: string | null
-          topic?: string | null
-          achievement?: string | null
-          next_focus?: string | null
-          listening_score?: number | null
-          speaking_score?: number | null
-          reading_score?: number | null
-          writing_score?: number | null
           created_at?: string
           updated_at?: string
           deleted_at?: string | null
@@ -376,13 +362,6 @@ export interface Database {
           date?: string
           content?: string | null
           next_prep?: string | null
-          topic?: string | null
-          achievement?: string | null
-          next_focus?: string | null
-          listening_score?: number | null
-          speaking_score?: number | null
-          reading_score?: number | null
-          writing_score?: number | null
           created_at?: string
           updated_at?: string
           deleted_at?: string | null
